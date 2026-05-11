@@ -9,7 +9,7 @@ Ejecutar: python main.py
 import tkinter as tk
 from tkinter import messagebox
 
-from config import C
+from config import C, MEMBERS
 from storage.json_repository import JsonRepository
 from services.task_service import TaskService 
 from services.project_service import ProjectService 
@@ -17,7 +17,7 @@ from ui.project_dialog import  ProjectDialog
 from ui.task_dialog import TaskDialog
 from ui.sidebar import  Sidebar
 from ui.task_list import  TaskList
-
+from ui.members_dialog import MembersDialog
 
 class ProjectManagerApp(tk.Tk):
     def __init__(self):
@@ -31,6 +31,7 @@ class ProjectManagerApp(tk.Tk):
         repo                 = JsonRepository()
         self.task_service    = TaskService(repo)
         self.project_service = ProjectService(repo, self.task_service)
+        MEMBERS[:] = self.task_service.members
 
         self.filter_project: str | None = None
 
@@ -47,6 +48,7 @@ class ProjectManagerApp(tk.Tk):
             on_new_project  = self._new_project,
             on_edit_project = self._edit_project,
             on_report       = self._show_report,
+            on_members      = self._manage_members,
         )
         self.sidebar.pack(side="left", fill="y")
 
@@ -191,6 +193,11 @@ class ProjectManagerApp(tk.Tk):
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
         self.refresh()
 
+    def _manage_members(self):
+        dlg = MembersDialog(self, self.task_service.members)
+        self.wait_window(dlg)
+        self.task_service.save_members(dlg.members)
+        MEMBERS[:] = dlg.members
 
 # ── Punto de entrada ──────────────────────────────────────────────────────────
 

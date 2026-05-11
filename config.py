@@ -27,7 +27,7 @@ DEFAULT_TASKS = [
     {"id": 6,  "title": "Tests de integración en CI/CD",      "status": "todo",     "project": "p3", "priority": "Media", "assign": "Carlos M.", "due": "2026-05-22", "description": ""},
     {"id": 7,  "title": "Documentación de la API REST",       "status": "backlog",  "project": "p3", "priority": "Baja",  "assign": "Laura P.",  "due": "2026-05-30", "description": ""},
     {"id": 8,  "title": "Push notifications iOS",             "status": "backlog",  "project": "p1", "priority": "Media", "assign": "Jorge G.",  "due": "2026-05-28", "description": ""},
-    {"id": 9,  "title": "Rediseño del footer",                "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-08", "description": ""},
+    {"id": 9,  "title": "Rediseño del footer",                "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-08", "description": "", "client":""},
 ]
 
 # ── Kanban columns ────────────────────────────────────────────────────────────
@@ -44,7 +44,8 @@ COLUMNS = [
 
 PRIORITY_OPTIONS = ["Alta", "Media", "Baja"]
 PRIORITY_COLORS  = {"Alta": "#E05555", "Media": "#E6A817", "Baja": "#2ECC71"}
-MEMBERS          = ["Ana R.", "Carlos M.", "Laura P.", "Jorge G."]
+DEFAULT_MEMBERS = [{"name": "User inicial", "pos": "", "team": ""}]
+MEMBERS = []
 PROJECT_COLORS   = [
     "#7C6FE0", "#1D9E75", "#EF9F27", "#E05555", "#4A90D9",
     "#E8678A", "#2ECC71", "#F39C12", "#1ABC9C", "#9B59B6",
