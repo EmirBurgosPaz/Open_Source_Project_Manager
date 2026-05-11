@@ -10,9 +10,13 @@
 
 Proyectos (ventana principal)/
 │
+
 ├── Projecto
+
 ├── Reporte sencillo de las tareas
+
 ├── Tareas por projecto
+
 ├──── Detalles de las tareas
 
 ****
