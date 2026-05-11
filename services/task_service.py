@@ -13,7 +13,7 @@ from storage.json_repository import JsonRepository
 class TaskService:
     def __init__(self, repo: JsonRepository):
         self.repo = repo
-        projects, tasks, self.next_id = repo.load()
+        projects, tasks, self.next_id, self.members  = repo.load()
         self.projects = list(projects)
         self.tasks    = list(tasks)
 
@@ -68,6 +68,7 @@ class TaskService:
             assign      = data["assign"],
             due         = data["due"],
             description = data.get("description", ""),
+            client = data.get("client", ""),
             created     = data.get("created", ""),
         )
         self.next_id += 1
@@ -87,6 +88,7 @@ class TaskService:
         task.assign      = data["assign"]
         task.due         = data["due"]
         task.description = data.get("description", "")
+        task.client = data.get("client", "")
         self._persist()
         return task
 
@@ -108,4 +110,8 @@ class TaskService:
     # ── Persistencia ──────────────────────────────────────────────────────────
 
     def _persist(self):
-        self.repo.save(self.projects, self.tasks, self.next_id)
+        self.repo.save(self.projects, self.tasks, self.next_id, self.members)
+
+    def save_members(self, members: list[str]):
+        self.members = members
+        self._persist()

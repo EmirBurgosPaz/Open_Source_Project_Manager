@@ -17,6 +17,7 @@ class Task:
     assign: str       = ""
     due: str          = ""           # "YYYY-MM-DD"
     description: str  = ""
+    client: str  = ""
     created: str      = field(default_factory=lambda: str(date.today()))
 
     def to_dict(self) -> dict:
@@ -29,6 +30,7 @@ class Task:
             "assign":      self.assign,
             "due":         self.due,
             "description": self.description,
+            "client": self.client,
             "created":     self.created,
         }
 
@@ -43,5 +45,6 @@ class Task:
             assign      = d.get("assign", ""),
             due         = d.get("due", ""),
             description = d.get("description", ""),
+            client = d.get("client", ""),
             created     = d.get("created", str(date.today())),
         )

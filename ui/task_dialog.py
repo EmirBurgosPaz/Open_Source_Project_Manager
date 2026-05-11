@@ -6,7 +6,8 @@ La validación y guardado los hace TaskService.
 
 import tkinter as tk
 from datetime import date
-from config import C, COLUMNS, PRIORITY_OPTIONS, MEMBERS
+from config import C, COLUMNS, PRIORITY_OPTIONS
+import config
 from utils.ui_helpers import make_label, make_entry, make_dark_combobox, center_window
 
 
@@ -49,6 +50,10 @@ class TaskDialog(tk.Toplevel):
         self.e_desc = make_entry(self, task.get("description", "") if task else "")
         self.e_desc.pack(fill="x", padx=16, pady=(0, 2))
 
+        make_label(self, "Cliente interno").pack(anchor="w", padx=16, pady=(8, 2))
+        self.e_client = make_entry(self, task.get("client", "") if task else "")
+        self.e_client.pack(fill="x", padx=16, pady=(0, 2))
+
         make_label(self, "Proyecto").pack(anchor="w", padx=16, pady=(8, 2))
         proj_names   = [p["name"] for p in self.projects]
         default_proj = next((p["name"] for p in self.projects
@@ -70,7 +75,7 @@ class TaskDialog(tk.Toplevel):
         row.pack(fill="x")
         for side, label_text, attr, opts, default_val in [
             ("left",  "Prioridad",  "prio_var",   PRIORITY_OPTIONS, task["priority"] if task else "Media"),
-            ("left",  "Asignado a", "assign_var",  MEMBERS,          task["assign"]   if task else MEMBERS[0]),
+            ("left",  "Asignado a", "assign_var", [m["name"] for m in config.MEMBERS], task["assign"] if task else config.MEMBERS[0]["name"]),
         ]:
             col = tk.Frame(row, bg=bg)
             col.pack(side=side, fill="x", expand=True)
@@ -130,6 +135,7 @@ class TaskDialog(tk.Toplevel):
             "title":       self.e_title.get().strip(),
             "project":     proj["id"],
             "description": self.e_desc.get().strip(),
+            "client": self.e_client.get().strip(),
             "status":      self._status_ids[status_idx],
             "priority":    self.prio_var.get(),
             "assign":      self.assign_var.get(),
