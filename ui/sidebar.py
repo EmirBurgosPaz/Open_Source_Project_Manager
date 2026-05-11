@@ -16,16 +16,17 @@ class Sidebar(tk.Frame):
       on_report()
     """
 
-    def __init__(self, parent, on_filter, on_new_project, on_edit_project, on_report):
+    def __init__(self, parent, on_filter, on_new_project, on_edit_project, on_report, on_members):
         super().__init__(parent, bg=C["sidebar"], width=200)
         self.pack_propagate(False)
-
+        self.on_members = on_members
         self.on_filter        = on_filter
         self.on_new_project   = on_new_project
         self.on_edit_project  = on_edit_project
         self.on_report        = on_report
 
         self._build_static()
+        self._nav_item(self, "👥", "Equipo", lambda e: self.on_members())
         self.proj_frame = tk.Frame(self, bg=C["sidebar"])
         self.proj_frame.pack(fill="x")
         self._nav_item(self, "◉", "Todos", lambda e: self.on_filter("all"))
@@ -41,6 +42,7 @@ class Sidebar(tk.Frame):
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x")
 
         self._nav_item(self, "📊", "Reportes", lambda e: self.on_report())
+        self._nav_item(self, "👥", "Equipo", lambda e: self.on_members())
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x", pady=8)
 
         ph = tk.Frame(self, bg=C["sidebar"])

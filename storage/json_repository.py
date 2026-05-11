@@ -6,7 +6,7 @@ Si mañana migras a SQLite, solo reescribes este archivo.
 
 import json
 import os
-from config import DATA_FILE, DEFAULT_PROJECTS, DEFAULT_TASKS
+from config import DATA_FILE, DEFAULT_PROJECTS, DEFAULT_TASKS, DEFAULT_MEMBERS
 from models.project import Project
 from models.task import Task
 
@@ -31,15 +31,17 @@ class JsonRepository:
         projects = [Project.from_dict(p) for p in data.get("projects", DEFAULT_PROJECTS)]
         tasks    = [Task.from_dict(t)    for t in data.get("tasks",    DEFAULT_TASKS)]
         next_id  = data.get("next_id", 10)
-        return projects, tasks, next_id
+        members  = data.get("members", DEFAULT_MEMBERS.copy())
+        return projects, tasks, next_id, members
 
     # ── Guardado ──────────────────────────────────────────────────────────────
 
-    def save(self, projects: list[Project], tasks: list[Task], next_id: int):
+    def save(self, projects: list[Project], tasks: list[Task], next_id: int, members: list[str]):
         data = {
             "projects": [p.to_dict() for p in projects],
             "tasks":    [t.to_dict() for t in tasks],
             "next_id":  next_id,
+            "members":  members,
         }
         with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
