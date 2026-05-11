@@ -95,6 +95,27 @@ class TaskService:
     def delete(self, task_id: int):
         self.tasks = [t for t in self.tasks if t.id != task_id]
         self._persist()
+    
+    def duplicate(self, task_id: int) -> Task:
+        original = self.get_by_id(task_id)
+        if not original:
+            raise ValueError(f"Tarea {task_id} no encontrada")
+        task = Task(
+            id              = self.next_id,
+            title           = f"{original.title} (copia)",
+            project_id      = original.project_id,
+            status          = original.status,
+            priority        = original.priority,
+            assign          = original.assign,
+            due             = original.due,
+            description     = original.description,
+            client = original.client,
+            created         = original.created,
+        )
+        self.next_id += 1
+        self.tasks.append(task)
+        self._persist()
+        return task
 
     # ── Validación ────────────────────────────────────────────────────────────
 

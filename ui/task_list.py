@@ -14,11 +14,13 @@ class TaskList(tk.Frame):
     on_edit_task(task_id) se llama al hacer doble clic.
     """
 
-    def __init__(self, parent, on_edit_task):
+    def __init__(self, parent, on_edit_task, on_duplicate_task, on_delete_task):
         super().__init__(parent, bg=C["bg"])
         self.on_edit_task = on_edit_task
         self._iid_map: dict = {}
         self._setup_style()
+        self.on_duplicate_task = on_duplicate_task
+        self.on_delete_task    = on_delete_task
 
     def _setup_style(self):
         style = ttk.Style()
@@ -57,6 +59,24 @@ class TaskList(tk.Frame):
         tree.tag_configure("odd_hover",  background=C["hover"])
         tree.tag_configure("even_hover", background=C["hover"])
         
+        # Menú contextual
+        menu = tk.Menu(self, tearoff=0, bg=C["panel"], fg=C["text"],
+                       activebackground=C["accent"], activeforeground="white",
+                       font=("Helvetica", 10), bd=0)
+        menu.add_command(label="✎  Editar",    command=lambda: self._on_double_click(tree))
+        menu.add_command(label="⧉  Duplicar",  command=lambda: self._on_duplicate(tree))
+        menu.add_separator()
+        menu.add_command(label="✕  Eliminar",  command=lambda: self._on_delete(tree))
+
+        def show_menu(e):
+            row = tree.identify_row(e.y)
+            if row:
+                tree.selection_set(row)
+                menu.tk_popup(e.x_root, e.y_root)
+
+        tree.bind("<Button-3>", show_menu)   # clic derecho Windows/Linux
+        tree.bind("<Button-2>", show_menu)   # clic derecho macOS
+
         # Variable para rastrear la fila anterior
         self._last_hovered = None
         
@@ -115,3 +135,19 @@ class TaskList(tk.Frame):
         task_id = self._iid_map.get(sel[0])
         if task_id is not None:
             self.on_edit_task(task_id)
+    
+    def _on_duplicate(self, tree):
+        sel = tree.selection()
+        if not sel:
+            return
+        task_id = self._iid_map.get(sel[0])
+        if task_id is not None:
+            self.on_duplicate_task(task_id)
+
+    def _on_delete(self, tree):
+        sel = tree.selection()
+        if not sel:
+            return
+        task_id = self._iid_map.get(sel[0])
+        if task_id is not None:
+            self.on_delete_task(task_id)

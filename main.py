@@ -8,7 +8,7 @@ Ejecutar: python main.py
 
 import tkinter as tk
 from tkinter import messagebox
-
+from tkinter import messagebox
 from config import C, MEMBERS
 from storage.json_repository import JsonRepository
 from services.task_service import TaskService 
@@ -78,7 +78,11 @@ class ProjectManagerApp(tk.Tk):
                   command=self._new_task).pack(side="right", padx=16)
 
         # Lista de tareas
-        self.task_list = TaskList(main, on_edit_task=self._edit_task)
+        self.task_list = TaskList(    main,
+                                    on_edit_task      = self._edit_task,
+                                    on_duplicate_task = self._duplicate_task,
+                                    on_delete_task    = self._delete_task,
+                                    )
         self.task_list.pack(fill="both", expand=True)
 
     # ── Refresh ───────────────────────────────────────────────────────────────
@@ -143,6 +147,15 @@ class ProjectManagerApp(tk.Tk):
             except ValueError as e:
                 messagebox.showwarning("Error", str(e))
         self.refresh()
+
+    def _duplicate_task(self, task_id: int):
+        self.task_service.duplicate(task_id)
+        self.refresh()
+
+    def _delete_task(self, task_id: int):
+        if messagebox.askyesno("Eliminar", "¿Eliminar esta tarea?"):
+            self.task_service.delete(task_id)
+            self.refresh()
 
     # ── Acciones: Proyectos ───────────────────────────────────────────────────
 
