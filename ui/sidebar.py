@@ -57,6 +57,7 @@ class Sidebar(tk.Frame):
     # ── Lista dinámica de proyectos ───────────────────────────────────────────
 
     def rebuild(self, projects: list, tasks: list):
+        self._current_projects = projects  # ← agrega esta línea
         for w in self.proj_frame.winfo_children():
             w.destroy()
 
@@ -81,7 +82,11 @@ class Sidebar(tk.Frame):
         cnt_lbl.pack(side="right")
         edit_lbl.pack(side="right", padx=(0, 2))
 
-        edit_lbl.bind("<Button-1>", lambda e, _pid=pid: self.on_edit_project(_pid))
+        def on_edit(e, _pid=pid):
+            if any(p.id == _pid for p in self._current_projects):
+                self.on_edit_project(_pid)
+
+        edit_lbl.bind("<Button-1>", on_edit)
 
         all_widgets = [f, row, dot, name_lbl, cnt_lbl, edit_lbl]
 

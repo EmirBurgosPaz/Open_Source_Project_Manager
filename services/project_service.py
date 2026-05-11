@@ -65,4 +65,5 @@ class ProjectService:
             self.task_service.projects,
             self.task_service.tasks,
             self.task_service.next_id,
+            self.task_service.members,
         )
