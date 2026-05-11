@@ -14,6 +14,10 @@ Proyectos (ventana principal)
 
 ├── Reporte sencillo de las tareas
 
+├── Miembros del workspace
+
+├── Tareas diarias
+
 ├── Tareas por projecto
 
 ├──── Detalles de las tareas
@@ -24,6 +28,8 @@ Proyectos (ventana principal)
 
 - Estructura inicial  - basado en un template de Claude
 - Recreacion del projecto en una estructura mas profesional y legible (Branch DEV)
+- Creacion de un grupo de miembros asignados al workspace
+- Creacion de una pantalla de tareas asignadas, que no son parte de un proyecto. 
 
 
 ## Metas actuales
@@ -33,3 +39,4 @@ Proyectos (ventana principal)
 ## Metas cumplidas
 
 - Primer prototipo
+- Estructura del workspace
