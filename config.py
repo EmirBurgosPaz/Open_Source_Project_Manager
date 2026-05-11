@@ -69,3 +69,9 @@ C = {
     "dlg_input": "#2A2A36",
     "dlg_border":"#3A3A4A",
 }
+
+FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral", "Único"]
+
+STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area", "informacion"]
+
+CATEGORY_OPTIONS = ["Automatico", "Manual"]

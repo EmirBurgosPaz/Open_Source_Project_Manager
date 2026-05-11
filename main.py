@@ -18,6 +18,10 @@ from ui.task_dialog import TaskDialog
 from ui.sidebar import  Sidebar
 from ui.task_list import  TaskList
 from ui.members_dialog import MembersDialog
+from ui.recurring_task_list import RecurringTaskList
+from ui.recurring_task_dialog import RecurringTaskDialog
+
+
 
 class ProjectManagerApp(tk.Tk):
     def __init__(self):
@@ -49,8 +53,11 @@ class ProjectManagerApp(tk.Tk):
             on_edit_project = self._edit_project,
             on_report       = self._show_report,
             on_members      = self._manage_members,
+            on_master_tasks  = self._show_master_tasks,
         )
         self.sidebar.pack(side="left", fill="y")
+        
+        
 
         # Panel principal
         main = tk.Frame(self, bg=C["bg"])
@@ -85,6 +92,11 @@ class ProjectManagerApp(tk.Tk):
                                     )
         self.task_list.pack(fill="both", expand=True)
 
+        self.recurring_list = RecurringTaskList(main, on_edit=self._edit_recurring, on_new=self._new_recurring)
+        #self.recurring_list.pack(fill="both", expand=True)
+
+        
+
     # ── Refresh ───────────────────────────────────────────────────────────────
 
     def refresh(self):
@@ -96,6 +108,7 @@ class ProjectManagerApp(tk.Tk):
         self.sidebar.rebuild(projects, tasks)
         self._render_stats()
         self.task_list.render(visible, projects)
+        self.recurring_list.render(self.task_service.recurring.get_all())
 
     def _render_stats(self):
         for w in self.stats_frame.winfo_children():
@@ -157,6 +170,53 @@ class ProjectManagerApp(tk.Tk):
             self.task_service.delete(task_id)
             self.refresh()
 
+    # ── Acciones: Tareas recurrentes ───────────────────────────────────────────────────
+
+    def _new_recurring(self):
+        dlg = RecurringTaskDialog(self)
+        self.wait_window(dlg)
+        if dlg.result and not dlg.result.get("deleted"):
+            self.task_service.recurring.create(dlg.result)
+            self.task_service._persist()
+            self.refresh()
+
+    def _edit_recurring(self, task_id: int):
+        task = next((t for t in self.task_service.recurring.get_all() if t.id == task_id), None)
+        if not task:
+            return
+        dlg = RecurringTaskDialog(self, task=task)
+        self.wait_window(dlg)
+        if not dlg.result:
+            return
+        if dlg.result.get("deleted"):
+            self.task_service.recurring.delete(task_id)
+        else:
+            self.task_service.recurring.update(task_id, dlg.result)
+        self.task_service._persist()
+        self.refresh()
+    
+    def _show_master_tasks(self):
+        self._show_recurring_tasks_view()
+        # limpiar contenido actual y mostrar master task list
+        for w in self.task_list.winfo_children():
+            w.destroy()
+        self.lbl_title.config(text="Master Task List")
+    
+    def _show_recurring_tasks_view(self):
+        """Oculta las tareas normales y muestra las recurrentes."""
+        self.task_list.pack_forget()
+        self.recurring_list.pack(fill="both", expand=True)
+        
+        # Opcional pero recomendado: Actualizar el título superior
+        self.lbl_title.config(text="Tareas Recurrentes")
+
+    def _show_normal_tasks_view(self):
+        """Oculta las tareas recurrentes y vuelve a la vista normal."""
+        self.recurring_list.pack_forget()
+        self.task_list.pack(fill="both", expand=True)
+        
+        # Restaurar el título
+        self.lbl_title.config(text="Todas las tareas")
     # ── Acciones: Proyectos ───────────────────────────────────────────────────
 
     def _new_project(self):
@@ -204,6 +264,7 @@ class ProjectManagerApp(tk.Tk):
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
         self.filter_project = None if project_id == "all" else project_id
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
+        self._show_normal_tasks_view()
         self.refresh()
 
     def _manage_members(self):

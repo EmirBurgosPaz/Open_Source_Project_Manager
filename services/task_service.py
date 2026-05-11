@@ -8,15 +8,17 @@ from datetime import datetime
 from models.project import Project
 from models.task import Task
 from storage.json_repository import JsonRepository
+from services.recurring_task_service import RecurringTaskService
 
 
 class TaskService:
     def __init__(self, repo: JsonRepository):
         self.repo = repo
-        projects, tasks, self.next_id, self.members  = repo.load()
-        self.projects = list(projects)
-        self.tasks    = list(tasks)
-
+        self.projects, self.tasks, self.next_id, self.members, rec_data, rec_next = repo.load()
+        self.projects = list(self.projects)
+        self.tasks    = list(self.tasks)
+        self.recurring = RecurringTaskService(repo)
+        self.recurring.load(rec_data, rec_next) 
     # ── Consultas ─────────────────────────────────────────────────────────────
 
     def get_all(self) -> list[Task]:
@@ -131,7 +133,7 @@ class TaskService:
     # ── Persistencia ──────────────────────────────────────────────────────────
 
     def _persist(self):
-        self.repo.save(self.projects, self.tasks, self.next_id, self.members)
+        self.repo.save(self.projects, self.tasks, self.next_id, self.members,self.recurring.to_dict_list(), self.recurring.next_id,)
 
     def save_members(self, members: list[str]):
         self.members = members
