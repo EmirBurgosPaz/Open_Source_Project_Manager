@@ -8,8 +8,7 @@
 
 ## Estructura inicial
 
-Proyectos (ventana principal)/
-│
+Proyectos (ventana principal)
 
 ├── Projecto
 
