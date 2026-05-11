@@ -147,6 +147,10 @@ class TaskDialog(tk.Toplevel):
         self._label(self, "Título")
         self.e_title = self._entry(self, task["title"] if task else "")
 
+        # --- NUEVO CAMPO EXTRA: Descripción ---
+        self._label(self, "Descripción")
+        self.e_desc = self._entry(self, task.get("description", "") if task else "")
+
         # Proyecto
         self._label(self, "Proyecto")
         proj_names   = [p["name"] for p in self.projects]
@@ -191,6 +195,11 @@ class TaskDialog(tk.Toplevel):
         # Fecha
         self._label(self, "Fecha límite (AAAA-MM-DD)")
         self.e_due = self._entry(self, task["due"] if task else str(date.today()))
+
+        self._label(self, "Fecha de creación")
+        fecha_creacion = task.get("created", str(date.today())) if task else str(date.today())
+        self.e_created = self._entry(self, fecha_creacion)
+        self.e_created.config(state="disabled", disabledbackground=C["hover"], disabledforeground=C["text"])
 
         # Separador
         tk.Frame(self, bg=C["dlg_border"], height=1).pack(fill="x", pady=(12, 0))
@@ -241,9 +250,11 @@ class TaskDialog(tk.Toplevel):
         self.result = {
             "title":   title,
             "project": proj["id"],
+            "description": self.e_desc.get(),
             "status":  self._status_ids[status_idx],
             "priority":self.prio_var.get(),
             "assign":  self.assign_var.get(),
+            "created":     self.e_created.get().strip(),
             "due":     self.e_due.get().strip(),
             "deleted": False,
         }
@@ -457,43 +468,77 @@ class ProjectManagerApp(tk.Tk):
         tk.Frame(self.sidebar, bg=C["border"], height=1).pack(fill="x")
 
         # Nav item: Reportes
-        self._nav_item("📊", "Reportes", self._show_report)
+        self._nav_item(self.sidebar, "📊", "Reportes", self._show_report)
 
         tk.Frame(self.sidebar, bg=C["border"], height=1).pack(fill="x", pady=8)
 
-        # Header "PROYECTOS" + botón +
+        # Header "PROYECTOS"
         ph = tk.Frame(self.sidebar, bg=C["sidebar"])
         ph.pack(fill="x", padx=6)
         tk.Label(ph, text="  PROYECTOS", bg=C["sidebar"], fg=C["muted"],
                  font=("Helvetica", 9)).pack(side="left")
+        
         add_proj_btn = tk.Label(ph, text="+", bg=C["sidebar"], fg=C["accent"],
                                 font=("Helvetica", 14, "bold"), cursor="hand2", padx=4)
         add_proj_btn.pack(side="right")
         add_proj_btn.bind("<Button-1>", lambda e: self._new_project())
 
+        # Contenedor dinámico de proyectos
         self.proj_frame = tk.Frame(self.sidebar, bg=C["sidebar"])
         self.proj_frame.pack(fill="x")
 
-        # Todos
-        self._nav_item("◉", "Todos", lambda: self._filter("all"))
+        # Renderizar proyectos (Asegúrate de que self.projects sea tu lista)
+        if hasattr(self, 'projects'):
+            for p in self.projects:
+                self._nav_item(
+                    self.proj_frame, "●", p['name'],
+                    cmd=lambda e, pid=p['id']: self._filter(pid),
+                    edit_cmd=lambda e, pid=p['id']: self._edit_project(pid)  # ✅ aquí
+                )
 
-    def _nav_item(self, icon, label, cmd):
-        f = tk.Frame(self.sidebar, bg=C["sidebar"], cursor="hand2")
+        # Todos (Separado de la lista dinámica)
+        self._nav_item(self.sidebar, "◉", "Todos", lambda e: self._filter("all"))
+
+    def _nav_item(self, parent, icon, label, cmd, edit_cmd=None):
+        f = tk.Frame(parent, bg=C["sidebar"], cursor="hand2")
         f.pack(fill="x")
+
         lbl = tk.Label(f, text=f"  {icon}  {label}",
                        bg=C["sidebar"], fg=C["muted"],
                        font=("Helvetica", 10), anchor="w", pady=7,
                        cursor="hand2")
-        lbl.pack(fill="x")
-        f.bind("<Button-1>",   lambda e, c=cmd: c())
-        lbl.bind("<Button-1>", lambda e, c=cmd: c())
+        lbl.pack(side="left", fill="x", expand=True)
 
-        def on_enter(e):
-            f.config(bg=C["hover"]); lbl.config(bg=C["hover"])
-        def on_leave(e):
-            f.config(bg=C["sidebar"]); lbl.config(bg=C["sidebar"])
-        f.bind("<Enter>", on_enter);   f.bind("<Leave>", on_leave)
-        lbl.bind("<Enter>", on_enter); lbl.bind("<Leave>", on_leave)
+        # ✅ Botón editar integrado directamente en _nav_item
+        edit_lbl = None
+        if edit_cmd:
+            edit_lbl = tk.Label(f, text="✎", bg=C["sidebar"], fg=C["muted"],
+                                font=("Helvetica", 10), cursor="hand2", padx=2)
+            edit_lbl.pack(side="right", padx=(0, 2))
+            edit_lbl.bind("<Button-1>", edit_cmd)
+
+        # ✅ Freeze correcto de f, lbl y edit_lbl
+        def on_enter(e, _f=f, _lbl=lbl, _edit=edit_lbl):
+            _f.config(bg=C["hover"])
+            _lbl.config(bg=C["hover"], fg=C["accent"])
+            if _edit:
+                _edit.config(bg=C["hover"], fg=C["accent"])
+
+        def on_leave(e, _f=f, _lbl=lbl, _edit=edit_lbl):
+            _f.config(bg=C["sidebar"])
+            _lbl.config(bg=C["sidebar"], fg=C["muted"])
+            if _edit:
+                _edit.config(bg=C["sidebar"], fg=C["muted"])
+
+        # ✅ Bind en los 3 widgets (frame, label, edit)
+        widgets = [f, lbl] + ([edit_lbl] if edit_lbl else [])
+        for w in widgets:
+            w.bind("<Enter>", on_enter)
+            w.bind("<Leave>", on_leave)
+
+        # Solo el frame y label activan el filtro, no el lápiz
+        f.bind("<Button-1>", cmd)
+        lbl.bind("<Button-1>", cmd)
 
     def _rebuild_project_list(self):
         for w in self.proj_frame.winfo_children():
@@ -501,42 +546,54 @@ class ProjectManagerApp(tk.Tk):
         for p in self.projects:
             pid   = p["id"]
             count = len([t for t in self.tasks if t["project"] == pid])
-            f   = tk.Frame(self.proj_frame, bg=C["sidebar"], cursor="hand2")
+
+            f = tk.Frame(self.proj_frame, bg=C["sidebar"], cursor="hand2")
             f.pack(fill="x")
             row = tk.Frame(f, bg=C["sidebar"])
             row.pack(fill="x", padx=10, pady=3)
+
             dot = tk.Label(row, text="●", bg=C["sidebar"], fg=p["color"],
                            font=("Helvetica", 10))
             dot.pack(side="left")
+
             name_lbl = tk.Label(row, text=p["name"], bg=C["sidebar"], fg=C["text"],
                                 font=("Helvetica", 10))
             name_lbl.pack(side="left", padx=4)
+
             cnt_lbl = tk.Label(row, text=str(count), bg=C["sidebar"], fg=C["muted"],
                                font=("Helvetica", 9))
             cnt_lbl.pack(side="right")
 
-            # Edit button (pencil), visible on hover
             edit_lbl = tk.Label(row, text="✎", bg=C["sidebar"], fg=C["muted"],
                                 font=("Helvetica", 10), cursor="hand2", padx=2)
             edit_lbl.pack(side="right", padx=(0, 2))
             edit_lbl.bind("<Button-1>", lambda e, pid=pid: self._edit_project(pid))
 
-            def _bind(widget, pid=pid, pn=p["name"]):
-                def on_enter(e):
-                    for w in [f, row, dot, name_lbl, cnt_lbl, edit_lbl]:
-                        w.config(bg=C["hover"])
-                    edit_lbl.config(fg=C["text"])
-                def on_leave(e):
-                    for w in [f, row, dot, name_lbl, cnt_lbl, edit_lbl]:
-                        w.config(bg=C["sidebar"])
-                    edit_lbl.config(fg=C["muted"])
-                widget.bind("<Button-1>", lambda e: self._filter(pid, pn))
-                widget.bind("<Enter>", on_enter)
-                widget.bind("<Leave>", on_leave)
+            # ✅ Freeze de TODOS los widgets en on_enter/on_leave
+            all_widgets = [f, row, dot, name_lbl, cnt_lbl, edit_lbl]
 
+            def on_enter(e, _ws=all_widgets, _edit=edit_lbl):
+                for w in _ws:
+                    w.config(bg=C["hover"])
+                _edit.config(fg=C["text"])
+
+            def on_leave(e, _ws=all_widgets, _edit=edit_lbl):
+                for w in _ws:
+                    w.config(bg=C["sidebar"])
+                _edit.config(fg=C["muted"])
+
+            def on_click(e, _pid=pid, _name=p["name"]):
+                self._filter(_pid, _name)
+
+            # ✅ Bind en todos los widgets excepto edit_lbl (tiene su propio click)
             for w in [f, row, dot, name_lbl, cnt_lbl]:
-                _bind(w)
+                w.bind("<Enter>", on_enter)
+                w.bind("<Leave>", on_leave)
+                w.bind("<Button-1>", on_click)
 
+            # edit_lbl también necesita hover pero NO el click de filtro
+            edit_lbl.bind("<Enter>", on_enter)
+            edit_lbl.bind("<Leave>", on_leave)
     # ── Acciones ─────────────────────────────────────────────────────────────
 
     def _new_project(self):
