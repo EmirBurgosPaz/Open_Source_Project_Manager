@@ -23,7 +23,7 @@ class JsonRepository:
         if not os.path.exists(self.filepath):
             projects = [Project.from_dict(p) for p in DEFAULT_PROJECTS]
             tasks    = [Task.from_dict(t)    for t in DEFAULT_TASKS]
-            return projects, tasks, 10
+            return projects, tasks, 10, DEFAULT_MEMBERS.copy()
 
         with open(self.filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
