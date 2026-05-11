@@ -14,13 +14,14 @@ class TaskList(tk.Frame):
     on_edit_task(task_id) se llama al hacer doble clic.
     """
 
-    def __init__(self, parent, on_edit_task, on_duplicate_task, on_delete_task):
+    def __init__(self, parent, on_edit_task, on_duplicate_task, on_delete_task,on_reorder_task):
         super().__init__(parent, bg=C["bg"])
         self.on_edit_task = on_edit_task
         self._iid_map: dict = {}
         self._setup_style()
         self.on_duplicate_task = on_duplicate_task
         self.on_delete_task    = on_delete_task
+        self.on_reorder_task = on_reorder_task
 
     def _setup_style(self):
         style = ttk.Style()
@@ -76,6 +77,34 @@ class TaskList(tk.Frame):
 
         tree.bind("<Button-3>", show_menu)   # clic derecho Windows/Linux
         tree.bind("<Button-2>", show_menu)   # clic derecho macOS
+
+        # ── Drag & Drop ───────────────────────────────────────────────
+        self._drag_source = None
+
+        def on_drag_start(e):
+            row = tree.identify_row(e.y)
+            if row:
+                self._drag_source = row
+                tree.selection_set(row)
+
+        def on_drag_motion(e):
+            if not self._drag_source:
+                return
+            target = tree.identify_row(e.y)
+            if target and target != self._drag_source:
+                tree.selection_set(target)
+
+        def on_drag_release(e):
+            if not self._drag_source:
+                return
+            target = tree.identify_row(e.y)
+            if target and target != self._drag_source:
+                self._swap_rows(tree, self._drag_source, target)
+            self._drag_source = None
+
+        tree.bind("<ButtonPress-1>",   on_drag_start)
+        tree.bind("<B1-Motion>",       on_drag_motion)
+        tree.bind("<ButtonRelease-1>", on_drag_release)
 
         # Variable para rastrear la fila anterior
         self._last_hovered = None
@@ -151,3 +180,16 @@ class TaskList(tk.Frame):
         task_id = self._iid_map.get(sel[0])
         if task_id is not None:
             self.on_delete_task(task_id)
+    def _swap_rows(self, tree, source_iid: str, target_iid: str):
+        src_idx = tree.index(source_iid)
+        tgt_idx = tree.index(target_iid)
+
+        # Intercambiar en el Treeview visualmente
+        tree.move(source_iid, "", tgt_idx)
+        tree.move(target_iid, "", src_idx)
+
+        # Notificar al exterior con los ids reales
+        src_id = self._iid_map.get(source_iid)
+        tgt_id = self._iid_map.get(target_iid)
+        if src_id is not None and tgt_id is not None:
+            self.on_reorder_task(src_id, tgt_id)

@@ -89,6 +89,7 @@ class ProjectManagerApp(tk.Tk):
                                     on_edit_task      = self._edit_task,
                                     on_duplicate_task = self._duplicate_task,
                                     on_delete_task    = self._delete_task,
+                                    on_reorder_task   = self._reorder_task,
                                     )
         self.task_list.pack(fill="both", expand=True)
 
@@ -169,6 +170,9 @@ class ProjectManagerApp(tk.Tk):
         if messagebox.askyesno("Eliminar", "¿Eliminar esta tarea?"):
             self.task_service.delete(task_id)
             self.refresh()
+    
+    def _reorder_task(self, src_id: int, tgt_id: int):
+        self.task_service.reorder(src_id, tgt_id)
 
     # ── Acciones: Tareas recurrentes ───────────────────────────────────────────────────
 

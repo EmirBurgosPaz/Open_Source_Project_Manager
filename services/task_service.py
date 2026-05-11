@@ -118,6 +118,12 @@ class TaskService:
         self.tasks.append(task)
         self._persist()
         return task
+    
+    def reorder(self, src_id: int, tgt_id: int):
+        src_idx = next(i for i, t in enumerate(self.tasks) if t.id == src_id)
+        tgt_idx = next(i for i, t in enumerate(self.tasks) if t.id == tgt_id)
+        self.tasks[src_idx], self.tasks[tgt_idx] = self.tasks[tgt_idx], self.tasks[src_idx]
+        self._persist()
 
     # ── Validación ────────────────────────────────────────────────────────────
 
