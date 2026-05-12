@@ -5,6 +5,7 @@ Solo describe QUÉ es una tarea, sin lógica de negocio ni persistencia.
 
 from dataclasses import dataclass, field
 from datetime import date
+from typing import Optional
 
 
 @dataclass
@@ -19,6 +20,7 @@ class Task:
     description: str  = ""
     client: str  = ""
     created: str      = field(default_factory=lambda: str(date.today()))
+    completed_at: Optional[str] = None
 
     def to_dict(self) -> dict:
         return {
@@ -32,6 +34,7 @@ class Task:
             "description": self.description,
             "client": self.client,
             "created":     self.created,
+            "completed_at":     self.completed_at,
         }
 
     @staticmethod
@@ -47,4 +50,5 @@ class Task:
             description = d.get("description", ""),
             client = d.get("client", ""),
             created     = d.get("created", str(date.today())),
+            completed_at     = d.get("completed_at", None),
         )

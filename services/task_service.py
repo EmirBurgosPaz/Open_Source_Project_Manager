@@ -83,6 +83,16 @@ class TaskService:
         task = self.get_by_id(task_id)
         if not task:
             raise ValueError(f"Tarea {task_id} no encontrada")
+
+        # --- NUEVA LÓGICA DE FECHA DE FINALIZACIÓN ---
+        # Verificamos si el nuevo estado es "done" y antes NO era "done"
+        if data["status"] == "done" and task.status != "done":
+            task.completed_at = datetime.now().strftime("%Y-%m-%d")
+        # Opcional: si la regresan a progreso, limpiamos la fecha
+        elif data["status"] != "done":
+            task.completed_at = None
+        # ---------------------------------------------
+
         task.title       = data["title"]
         task.project_id  = data["project"]
         task.status      = data["status"]
