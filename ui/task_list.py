@@ -55,10 +55,13 @@ class TaskList(tk.Frame):
 
         tree.tag_configure("odd",  background=C["bg"])
         tree.tag_configure("even", background=C["row_alt"])
-
+        tree.tag_configure("overdue",   background=C["over_bg"], foreground=C["over_fg"])  # ← agrega
+        tree.tag_configure("due_today", background=C["today_bg"], foreground=C["today_fg"])  # ← agrega
         # Tags de hover
         tree.tag_configure("odd_hover",  background=C["hover"])
         tree.tag_configure("even_hover", background=C["hover"])
+        tree.tag_configure("hover",     background=C["hover"])
+        self._iid_tags = {}
         
         # Menú contextual
         menu = tk.Menu(self, tearoff=0, bg=C["panel"], fg=C["text"],
@@ -113,22 +116,19 @@ class TaskList(tk.Frame):
             row = tree.identify_row(e.y)
             if row == self._last_hovered:
                 return
-            # Restaurar fila anterior
             if self._last_hovered and self._last_hovered in tree.get_children():
-                idx = tree.index(self._last_hovered)
-                tree.item(self._last_hovered, tags=("even" if idx % 2 == 0 else "odd",))
-            # Aplicar hover a la fila actual
+                original_tag = self._iid_tags.get(self._last_hovered, "odd")
+                tree.item(self._last_hovered, tags=(original_tag,))
             if row:
-                idx = tree.index(row)
-                tree.item(row, tags=(f"{'even' if idx % 2 == 0 else 'odd'}_hover",))
+                tree.item(row, tags=("hover",))
             self._last_hovered = row
-        
+
         def on_leave(e):
             if self._last_hovered and self._last_hovered in tree.get_children():
-                idx = tree.index(self._last_hovered)
-                tree.item(self._last_hovered, tags=("even" if idx % 2 == 0 else "odd",))
+                original_tag = self._iid_tags.get(self._last_hovered, "odd")
+                tree.item(self._last_hovered, tags=(original_tag,))
             self._last_hovered = None
-        
+
         tree.bind("<Motion>", on_motion)
         tree.bind("<Leave>",  on_leave)
 
@@ -141,7 +141,8 @@ class TaskList(tk.Frame):
 
         for i, task in enumerate(tasks):
             col_info = next((c for c in COLUMNS if c[0] == task.status), ("?", "?", "#888"))
-            iid = tree.insert("", "end", tags=("even" if i % 2 == 0 else "odd",), values=(
+            tag = self._due_tag(task.due, i)
+            iid = tree.insert("", "end", tags=(tag,), values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
                 col_info[1],
@@ -150,6 +151,7 @@ class TaskList(tk.Frame):
                 task.due,
             ))
             self._iid_map[iid] = task.id
+            self._iid_tags[iid] = tag  
 
         tree.bind("<Double-1>", lambda e: self._on_double_click(tree))
 
@@ -180,6 +182,8 @@ class TaskList(tk.Frame):
         task_id = self._iid_map.get(sel[0])
         if task_id is not None:
             self.on_delete_task(task_id)
+    
+
     def _swap_rows(self, tree, source_iid: str, target_iid: str):
         src_idx = tree.index(source_iid)
         tgt_idx = tree.index(target_iid)
@@ -193,3 +197,16 @@ class TaskList(tk.Frame):
         tgt_id = self._iid_map.get(target_iid)
         if src_id is not None and tgt_id is not None:
             self.on_reorder_task(src_id, tgt_id)
+
+    def _due_tag(self, due_str: str, idx: int) -> str:
+        try:
+            from datetime import date
+            due  = date.fromisoformat(due_str)
+            hoy  = date.today()
+            if due < hoy:
+                return "overdue"
+            if due == hoy:
+                return "due_today"
+        except (ValueError, TypeError):
+            pass
+        return "even" if idx % 2 == 0 else "odd"

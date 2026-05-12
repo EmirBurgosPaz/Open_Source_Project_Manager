@@ -68,6 +68,10 @@ C = {
     "dlg_bg":    "#1E1E26",
     "dlg_input": "#2A2A36",
     "dlg_border":"#3A3A4A",
+    "over_bg" : "#2A1A1A",
+    "over_fg" : "#E05555",
+    "today_bg" : "#2A2010",
+    "today_fg" : "#E6A817"
 }
 
 FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral", "Único"]
