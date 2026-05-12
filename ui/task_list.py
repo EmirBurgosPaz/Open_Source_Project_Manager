@@ -6,7 +6,7 @@ Solo responsabilidad: renderizar tareas y notificar doble-clic.
 import tkinter as tk
 from tkinter import ttk
 from config import C, COLUMNS
-
+from datetime import date
 
 class TaskList(tk.Frame):
     """
@@ -141,7 +141,7 @@ class TaskList(tk.Frame):
 
         for i, task in enumerate(tasks):
             col_info = next((c for c in COLUMNS if c[0] == task.status), ("?", "?", "#888"))
-            tag = self._due_tag(task.due, i)
+            tag = self._due_tag(task.due, i, task.status )
             iid = tree.insert("", "end", tags=(tag,), values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
@@ -198,14 +198,14 @@ class TaskList(tk.Frame):
         if src_id is not None and tgt_id is not None:
             self.on_reorder_task(src_id, tgt_id)
 
-    def _due_tag(self, due_str: str, idx: int) -> str:
+    def _due_tag(self, due_str: str, idx: int, status : str) -> str:
         try:
-            from datetime import date
+            
             due  = date.fromisoformat(due_str)
             hoy  = date.today()
-            if due < hoy:
+            if (due < hoy) and (status != "done"):
                 return "overdue"
-            if due == hoy:
+            if (due == hoy) and (status != "done"):
                 return "due_today"
         except (ValueError, TypeError):
             pass
