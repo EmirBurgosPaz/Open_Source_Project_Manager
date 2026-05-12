@@ -93,7 +93,10 @@ class ProjectManagerApp(tk.Tk):
                                     )
         self.task_list.pack(fill="both", expand=True)
 
-        self.recurring_list = RecurringTaskList(main, on_edit=self._edit_recurring, on_new=self._new_recurring)
+        self.recurring_list = RecurringTaskList(main, 
+                                                on_edit=self._edit_recurring, 
+                                                on_new=self._new_recurring,
+                                                on_reorder_task   = self._reorder_recurring,)
         #self.recurring_list.pack(fill="both", expand=True)
 
         
@@ -221,6 +224,11 @@ class ProjectManagerApp(tk.Tk):
         
         # Restaurar el título
         self.lbl_title.config(text="Todas las tareas")
+    
+    def _reorder_recurring(self, src_id: int, tgt_id: int):
+        self.task_service.recurring.reorder(src_id, tgt_id)
+        self.task_service.save_members(self.task_service.members)  # persiste
+
     # ── Acciones: Proyectos ───────────────────────────────────────────────────
 
     def _new_project(self):
