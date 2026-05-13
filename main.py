@@ -27,7 +27,7 @@ class ProjectManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Project Manager")
-        self.geometry("1050x660")
+        self.geometry("1550x880")
         self.configure(bg=C["bg"])
         self.minsize(800, 500)
 
