@@ -3,7 +3,7 @@ ui/members_dialog.py — Diálogo para gestionar miembros con edición por doble
 """
 
 import tkinter as tk
-from config import C
+from config import C, KEYBOARD_KEYS
 from utils.ui_helpers import center_window
 
 
@@ -23,6 +23,7 @@ class MembersDialog(tk.Toplevel):
         ]
 
         self._build()
+        self.bind(KEYBOARD_KEYS["enter"], self._add_member)
         center_window(self, parent)
 
     def _build(self):
@@ -134,7 +135,7 @@ class MembersDialog(tk.Toplevel):
 
         lbl.bind("<Double-Button-1>", on_double_click)
 
-    def _add_member(self):
+    def _add_member(self, event=None):
         n, p, t = self.e_name.get(), self.e_pos.get(), self.e_team.get()
         if n and n != "Nombre":
             self.members.append({

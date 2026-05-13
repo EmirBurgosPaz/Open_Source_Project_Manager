@@ -6,7 +6,7 @@ La validación y guardado los hace TaskService.
 
 import tkinter as tk
 from datetime import date
-from config import C, COLUMNS, PRIORITY_OPTIONS
+from config import C, COLUMNS, PRIORITY_OPTIONS, KEYBOARD_KEYS
 import config
 from utils.ui_helpers import make_label, make_entry, make_dark_combobox, center_window
 
@@ -34,6 +34,9 @@ class TaskDialog(tk.Toplevel):
         self.grab_set()
 
         self._build(task, default_status)
+
+        self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+
         self.e_title.focus()
         center_window(self, parent)
 
@@ -124,7 +127,7 @@ class TaskDialog(tk.Toplevel):
 
     # ── Handlers ─────────────────────────────────────────────────────────────
 
-    def _on_save(self):
+    def _on_save(self, event=None):
         status_label = self.status_var.get()
         status_labels = [c[1] for c in COLUMNS]
         status_idx = status_labels.index(status_label)

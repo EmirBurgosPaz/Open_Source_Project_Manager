@@ -94,3 +94,9 @@ FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral", 
 STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area", "informacion"]
 
 CATEGORY_OPTIONS = ["Automatico", "Manual"]
+
+KEYBOARD_KEYS = {
+    "enter": "<Return>",
+    "escape": "<Escape>",
+    "space": "<space>"
+}

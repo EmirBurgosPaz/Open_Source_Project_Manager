@@ -3,7 +3,7 @@ ui/project_dialog.py — Diálogo para crear y editar proyectos.
 """
 
 import tkinter as tk
-from config import C, PROJECT_COLORS
+from config import C, PROJECT_COLORS, KEYBOARD_KEYS
 from utils.ui_helpers import make_label, make_entry, center_window
 
 
@@ -31,6 +31,8 @@ class ProjectDialog(tk.Toplevel):
 
         self._build(project)
         self.e_name.focus()
+        self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+
         center_window(self, parent)
 
     def _build(self, project):
@@ -104,7 +106,7 @@ class ProjectDialog(tk.Toplevel):
         name = self.e_name.get().strip() or "Nombre del proyecto"
         self.preview_dot.config(text=f"  ●  {name}", fg=self.selected_color.get())
 
-    def _on_save(self):
+    def _on_save(self, event=None):
         from tkinter import messagebox
         name = self.e_name.get().strip()
         if not name:

@@ -1,5 +1,5 @@
 import tkinter as tk
-from config import C, FREQUENCY_OPTIONS, STATUS_OPTIONS, CATEGORY_OPTIONS, PRIORITY_OPTIONS
+from config import C, FREQUENCY_OPTIONS, STATUS_OPTIONS, CATEGORY_OPTIONS, PRIORITY_OPTIONS, KEYBOARD_KEYS
 from utils.ui_helpers import make_label
 from utils.ui_helpers import make_entry
 from utils.ui_helpers import make_dark_combobox
@@ -17,6 +17,8 @@ class RecurringTaskDialog(tk.Toplevel):
         self.configure(bg=C["dlg_bg"])
         self.grab_set()
         self._build(task)
+        self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+
         center_window(self, parent)
 
     def _build(self, task):
@@ -73,7 +75,7 @@ class RecurringTaskDialog(tk.Toplevel):
                   padx=14, pady=5, cursor="hand2",
                   command=self._on_save).pack(side="right")
 
-    def _on_save(self):
+    def _on_save(self, event=None):
         title = self.e_title.get().strip()
         if not title:
             from tkinter import messagebox
