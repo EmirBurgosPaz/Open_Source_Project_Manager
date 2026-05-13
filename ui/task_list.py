@@ -5,7 +5,7 @@ Solo responsabilidad: renderizar tareas y notificar doble-clic.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, COLUMNS
+from config import C, COLUMNS, PRIORITY_COLORS
 from datetime import date
 
 class TaskList(tk.Frame):
@@ -36,7 +36,7 @@ class TaskList(tk.Frame):
                         font=("Helvetica", 9, "bold"))
         style.map("Dark.Treeview",
                   background=[("selected", C["accent_dk"])],
-                  foreground=[("selected", "#FFFFFF")])
+                  foreground=[("selected", C["white"])])
 
     def render(self, tasks: list, projects: list):
         """Limpia y vuelve a pintar la lista completa."""
@@ -52,7 +52,10 @@ class TaskList(tk.Frame):
         for col, w in zip(cols, widths):
             tree.heading(col, text=col)
             tree.column(col, width=w, anchor="w", minwidth=60)
+        
 
+        tree.tag_configure("todo",    foreground=C["todo_fg"])  # ← agrega
+        tree.tag_configure("high_priority", background=C["high_bg"])
         tree.tag_configure("odd",  background=C["bg"])
         tree.tag_configure("even", background=C["row_alt"])
         tree.tag_configure("overdue",   background=C["over_bg"], foreground=C["over_fg"])  # ← agrega
@@ -109,29 +112,6 @@ class TaskList(tk.Frame):
         tree.bind("<B1-Motion>",       on_drag_motion)
         tree.bind("<ButtonRelease-1>", on_drag_release)
 
-        # Variable para rastrear la fila anterior
-        self._last_hovered = None
-        
-        def on_motion(e):
-            row = tree.identify_row(e.y)
-            if row == self._last_hovered:
-                return
-            if self._last_hovered and self._last_hovered in tree.get_children():
-                original_tag = self._iid_tags.get(self._last_hovered, "odd")
-                tree.item(self._last_hovered, tags=(original_tag,))
-            if row:
-                tree.item(row, tags=("hover",))
-            self._last_hovered = row
-
-        def on_leave(e):
-            if self._last_hovered and self._last_hovered in tree.get_children():
-                original_tag = self._iid_tags.get(self._last_hovered, "odd")
-                tree.item(self._last_hovered, tags=(original_tag,))
-            self._last_hovered = None
-
-        tree.bind("<Motion>", on_motion)
-        tree.bind("<Leave>",  on_leave)
-
         vsb = ttk.Scrollbar(self, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=vsb.set)
         vsb.pack(side="right", fill="y")
@@ -140,9 +120,24 @@ class TaskList(tk.Frame):
         proj_map = {p.id: p.name for p in projects}
 
         for i, task in enumerate(tasks):
+
             col_info = next((c for c in COLUMNS if c[0] == task.status), ("?", "?", "#888"))
-            tag = self._due_tag(task.due, i, task.status )
-            iid = tree.insert("", "end", tags=(tag,), values=(
+
+            base_tag = self._due_tag(task.due, i, task.status)
+
+            tags_fila = (base_tag,)
+
+            # 3. Evaluamos si la tarea está "por hacer" y agregamos el tag "todo"
+            # Asegúrate de que "todo" coincida exactamente con la palabra 
+            # que usas en el estatus (podría ser "To-Do" o "todo")
+
+            if task.status != "done":
+                tags_fila = (base_tag, "todo")
+            
+            if task.priority == "Alta": 
+                tags_fila = (base_tag, "high_priority")
+
+            iid = tree.insert("", "end", tags=tags_fila, values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
                 col_info[1],
@@ -150,14 +145,49 @@ class TaskList(tk.Frame):
                 task.assign,
                 task.due,
             ))
+
             self._iid_map[iid] = task.id
-            self._iid_tags[iid] = tag  
+            self._iid_tags[iid] = tags_fila
 
         tree.bind("<Double-1>", lambda e: self._on_double_click(tree))
 
         tk.Label(self,
                  text="Doble clic en una fila para editar · Filtrar por proyecto en la barra lateral",
                  bg=C["bg"], fg=C["muted"], font=("Helvetica", 9)).pack(pady=6)
+
+            # Variable para rastrear la fila anterior
+        self._last_hovered = None
+        
+        def on_motion(e):
+
+            row = tree.identify_row(e.y)
+
+            if row == self._last_hovered:
+                return
+            
+            if self._last_hovered and self._last_hovered in tree.get_children():
+
+                original_tag = self._iid_tags.get(self._last_hovered,( "odd",))
+                tree.item(self._last_hovered, tags=original_tag)
+
+            if row:
+                tree.item(row, tags=("hover",))
+
+            self._last_hovered = row
+
+        def on_leave(e):
+        
+            if self._last_hovered and self._last_hovered in tree.get_children():
+
+                original_tag = self._iid_tags.get(self._last_hovered, ("odd",))
+
+                tree.item(self._last_hovered, tags=original_tag)
+
+            self._last_hovered = None
+
+        tree.bind("<Motion>", on_motion)
+        tree.bind("<Leave>",  on_leave)
+
 
     def _on_double_click(self, tree):
         sel = tree.selection()
