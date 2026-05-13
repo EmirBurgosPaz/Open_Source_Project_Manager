@@ -71,7 +71,22 @@ C = {
     "over_bg" : "#2A1A1A",
     "over_fg" : "#E05555",
     "today_bg" : "#2A2010",
-    "today_fg" : "#E6A817"
+    "today_fg" : "#E6A817",
+    "done_bg":   "#14291E",
+    "done_fg":   "#4ADE80",
+    "info_bg":   "#142336",
+    "info_fg":   "#60A5FA",
+    "disabled_fg": "#4D4D5C",
+    "tag_teal":  "#2DD4BF",
+    "tag_pink":  "#F472B6",
+    "todo_bg": "#162B43",
+    "todo_fg": "#38BDF8",
+    "high_bg": "#331E18",
+    "high_fg": "#FF6B6B",
+    "white" : "#FFFFFF",
+    "done_tasks" :  "#2ECC71",
+    "progress_tasks" : "#E6A817",
+    "priority_tasks" : "#E05555"
 }
 
 FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral", "Único"]
