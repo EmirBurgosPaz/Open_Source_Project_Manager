@@ -53,7 +53,7 @@ def calculate_next_version(current_version, commits):
     bump_patch = False
 
     for commit in commits:
-        if "major" in commit or re.match(r'^.*!:', commit):
+        if "Major version" in commit or re.match(r'^.*!:', commit):
             bump_major = True
         elif commit.startswith("feat:"):
             bump_minor = True
