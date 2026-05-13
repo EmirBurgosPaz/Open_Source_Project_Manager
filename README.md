@@ -63,3 +63,4 @@ Estructura
 - ~~Migración de archivo único a estructura modular~~
 - ~~Repositorio JSON con separación de persistencia~~
 
+Version 0.1.0
