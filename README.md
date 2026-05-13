@@ -21,6 +21,8 @@ Funcional
 - Ordenar columnas haciendo clic en el header
 - ~~Indicador visual de tareas vencidas (fecha límite pasada en rojo)~~
 - ~~Indicador visual de tareas vencidas excluye status "done"~~
+- ~~Indicador visual de tareas vencidas excluye status "No completadas"~~
+- ~~Indicador visual de tareas vencidas excluye status "Prioridad"~~
 - Notificaciones o alertas de deadlines próximos
 
 Datos
@@ -60,3 +62,4 @@ Estructura
 - ~~Separación en capas: models, services, storage, ui, utils~~
 - ~~Migración de archivo único a estructura modular~~
 - ~~Repositorio JSON con separación de persistencia~~
+
