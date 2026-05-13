@@ -120,9 +120,9 @@ class ProjectManagerApp(tk.Tk):
         s = self.task_service.get_stats()
         for label, val, color in [
             ("Total",          s["total"],        C["text"]),
-            ("Completadas",    s["done"],          "#2ECC71"),
-            ("En progreso",    s["progress"],      "#E6A817"),
-            ("Alta prioridad", s["high_priority"], "#E05555"),
+            ("Completadas",    s["done"],         C["done_tasks"]),
+            ("En progreso",    s["progress"],      C["progress_tasks"]),
+            ("Alta prioridad", s["high_priority"], C["priority_tasks"]),
         ]:
             f = tk.Frame(self.stats_frame, bg=C["panel"])
             f.pack(side="left", padx=14, pady=10)
