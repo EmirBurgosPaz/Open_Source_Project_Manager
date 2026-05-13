@@ -66,4 +66,6 @@ class ProjectService:
             self.task_service.tasks,
             self.task_service.next_id,
             self.task_service.members,
+            self.task_service.recurring.to_dict_list(),
+            self.task_service.recurring.next_id,
         )
