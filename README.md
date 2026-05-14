@@ -1,4 +1,4 @@
-# Proyecto Meyaj - Open source task manager (V 0.21)
+# Proyecto Meyaj - Open source task manager (Version 0.4.2)
 
 ****
 
@@ -63,4 +63,3 @@ Estructura
 - ~~Migración de archivo único a estructura modular~~
 - ~~Repositorio JSON con separación de persistencia~~
 
-Version 0.4.2
