@@ -78,11 +78,12 @@ class ProjectManagerApp(tk.Tk):
                                    font=("Helvetica", 13, "bold"))
         self.lbl_title.pack(side="left", padx=16)
 
-        tk.Button(topbar, text="+ Nueva tarea",
+        self.btn_nueva_tarea = tk.Button(topbar, text="+ Nueva tarea",
                   bg=C["accent"], fg="white",
                   font=("Helvetica", 10, "bold"), relief="flat", bd=0,
                   padx=12, pady=5, cursor="hand2",
-                  command=self._new_task).pack(side="right", padx=16)
+                  command=self._new_task)
+        self.btn_nueva_tarea.pack(side="right", padx=16)
 
         # Lista de tareas
         self.task_list = TaskList(    main,
@@ -92,6 +93,12 @@ class ProjectManagerApp(tk.Tk):
                                     on_reorder_task   = self._reorder_task,
                                     )
         self.task_list.pack(fill="both", expand=True)
+
+        self.btn_nueva_recurrente = tk.Button(topbar, text="+ Nueva tarea recurrente",
+                                       bg=C["accent"], fg="white",
+                                       font=("Helvetica", 10, "bold"), relief="flat", bd=0,
+                                       padx=12, pady=5, cursor="hand2",
+                                       command=self._new_recurring)
 
         self.recurring_list = RecurringTaskList(main, 
                                                 on_edit=self._edit_recurring, 
@@ -203,11 +210,12 @@ class ProjectManagerApp(tk.Tk):
         self.refresh()
     
     def _show_master_tasks(self):
+        self.btn_nueva_tarea.pack_forget()
         self._show_recurring_tasks_view()
+        self.btn_nueva_recurrente.pack(side="right", padx=16)
         # limpiar contenido actual y mostrar master task list
         for w in self.task_list.winfo_children():
             w.destroy()
-        self.lbl_title.config(text="Master Task List")
     
     def _show_recurring_tasks_view(self):
         """Oculta las tareas normales y muestra las recurrentes."""
@@ -219,6 +227,8 @@ class ProjectManagerApp(tk.Tk):
 
     def _show_normal_tasks_view(self):
         """Oculta las tareas recurrentes y vuelve a la vista normal."""
+        self.btn_nueva_recurrente.pack_forget() 
+        self.btn_nueva_tarea.pack(side="right", padx=16)
         self.recurring_list.pack_forget()
         self.task_list.pack(fill="both", expand=True)
         
@@ -274,6 +284,7 @@ class ProjectManagerApp(tk.Tk):
     # ── Filtro ────────────────────────────────────────────────────────────────
 
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
+        self._show_normal_tasks_view()
         self.filter_project = None if project_id == "all" else project_id
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
         self._show_normal_tasks_view()

@@ -17,16 +17,6 @@ class RecurringTaskList(tk.Frame):
         header.pack(fill="x")
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x")
 
-        tk.Label(header, text="📋  Master Task List",
-                 bg=C["panel"], fg=C["text"],
-                 font=("Helvetica", 13, "bold")).pack(side="left", padx=16, pady=10)
-
-        tk.Button(header, text="+ Nueva tarea recurrente",
-                  bg=C["accent"], fg="white",
-                  font=("Helvetica", 10, "bold"), relief="flat", bd=0,
-                  padx=12, pady=5, cursor="hand2",
-                  command=on_new).pack(side="right", padx=16, pady=8)
-
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x")
 
         self.table_frame = tk.Frame(self, bg=C["bg"])
