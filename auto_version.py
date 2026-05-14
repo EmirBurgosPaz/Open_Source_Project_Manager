@@ -77,7 +77,7 @@ def calculate_next_version(current_version, commits):
     else:
         minor += 1
         patch = 0
-    
+
     return f"{major}.{minor}.{patch}"
 
 def update_readme_and_git(old_version, new_version):
@@ -111,14 +111,17 @@ def main():
 
     new_version = calculate_next_version(current_version, commits)
 
-    print(f"Nueva versión propuesta: {new_version}")
-
-    confirm = input(f"¿Actualizar {README_FILE} y crear tag v{new_version}? (s/n): ")
-    if confirm.lower() == 's':
-        update_readme_and_git(current_version, new_version)
-        print(f"¡Listo! README actualizado y Tag v{new_version} creado.")
+    if new_version == current_version:
+        print("No hay cambios") 
     else:
-        print("Operación cancelada.")
+        print(f"Nueva versión propuesta: {new_version}")
+
+        confirm = input(f"¿Actualizar {README_FILE} y crear tag v{new_version}? (s/n): ")
+        if confirm.lower() == 's':
+            update_readme_and_git(current_version, new_version)
+            print(f"¡Listo! README actualizado y Tag v{new_version} creado.")
+        else:
+            print("Operación cancelada.")
 
 if __name__ == "__main__":
     main()
