@@ -1,4 +1,4 @@
-# Proyecto Meyaj - Open source task manager (Version 0.4.2)
+# Proyecto Meyaj - Open source task manager (Version 0.5.0)
 
 ****
 
