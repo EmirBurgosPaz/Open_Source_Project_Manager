@@ -53,11 +53,13 @@ def calculate_next_version(current_version, commits):
     bump_patch = False
 
     for commit in commits:
-        if "Major version" in commit or re.match(r'^.*!:', commit):
+        if re.match(r'^(ignore|skip|wip|no.release)\s*:', commit, re.IGNORECASE):
+            break
+        if re.search(r'major version|breaking change', commit, re.IGNORECASE) or re.match(r'^.*!:', commit):
             bump_major = True
-        elif commit.startswith("feat:"):
+        elif re.match(r'^(update|feature|feat|add|enhance)\s*:', commit, re.IGNORECASE):
             bump_minor = True
-        elif commit.startswith("fix:"):
+        elif re.match(r'^(fix|patch|hotfix|bugfix)\s*:', commit, re.IGNORECASE):
             bump_patch = True
 
     # Lógica de incremento
