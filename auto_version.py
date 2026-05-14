@@ -2,6 +2,7 @@ import subprocess
 import re
 import sys
 import os
+import numpy as np
 
 # Configuramos el archivo de destino
 README_FILE = "README.md"
@@ -53,7 +54,8 @@ def calculate_next_version(current_version, commits):
     bump_patch = False
     bump_ignore = False
 
-    for commit in commits:
+    for commit in commits[::-1]:
+        print(commit)
         if re.match(r'^(ignore|skip|wip|no.release)\s*:', commit, re.IGNORECASE):
             bump_ignore = True
         if re.search(r'major version|breaking change', commit, re.IGNORECASE) or re.match(r'^.*!:', commit):
@@ -69,16 +71,13 @@ def calculate_next_version(current_version, commits):
         minor = 0
         patch = 0
     elif bump_patch and not bump_minor:
-        # Sube parche solo si hubo fix y NADA de feat
         patch += 1
-    elif bump_ignore:
-        return False
+    elif bump_ignore and not bump_minor and not bump_patch:
+        pass  # Todos eran ignore, no se toca la versión
     else:
-        # COMPORTAMIENTO POR DEFECTO: 
-        # Si hubo 'feat' o si no se detectó ningún prefijo, se asume Minor.
         minor += 1
         patch = 0
-
+    
     return f"{major}.{minor}.{patch}"
 
 def update_readme_and_git(old_version, new_version):
@@ -112,17 +111,14 @@ def main():
 
     new_version = calculate_next_version(current_version, commits)
 
-    if new_version == False:
-        print("sin cambios")
+    print(f"Nueva versión propuesta: {new_version}")
+
+    confirm = input(f"¿Actualizar {README_FILE} y crear tag v{new_version}? (s/n): ")
+    if confirm.lower() == 's':
+        update_readme_and_git(current_version, new_version)
+        print(f"¡Listo! README actualizado y Tag v{new_version} creado.")
     else:
-        print(f"Nueva versión propuesta: {new_version}")
-    
-        confirm = input(f"¿Actualizar {README_FILE} y crear tag v{new_version}? (s/n): ")
-        if confirm.lower() == 's':
-            update_readme_and_git(current_version, new_version)
-            print(f"¡Listo! README actualizado y Tag v{new_version} creado.")
-        else:
-            print("Operación cancelada.")
+        print("Operación cancelada.")
 
 if __name__ == "__main__":
     main()
