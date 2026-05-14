@@ -23,7 +23,11 @@ class MembersDialog(tk.Toplevel):
         ]
 
         self._build()
+        self.focus()
+
         self.bind(KEYBOARD_KEYS["enter"], self._add_member)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
+        
         center_window(self, parent)
 
     def _build(self):
@@ -152,3 +156,6 @@ class MembersDialog(tk.Toplevel):
     def _remove(self, idx: int):
         self.members.pop(idx)
         self._render_rows()
+
+    def _on_close(self,event = None):
+        self.destroy()

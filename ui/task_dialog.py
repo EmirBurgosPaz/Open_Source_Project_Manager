@@ -5,6 +5,7 @@ La validación y guardado los hace TaskService.
 """
 
 import tkinter as tk
+from tkinter import messagebox
 from datetime import date
 from config import C, COLUMNS, PRIORITY_OPTIONS, KEYBOARD_KEYS
 import config
@@ -35,7 +36,9 @@ class TaskDialog(tk.Toplevel):
 
         self._build(task, default_status)
 
+        #~keyboard shortcuts
         self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
 
         self.e_title.focus()
         center_window(self, parent)
@@ -148,7 +151,9 @@ class TaskDialog(tk.Toplevel):
         self.destroy()
 
     def _on_delete(self):
-        from tkinter import messagebox
         if messagebox.askyesno("Eliminar", "¿Eliminar esta tarea?", parent=self):
             self.result = {"deleted": True}
             self.destroy()
+    
+    def _on_close(self, event=None):
+        self.destroy()

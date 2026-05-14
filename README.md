@@ -13,6 +13,7 @@ Prototipo
 - ~~Primer template del Prototipo~~
 - ~~Prototipo Funcional~~
 - ~~Prototipo implementable~~
+- Release
 
 Funcional
 

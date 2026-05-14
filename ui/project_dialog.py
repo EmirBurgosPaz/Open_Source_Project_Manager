@@ -31,7 +31,9 @@ class ProjectDialog(tk.Toplevel):
 
         self._build(project)
         self.e_name.focus()
+        
         self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
 
         center_window(self, parent)
 
@@ -117,4 +119,7 @@ class ProjectDialog(tk.Toplevel):
 
     def _on_delete(self):
         self.result = {"deleted": True}
+        self.destroy()
+
+    def _on_close(self, event = None):
         self.destroy()

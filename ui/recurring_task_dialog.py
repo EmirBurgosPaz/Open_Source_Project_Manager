@@ -15,10 +15,16 @@ class RecurringTaskDialog(tk.Toplevel):
         self.title("Editar tarea" if task else "Nueva tarea recurrente")
         self.resizable(False, False)
         self.configure(bg=C["dlg_bg"])
-        self.grab_set()
-        self._build(task)
-        self.bind(KEYBOARD_KEYS["enter"], self._on_save)
 
+        self.grab_set()
+
+        self._build(task)
+
+        #~keyboard shortcuts
+        self.bind(KEYBOARD_KEYS["enter"], self._on_save)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
+
+        self.focus_set()
         center_window(self, parent)
 
     def _build(self, task):
@@ -92,5 +98,8 @@ class RecurringTaskDialog(tk.Toplevel):
 
     def _on_delete(self):
         self.result = {"deleted": True}
+        self.destroy()
+    
+    def _on_close(self, event=None):
         self.destroy()
     
