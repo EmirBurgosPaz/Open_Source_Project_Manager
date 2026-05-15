@@ -2,8 +2,13 @@ import tkinter as tk
 import random
 import math
 
+
 # Importamos tu diccionario de colores desde tu archivo de configuración
 from config import C 
+from auto_version import get_current_version
+
+start_distance = 400
+start_height = 230
 
 class TechPlexusSplash(tk.Toplevel):
     def __init__(self, parent):
@@ -58,10 +63,10 @@ class TechPlexusSplash(tk.Toplevel):
             })
             
         # --- Textos ---
-        self.canvas.create_text(550, 230, text="Gestor de tareas", fill=C["text"], font=("Helvetica", 42, "bold"), anchor="w")
-        
-        self.loading_bar = self.canvas.create_rectangle(550, 280, 550, 283, fill=C["accent"], outline="")
-        self.loading_text = self.canvas.create_text(550, 310, text="Iniciando módulos... 0%", fill=C["muted"], font=("Helvetica", 11), anchor="w")
+        self.canvas.create_text(start_distance, start_height, text=f"Gestor de tareas {get_current_version()}", fill=C["text"], font=("Helvetica", 42, "bold"), anchor="w")
+        self.canvas.create_text(start_distance, start_height +50 , text="by: Informacion", fill=C["text"], font=("Helvetica", 20, "bold"), anchor="w")
+        self.loading_bar = self.canvas.create_rectangle(start_distance, start_height +80, start_distance, start_height +95, fill=C["accent"], outline="")
+        self.loading_text = self.canvas.create_text(start_distance, start_height +110, text="Iniciando módulos... 0%", fill=C["muted"], font=("Helvetica", 11), anchor="w")
         
         self.frame = 0
         self.max_frames = 200 
@@ -105,7 +110,7 @@ class TechPlexusSplash(tk.Toplevel):
                     self.canvas.create_line(x1, y1, x2, y2, fill=C["accent_dk"], tags="plexus_line")
 
         porcentaje = min(100, int((self.frame / self.max_frames) * 100))
-        self.canvas.coords(self.loading_bar, 550, 280, 550 + (porcentaje * 2), 283)
+        self.canvas.coords(self.loading_bar, start_distance, start_height + 80 , start_distance + (porcentaje * 2), start_height + 95 )
         self.canvas.itemconfig(self.loading_text, text=f"Construyendo interfaz... {porcentaje}%")
         
         if self.frame < self.max_frames:
