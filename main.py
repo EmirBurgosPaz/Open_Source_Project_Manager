@@ -28,7 +28,17 @@ class ProjectManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Project Manager")
-        self.geometry("1550x880")
+
+        app_width = 1550
+        app_height = 880
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x = (screen_width // 2) - (app_width // 2)
+        y = (screen_height // 2) - (app_height // 2)
+
+        self.geometry(f"{app_width}x{app_height}+{x}+{y}")
         self.configure(bg=C["bg"])
         self.minsize(800, 500)
 
