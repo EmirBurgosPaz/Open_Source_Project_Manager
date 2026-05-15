@@ -56,7 +56,8 @@ class TaskList(tk.Frame):
 
         tree.tag_configure("todo",    foreground=C["todo_fg"])  # ← agrega
         tree.tag_configure("revision",    foreground=C["progress_tasks"])  # ← agrega
-        tree.tag_configure("high_priority", background=C["high_bg"])
+        tree.tag_configure("high_priority", background=C["high_bg"],foreground=C["todo_fg"])
+        tree.tag_configure("high_priority_done", background=C["high_bg"])
         tree.tag_configure("odd",  background=C["bg"])
         tree.tag_configure("even", background=C["row_alt"])
         tree.tag_configure("overdue",   background=C["over_bg"], foreground=C["over_fg"])  # ← agrega
@@ -140,6 +141,9 @@ class TaskList(tk.Frame):
             
             if task.priority == "Alta": 
                 tags_fila = (base_tag, "high_priority")
+            
+            if (task.priority == "Alta") & ( task.status == "done"): 
+                tags_fila = (base_tag,"high_priority_done" )
 
             iid = tree.insert("", "end", tags=tags_fila, values=(
                 task.title,
