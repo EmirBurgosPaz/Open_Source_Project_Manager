@@ -59,6 +59,7 @@ C = {
     "sidebar":   "#141417",
     "panel":     "#22222A",
     "border":    "#2E2E38",
+    "grid": "#1F1F26",
     "text":      "#E8E8EC",
     "muted":     "#7A7A8A",
     "accent":    "#7C6FE0",

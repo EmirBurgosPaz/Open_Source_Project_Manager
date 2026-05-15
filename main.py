@@ -20,6 +20,7 @@ from ui.task_list import  TaskList
 from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
+from ui.splash import TechPlexusSplash
 
 
 
@@ -31,6 +32,9 @@ class ProjectManagerApp(tk.Tk):
         self.configure(bg=C["bg"])
         self.minsize(800, 500)
 
+        self.withdraw()
+        splash = TechPlexusSplash(self)
+
         # ── Servicios (toda la lógica vive aquí) ─────────────────────────────
         repo                 = JsonRepository()
         self.task_service    = TaskService(repo)
@@ -41,6 +45,9 @@ class ProjectManagerApp(tk.Tk):
 
         self._build_layout()
         self.refresh()
+
+        self.wait_window(splash)
+        self.deiconify()
 
     # ── Layout ───────────────────────────────────────────────────────────────
 
