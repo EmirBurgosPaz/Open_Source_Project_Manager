@@ -43,40 +43,38 @@ def get_commits_since_last_tag():
     return commits.split('\n') if commits else []
 
 def calculate_next_version(current_version, commits):
-    """Calcula la nueva versión. Si no hay prefijos, sube 'Minor' (feat) por defecto."""
     if not commits:
         return current_version
 
     major, minor, patch = map(int, current_version.split('.'))
-    
-    bump_major = False
-    bump_minor = False
-    bump_patch = False
-    bump_ignore = False
+
+    count_major = 0
+    count_minor = 0
+    count_patch = 0
+    count_ignore = 0
 
     for commit in commits[::-1]:
         print(commit)
         if re.match(r'^(ignore|skip|wip|no.release)\s*:', commit, re.IGNORECASE):
-            bump_ignore = True
-        if re.search(r'major version|breaking change', commit, re.IGNORECASE) or re.match(r'^.*!:', commit):
-            bump_major = True
-        elif re.match(r'^(update|feature|feat|add|enhance)\s*:', commit, re.IGNORECASE):
-            bump_minor = True
+            count_ignore += 1
+        elif re.search(r'major version|breaking change', commit, re.IGNORECASE) or re.match(r'^.*!:', commit):
+            count_major += 1
+        elif re.match(r'^(update|feature|feat|add|enhance|legacy)\s*:', commit, re.IGNORECASE):
+            count_minor += 1
         elif re.match(r'^(fix|patch|hotfix|bugfix)\s*:', commit, re.IGNORECASE):
-            bump_patch = True
+            count_patch += 1
 
     # Lógica de incremento
-    if bump_major:
-        major += 1
+    if count_major > 0:
+        major += count_major
         minor = 0
         patch = 0
-    elif bump_patch and not bump_minor:
-        patch += 1
-    elif bump_ignore and not bump_minor and not bump_patch:
-        pass  # Todos eran ignore, no se toca la versión
-    else:
-        minor += 1
+    elif count_minor > 0:
+        minor += count_minor
         patch = 0
+    elif count_patch > 0:
+        patch += count_patch
+    # Si solo hay ignores, no se toca nada
 
     return f"{major}.{minor}.{patch}"
 
