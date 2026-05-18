@@ -84,3 +84,29 @@ def bind_hover(widgets: list, bg_normal: str, bg_hover: str,
     for w in widgets:
         w.bind("<Enter>", on_enter)
         w.bind("<Leave>", on_leave)
+
+class Tooltip:
+    """Muestra un tooltip al hacer hover sobre un widget."""
+    def __init__(self, widget, text: str):
+        self.widget = widget
+        self.text   = text
+        self.tip    = None
+        widget.bind("<Enter>", self._show)
+        widget.bind("<Leave>", self._hide)
+
+    def _show(self, e):
+        x = self.widget.winfo_rootx() + self.widget.winfo_width() + 4
+        y = self.widget.winfo_rooty()
+        self.tip = tk.Toplevel(self.widget)
+        self.tip.wm_overrideredirect(True)
+        self.tip.wm_geometry(f"+{x}+{y}")
+        tk.Label(self.tip, text=self.text,
+                 bg=C["panel"], fg=C["text"],
+                 font=("Helvetica", 9),
+                 relief="flat", bd=0,
+                 padx=8, pady=4).pack()
+
+    def _hide(self, e):
+        if self.tip:
+            self.tip.destroy()
+            self.tip = None

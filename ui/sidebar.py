@@ -5,7 +5,12 @@ Solo responsabilidad: mostrar proyectos y disparar callbacks.
 
 import tkinter as tk
 from config import C
+from utils.ui_helpers import Tooltip
 
+MAX_NAME_LEN = 18 
+
+def _truncate(text: str, max_len: int = MAX_NAME_LEN) -> str:
+        return text if len(text) <= max_len else text[:max_len - 3] + "..."
 
 class Sidebar(tk.Frame):
     """
@@ -74,7 +79,12 @@ class Sidebar(tk.Frame):
         row.pack(fill="x", padx=10, pady=3)
 
         dot      = tk.Label(row, text="●",      bg=C["sidebar"], fg=color,     font=("Helvetica", 10))
-        name_lbl = tk.Label(row, text=name,     bg=C["sidebar"], fg=C["text"], font=("Helvetica", 10))
+
+        display_name = _truncate(name)
+        name_lbl = tk.Label(row, text=display_name, bg=C["sidebar"], fg=C["text"], font=("Helvetica", 10))
+        if len(name) > MAX_NAME_LEN:
+            Tooltip(name_lbl, name)
+
         cnt_lbl  = tk.Label(row, text=str(count), bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 9))
         edit_lbl = tk.Label(row, text="✎",      bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 10), cursor="hand2", padx=2)
 
@@ -129,3 +139,5 @@ class Sidebar(tk.Frame):
             w.bind("<Enter>", on_enter)
             w.bind("<Leave>", on_leave)
             w.bind("<Button-1>", cmd)
+    
+    
