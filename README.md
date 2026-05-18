@@ -25,6 +25,7 @@ Funcional
 - ~~Indicador visual de tareas vencidas excluye status "No completadas"~~
 - ~~Indicador visual de tareas vencidas excluye status "Prioridad"~~
 - Notificaciones o alertas de deadlines próximos
+- Sistema de Tags
 
 Datos
 
@@ -47,6 +48,9 @@ UX
 - Dashboard con gráficas de progreso por proyecto
 - Atajos de teclado (N para nueva tarea, Esc para cerrar diálogo)
 - Paginación o carga lazy si la lista crece mucho
+- Sistema de canvas tradicional ¿?
+- Sistema de diagramas ¿?
+- Mejoras de UI
 
 Equipo
 
