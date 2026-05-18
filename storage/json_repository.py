@@ -41,11 +41,13 @@ class JsonRepository:
     def save(self, projects: list[Project], tasks: list[Task], next_id: int, members: list[str], recurring: list[Task], next_rec_id: int):
         data = {
             "projects": [p.to_dict() for p in projects],
-            "tasks":    [t.to_dict() for t in tasks],
-            "next_id":  next_id,
             "members":  members,
             "recurring_tasks":    recurring,
             "next_recurring_id":  next_rec_id,
+            "next_id":  next_id,
+            "tasks":    [t.to_dict() for t in tasks],
+            
+            
         }
         with open(self.filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
