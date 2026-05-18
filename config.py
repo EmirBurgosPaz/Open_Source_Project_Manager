@@ -32,18 +32,22 @@ DEFAULT_TASKS = [
 
 # ── Kanban columns ────────────────────────────────────────────────────────────
 
-COLUMNS = [
-    ("backlog",  "Backlog",     "#6B6A66"),
-    ("todo",     "Por hacer",   "#4A90D9"),
-    ("progress", "En progreso", "#E6A817"),
-    ("review",   "En revisión", "#9B8FE8"),
-    ("done",     "Completado",  "#2ECC71"),
+COLUMNS_STATUS = [
+    ("todo",     "Por hacer"),
+    ("progress", "En progreso"),
+    ("review",   "En revisión"),
+    ("done",     "Completado"),
+    ("backlog",  "Backlog"),
 ]
+
+COLUMNS_STATUS_DEFAULT = [
+    ("todo",     "Por hacer",   ),
+]
+
 
 # ── Opciones de formularios ───────────────────────────────────────────────────
 
 PRIORITY_OPTIONS = ["Alta", "Media", "Baja"]
-PRIORITY_COLORS  = {"Alta": "#E05555", "Media": "#E6A817", "Baja": "#2ECC71"}
 DEFAULT_MEMBERS = [{"name": "User inicial", "pos": "", "team": ""}]
 MEMBERS = []
 PROJECT_COLORS   = [

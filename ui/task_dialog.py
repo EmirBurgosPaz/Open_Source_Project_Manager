@@ -7,7 +7,7 @@ La validación y guardado los hace TaskService.
 import tkinter as tk
 from tkinter import messagebox
 from datetime import date
-from config import C, COLUMNS, PRIORITY_OPTIONS, KEYBOARD_KEYS
+from config import C, COLUMNS_STATUS, PRIORITY_OPTIONS, KEYBOARD_KEYS, COLUMNS_STATUS_DEFAULT
 import config
 from utils.ui_helpers import make_label, make_entry, make_dark_combobox, center_window
 
@@ -68,12 +68,18 @@ class TaskDialog(tk.Toplevel):
         proj_cb.pack(fill="x", padx=16, pady=(0, 2))
 
         make_label(self, "Estado").pack(anchor="w", padx=16, pady=(8, 2))
-        status_labels    = [c[1] for c in COLUMNS]
-        self._status_ids = [c[0] for c in COLUMNS]
-        default_st = (next((c[1] for c in COLUMNS if c[0] == task["status"]), status_labels[0])
-                      if task else
-                      next((c[1] for c in COLUMNS if c[0] == default_status), status_labels[1]))
-        self.status_var, status_cb = make_dark_combobox(self, status_labels, default_st)
+        
+        status_labels = [c[1] for c in COLUMNS_STATUS]
+        status_ids    = [c[0] for c in COLUMNS_STATUS]
+
+        # Buscar la etiqueta del status actual o usar el default
+        if task:
+            default_status_label = next((c[1] for c in COLUMNS_STATUS if c[0] == task.get("status", COLUMNS_STATUS_DEFAULT)), status_labels[0])
+        else:
+            default_status_label = next((c[1] for c in COLUMNS_STATUS if c[0] == COLUMNS_STATUS_DEFAULT), status_labels[0])
+
+        self._status_ids = status_ids
+        self.status_var, status_cb = make_dark_combobox(self, status_labels, default_status_label)
         status_cb.pack(fill="x", padx=16, pady=(0, 2))
 
         # Fila: Prioridad + Asignado
@@ -131,9 +137,9 @@ class TaskDialog(tk.Toplevel):
     # ── Handlers ─────────────────────────────────────────────────────────────
 
     def _on_save(self, event=None):
-        status_label = self.status_var.get()
-        status_labels = [c[1] for c in COLUMNS]
-        status_idx = status_labels.index(status_label)
+
+        status_idx = [c[1] for c in COLUMNS_STATUS].index(self.status_var.get())
+
         proj_name  = self.proj_var.get()
         proj       = next(p for p in self.projects if p["name"] == proj_name)
 
@@ -142,7 +148,7 @@ class TaskDialog(tk.Toplevel):
             "project":     proj["id"],
             "description": self.e_desc.get().strip(),
             "client": self.e_client.get().strip(),
-            "status":      self._status_ids[status_idx],
+            "status": self._status_ids[status_idx],
             "priority":    self.prio_var.get(),
             "assign":      self.assign_var.get(),
             "due":         self.e_due.get().strip(),

@@ -5,7 +5,7 @@ Solo responsabilidad: renderizar tareas y notificar doble-clic.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, COLUMNS, PRIORITY_COLORS
+from config import C
 from datetime import date
 
 class TaskList(tk.Frame):
@@ -123,8 +123,6 @@ class TaskList(tk.Frame):
 
         for i, task in enumerate(tasks):
 
-            col_info = next((c for c in COLUMNS if c[0] == task.status), ("?", "?", "#888"))
-
             base_tag = self._due_tag(task.due, i, task.status)
 
             tags_fila = (base_tag,)
@@ -148,7 +146,6 @@ class TaskList(tk.Frame):
             iid = tree.insert("", "end", tags=tags_fila, values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
-                col_info[1],
                 task.priority,
                 task.assign,
                 task.due,
