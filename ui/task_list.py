@@ -44,8 +44,8 @@ class TaskList(tk.Frame):
             w.destroy()
         self._iid_map = {}
 
-        cols   = ("Tarea", "Proyecto", "Estado", "Prioridad", "Asignado", "Fecha")
-        widths = [340, 340, 115, 115, 115, 95]
+        cols   = ("Tarea", "Proyecto","Cliente interno", "Estado", "Prioridad", "Asignado", "Fecha")
+        widths = [340, 340, 115, 115, 115, 115, 95]
 
         tree = ttk.Treeview(self, columns=cols, show="headings",
                             style="Dark.Treeview", selectmode="browse")
@@ -151,6 +151,7 @@ class TaskList(tk.Frame):
             iid = tree.insert("", "end", tags=tags_fila, values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
+                task.client,
                 status_label,
                 task.priority,
                 task.assign,

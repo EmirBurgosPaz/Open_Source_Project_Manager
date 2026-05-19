@@ -9,6 +9,7 @@ from models.project import Project
 from models.task import Task
 from storage.json_repository import JsonRepository
 from services.recurring_task_service import RecurringTaskService
+from config import COLUMNS_STATUS
 
 
 class TaskService:
@@ -154,3 +155,33 @@ class TaskService:
     def save_members(self, members: list[str]):
         self.members = members
         self._persist()
+    
+    def filter(self, tasks: list, filters: dict) -> list:
+        result = tasks
+        
+
+        if filters.get("client"):
+            result = [t for t in result if filters["client"] in t.title.lower()]
+
+        if filters.get("search"):
+            result = [t for t in result if filters["search"] in t.title.lower()]
+
+        if filters.get("status") and filters["status"] != "Todos":
+            if filters["status"] == "Activas":
+                # Buscamos los IDs internos de las tareas que no están terminadas
+                # (Ajusta "Por hacer" y "En progreso" si tus textos en COLUMNS_STATUS son diferentes)
+                active_ids = [c[0] for c in COLUMNS_STATUS if c[1] in ["Por hacer", "En progreso"]]
+                result = [t for t in result if t.status in active_ids]
+            else:
+                # Lógica normal para un estado individual (Ej. "Completado")
+                status_id = next((c[0] for c in COLUMNS_STATUS if c[1] == filters["status"]), None)
+                if status_id:
+                    result = [t for t in result if t.status == status_id]
+
+        if filters.get("priority") and filters["priority"] != "Todas":
+            result = [t for t in result if t.priority == filters["priority"]]
+
+        if filters.get("assign") and filters["assign"] != "Todos":
+            result = [t for t in result if t.assign == filters["assign"]]
+
+        return result

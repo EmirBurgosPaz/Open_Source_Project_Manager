@@ -21,6 +21,7 @@ from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
 from ui.splash import TechPlexusSplash
+from ui.filter_bar import FilterBar
 
 
 
@@ -102,6 +103,13 @@ class ProjectManagerApp(tk.Tk):
                   command=self._new_task)
         self.btn_nueva_tarea.pack(side="right", padx=16)
 
+        #filtros
+
+        self.filter_bar = FilterBar(main, on_filter=self._on_filter_change)
+        self.filter_bar.pack(fill="x")
+        tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
+
+
         # Lista de tareas
         self.task_list = TaskList(    main,
                                     on_edit_task      = self._edit_task,
@@ -133,6 +141,12 @@ class ProjectManagerApp(tk.Tk):
         visible  = (tasks if not self.filter_project
                     else self.task_service.get_by_project(self.filter_project))
 
+        # Aplicar filtros dinámicos
+        filters = getattr(self, "_active_filters", {})
+        if filters:
+            visible = self.task_service.filter(visible, filters)
+    
+        self.filter_bar.refresh_members()
         self.sidebar.rebuild(projects, tasks)
         self._render_stats()
         self.task_list.render(visible, projects)
@@ -312,6 +326,10 @@ class ProjectManagerApp(tk.Tk):
         self.wait_window(dlg)
         self.task_service.save_members(dlg.members)
         MEMBERS[:] = dlg.members
+    
+    def _on_filter_change(self, filters: dict):
+        self._active_filters = filters
+        self.refresh()
 
 # ── Punto de entrada ──────────────────────────────────────────────────────────
 
