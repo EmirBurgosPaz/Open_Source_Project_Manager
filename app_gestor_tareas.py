@@ -107,6 +107,7 @@ class ProjectManagerApp(tk.Tk):
 
         self.filter_bar = FilterBar(main, on_filter=self._on_filter_change)
         self.filter_bar.pack(fill="x")
+
         tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
 
 
@@ -145,7 +146,7 @@ class ProjectManagerApp(tk.Tk):
         filters = getattr(self, "_active_filters", {})
         if filters:
             visible = self.task_service.filter(visible, filters)
-    
+
         self.filter_bar.refresh_members()
         self.sidebar.rebuild(projects, tasks)
         self._render_stats()
@@ -215,6 +216,17 @@ class ProjectManagerApp(tk.Tk):
     def _reorder_task(self, src_id: int, tgt_id: int):
         self.task_service.reorder(src_id, tgt_id)
 
+
+    def _show_normal_tasks_view(self):
+        """Oculta las tareas recurrentes y vuelve a la vista normal."""
+        self.btn_nueva_recurrente.pack_forget() 
+        self.btn_nueva_tarea.pack(side="right", padx=16)
+        self.recurring_list.pack_forget()
+        self.filter_bar.pack(fill="x")
+        self.task_list.pack(fill="both", expand=True)
+
+        
+
     # ── Acciones: Tareas recurrentes ───────────────────────────────────────────────────
 
     def _new_recurring(self):
@@ -251,17 +263,11 @@ class ProjectManagerApp(tk.Tk):
     def _show_recurring_tasks_view(self):
         """Oculta las tareas normales y muestra las recurrentes."""
         self.task_list.pack_forget()
+        self.filter_bar.pack_forget()
         self.recurring_list.pack(fill="both", expand=True)
         
         # Opcional pero recomendado: Actualizar el título superior
         self.lbl_title.config(text="Tareas Recurrentes")
-
-    def _show_normal_tasks_view(self):
-        """Oculta las tareas recurrentes y vuelve a la vista normal."""
-        self.btn_nueva_recurrente.pack_forget() 
-        self.btn_nueva_tarea.pack(side="right", padx=16)
-        self.recurring_list.pack_forget()
-        self.task_list.pack(fill="both", expand=True)
         
         # Restaurar el título
         self.lbl_title.config(text="Todas las tareas")
