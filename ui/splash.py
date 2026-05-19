@@ -69,7 +69,7 @@ class TechPlexusSplash(tk.Toplevel):
         self.loading_text = self.canvas.create_text(start_distance, start_height +110, text="Iniciando módulos... 0%", fill=C["muted"], font=("Helvetica", 11), anchor="w")
         
         self.frame = 0
-        self.max_frames = 200 
+        self.max_frames = 250 
         
         self.attributes("-topmost", True)
         
@@ -77,7 +77,7 @@ class TechPlexusSplash(tk.Toplevel):
         self.animate()
         
         # Destruir esta ventana después de 3500ms
-        self.after(3500, self.destroy)
+        self.after(4000, self.destroy)
         
     def animate(self):
         self.frame += 1
