@@ -5,7 +5,7 @@ Solo responsabilidad: renderizar tareas y notificar doble-clic.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C
+from config import C, COLUMNS_STATUS
 from datetime import date
 
 class TaskList(tk.Frame):
@@ -45,14 +45,17 @@ class TaskList(tk.Frame):
         self._iid_map = {}
 
         cols   = ("Tarea", "Proyecto", "Estado", "Prioridad", "Asignado", "Fecha")
-        widths = [340, 110, 115, 85, 105, 95]
+        widths = [340, 340, 115, 115, 115, 95]
 
         tree = ttk.Treeview(self, columns=cols, show="headings",
                             style="Dark.Treeview", selectmode="browse")
         for col, w in zip(cols, widths):
-            tree.heading(col, text=col)
-            tree.column(col, width=w, anchor="w", minwidth=60)
-        
+            tree.heading(col, text=col, anchor="w")
+            tree.column(col, width=w, anchor="w", minwidth=w, stretch=False)
+
+        # La última columna absorbe el espacio sobrante
+        tree.column("Fecha", width=95, anchor="w", minwidth=95, stretch=True)
+
 
         tree.tag_configure("todo",    foreground=C["todo_fg"])  # ← agrega
         tree.tag_configure("revision",    foreground=C["progress_tasks"])  # ← agrega
@@ -143,9 +146,12 @@ class TaskList(tk.Frame):
             if (task.priority == "Alta") & ( task.status == "done"): 
                 tags_fila = (base_tag,"high_priority_done" )
 
+            status_label = next((c[1] for c in COLUMNS_STATUS if c[0] == task.status), task.status)
+
             iid = tree.insert("", "end", tags=tags_fila, values=(
                 task.title,
                 proj_map.get(task.project_id, "?"),
+                status_label,
                 task.priority,
                 task.assign,
                 task.due,
