@@ -86,15 +86,19 @@ def bind_hover(widgets: list, bg_normal: str, bg_hover: str,
         w.bind("<Leave>", on_leave)
 
 class Tooltip:
-    """Muestra un tooltip al hacer hover sobre un widget."""
-    def __init__(self, widget, text: str):
-        self.widget = widget
-        self.text   = text
-        self.tip    = None
-        widget.bind("<Enter>", self._show)
-        widget.bind("<Leave>", self._hide)
+    def __init__(self, widget, text: str, trigger_widgets: list = None):
+        self.widget          = widget
+        self.text            = text
+        self.tip             = None
+        # Si se pasan widgets externos (como el frame padre), escuchar en ellos
+        targets = trigger_widgets if trigger_widgets else [widget]
+        for w in targets:
+            w.bind("<Enter>", self._show, add="+")
+            w.bind("<Leave>", self._hide, add="+")
 
     def _show(self, e):
+        if self.tip:
+            return
         x = self.widget.winfo_rootx() + self.widget.winfo_width() + 4
         y = self.widget.winfo_rooty()
         self.tip = tk.Toplevel(self.widget)

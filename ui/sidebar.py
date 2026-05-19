@@ -82,8 +82,7 @@ class Sidebar(tk.Frame):
 
         display_name = _truncate(name)
         name_lbl = tk.Label(row, text=display_name, bg=C["sidebar"], fg=C["text"], font=("Helvetica", 10))
-        if len(name) > MAX_NAME_LEN:
-            Tooltip(name_lbl, name)
+        
 
         cnt_lbl  = tk.Label(row, text=str(count), bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 9))
         edit_lbl = tk.Label(row, text="✎",      bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 10), cursor="hand2", padx=2)
@@ -118,6 +117,9 @@ class Sidebar(tk.Frame):
 
         edit_lbl.bind("<Enter>", on_enter)
         edit_lbl.bind("<Leave>", on_leave)
+
+        if len(name) > MAX_NAME_LEN:
+            Tooltip(name_lbl, name, trigger_widgets=[f, row, dot, name_lbl])
 
     def _nav_item(self, parent, icon, label, cmd):
         f   = tk.Frame(parent, bg=C["sidebar"], cursor="hand2")
