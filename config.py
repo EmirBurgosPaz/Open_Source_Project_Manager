@@ -37,6 +37,7 @@ COLUMNS_STATUS = [
     ("progress", "En progreso"),
     ("review",   "En revisión"),
     ("done",     "Completado"),
+    ("denied",     "Denegado"),
     ("backlog",  "Backlog"),
 ]
 
