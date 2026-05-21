@@ -53,6 +53,7 @@ class ProjectManagerApp(tk.Tk):
         MEMBERS[:] = self.task_service.members
 
         self.filter_project: str | None = None
+        self.current_project_id = None
 
         self._build_layout()
         self.refresh()
@@ -177,7 +178,7 @@ class ProjectManagerApp(tk.Tk):
         projects = [p.__dict__ for p in self.project_service.get_all()]
         # TaskDialog espera dicts con "id" y "name"
         projects_dicts = [{"id": p.id, "name": p.name} for p in self.project_service.get_all()]
-        dlg = TaskDialog(self, projects_dicts)
+        dlg = TaskDialog(self, projects_dicts,default_project_id=self.current_project_id)
         self.wait_window(dlg)
         if dlg.result and not dlg.result.get("deleted"):
             try:
@@ -191,7 +192,7 @@ class ProjectManagerApp(tk.Tk):
         if not task:
             return
         projects_dicts = [{"id": p.id, "name": p.name} for p in self.project_service.get_all()]
-        dlg = TaskDialog(self, projects_dicts, task=task.to_dict())
+        dlg = TaskDialog(self, projects_dicts, task=task.to_dict(), default_project_id=self.current_project_id)
         self.wait_window(dlg)
         if not dlg.result:
             return
@@ -323,6 +324,7 @@ class ProjectManagerApp(tk.Tk):
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
         self._show_normal_tasks_view()
         self.filter_project = None if project_id == "all" else project_id
+        self.current_project_id = project_id
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
         self._show_normal_tasks_view()
         self.refresh()

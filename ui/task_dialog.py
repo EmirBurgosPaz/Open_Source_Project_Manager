@@ -21,14 +21,14 @@ class TaskDialog(tk.Toplevel):
       - dict con los campos → datos listos para TaskService
     """
 
-    def __init__(self, parent, projects: list, task: dict = None, default_status: str = "todo"):
+    def __init__(self, parent, projects: list, task: dict = None, default_status: str = "todo", default_project_id=None):
         super().__init__(parent)
         self.result   = None
         self.projects = projects
         self.task     = task
         self.prio_var = None
         self.assign_var = None
-
+        self.default_project_id = default_project_id
         self.title("Editar tarea" if task else "Nueva tarea")
         self.resizable(False, False)
         self.configure(bg=C["dlg_bg"])
@@ -61,9 +61,13 @@ class TaskDialog(tk.Toplevel):
         self.e_client.pack(fill="x", padx=16, pady=(0, 2))
 
         make_label(self, "Proyecto").pack(anchor="w", padx=16, pady=(8, 2))
-        proj_names   = [p["name"] for p in self.projects]
-        default_proj = next((p["name"] for p in self.projects
-                             if task and p["id"] == task.get("project")), proj_names[0])
+        proj_names = [p["name"] for p in self.projects]
+        
+        target_id = task.get("project") if task else self.default_project_id
+        
+        default_proj = next((p["name"] for p in self.projects 
+                             if p["id"] == target_id), proj_names[0])
+                             
         self.proj_var, proj_cb = make_dark_combobox(self, proj_names, default_proj)
         proj_cb.pack(fill="x", padx=16, pady=(0, 2))
 
