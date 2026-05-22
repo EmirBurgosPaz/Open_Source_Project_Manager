@@ -95,7 +95,7 @@ C = {
     "priority_tasks" : "#E05555"
 }
 
-FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral", "Único"]
+FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral"]
 
 STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area", "informacion"]
 
