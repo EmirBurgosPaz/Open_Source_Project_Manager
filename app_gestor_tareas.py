@@ -22,6 +22,7 @@ from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
 from ui.splash import TechPlexusSplash
 from ui.filter_bar import FilterBar
+from ui.report_window import ReportWindow
 
 
 
@@ -321,8 +322,8 @@ class ProjectManagerApp(tk.Tk):
     # ── Acciones: Reporte ─────────────────────────────────────────────────────
 
     def _show_report(self):
-        lines = self.task_service.get_report_lines()
-        messagebox.showinfo("Reporte", "\n".join(lines))
+        
+        ReportWindow(self, self.task_service)
 
     # ── Filtro ────────────────────────────────────────────────────────────────
 

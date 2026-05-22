@@ -110,3 +110,30 @@ KEYBOARD_KEYS = {
     "new_project" : "<KeyPress-p>",
     "new_recurring" : "<KeyPress-r>",
 }
+
+STATUS_COLORS = {
+    "todo":     "#38BDF8",
+    "progress": "#E6A817",
+    "review":   "#9B59B6",
+    "done":     "#2ECC71",
+    "denied":   "#E05555",
+    "backlog":  "#7A7A8A",
+}
+PRIORITY_COLORS = {
+    "Alta":  "#FF6B6B",
+    "Media": "#E6A817",
+    "Baja":  "#38BDF8",
+}
+
+
+
+
+STATUS_FILL = {
+    "done":     "2ECC71",
+    "progress": "E6A817",
+    "review":   "9B59B6",
+    "todo":     "38BDF8",
+    "denied":   "E05555",
+    "backlog":  "7A7A8A",
+}
+PRIORITY_FILL = {"Alta": "FF6B6B", "Media": "E6A817", "Baja": "38BDF8"}
