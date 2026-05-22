@@ -9,7 +9,7 @@ Ejecutar: python main.py
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import messagebox
-from config import C, MEMBERS
+from config import C, MEMBERS, KEYBOARD_KEYS
 from storage.json_repository import JsonRepository
 from services.task_service import TaskService 
 from services.project_service import ProjectService 
@@ -57,6 +57,11 @@ class ProjectManagerApp(tk.Tk):
 
         self._build_layout()
         self.refresh()
+
+        self.bind(KEYBOARD_KEYS["new_task"], self._new_task)
+        self.bind(KEYBOARD_KEYS["new_project"], self._new_project)
+        self.bind(KEYBOARD_KEYS["new_recurring"], self._new_recurring)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
 
         self.wait_window(splash)
         self.deiconify()
@@ -174,7 +179,7 @@ class ProjectManagerApp(tk.Tk):
 
     # ── Acciones: Tareas ─────────────────────────────────────────────────────
 
-    def _new_task(self):
+    def _new_task(self, event=None):
         projects = [p.__dict__ for p in self.project_service.get_all()]
         # TaskDialog espera dicts con "id" y "name"
         projects_dicts = [{"id": p.id, "name": p.name} for p in self.project_service.get_all()]
@@ -230,7 +235,7 @@ class ProjectManagerApp(tk.Tk):
 
     # ── Acciones: Tareas recurrentes ───────────────────────────────────────────────────
 
-    def _new_recurring(self):
+    def _new_recurring(self, event=None):
         dlg = RecurringTaskDialog(self)
         self.wait_window(dlg)
         if dlg.result and not dlg.result.get("deleted"):
@@ -279,7 +284,7 @@ class ProjectManagerApp(tk.Tk):
 
     # ── Acciones: Proyectos ───────────────────────────────────────────────────
 
-    def _new_project(self):
+    def _new_project(self,  event=None):
         dlg = ProjectDialog(self)
         self.wait_window(dlg)
         if dlg.result and not dlg.result.get("deleted"):
@@ -338,6 +343,9 @@ class ProjectManagerApp(tk.Tk):
     def _on_filter_change(self, filters: dict):
         self._active_filters = filters
         self.refresh()
+    
+    def _on_close(self, event=None):
+        self.destroy()
 
 # ── Punto de entrada ──────────────────────────────────────────────────────────
 

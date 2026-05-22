@@ -105,5 +105,8 @@ KEYBOARD_KEYS = {
     "enter": "<Return>",
     "escape": "<Escape>",
     "space": "<space>",
-    "tab" : "<Tab>",
+    "tab" : "<KeyPress-Tab>",
+    "new_task" : "<KeyPress-n>",
+    "new_project" : "<KeyPress-p>",
+    "new_recurring" : "<KeyPress-r>",
 }

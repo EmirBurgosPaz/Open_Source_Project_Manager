@@ -21,8 +21,17 @@ def make_dark_combobox(parent, values: list, default: str) -> tuple[tk.StringVar
                     lightcolor=C["dlg_input"],
                     darkcolor=C["dlg_input"])
     style.map("Dark.TCombobox",
-              fieldbackground=[("readonly", C["dlg_input"])],
-              foreground=[("readonly", C["text"])])
+          fieldbackground=[
+              ("readonly", C["dlg_input"])
+          ],
+          foreground=[
+              ("readonly", C["text"])
+          ],
+          bordercolor=[
+              ("focus", C["accent"]),                # ← solo el borde cambia
+          ],
+)
+
     var = tk.StringVar(value=default)
     cb  = ttk.Combobox(parent, textvariable=var, values=values,
                        state="readonly", font=("Helvetica", 11),
@@ -122,6 +131,3 @@ class Tooltip:
             self.tip.destroy()
             self.tip = None
     
-def _focus_next_widget(self, event):
-    event.widget.tk_focusNext().found()
-    return "break"
