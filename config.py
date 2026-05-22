@@ -104,5 +104,6 @@ CATEGORY_OPTIONS = ["Automatico", "Manual"]
 KEYBOARD_KEYS = {
     "enter": "<Return>",
     "escape": "<Escape>",
-    "space": "<space>"
+    "space": "<space>",
+    "tab" : "<Tab>",
 }
