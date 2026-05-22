@@ -5,7 +5,7 @@ Widgets genéricos que no dependen de la lógica de negocio.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C
+from config import C, KEYBOARD_KEYS
 
 
 def make_dark_combobox(parent, values: list, default: str) -> tuple[tk.StringVar, ttk.Combobox]:
@@ -27,6 +27,13 @@ def make_dark_combobox(parent, values: list, default: str) -> tuple[tk.StringVar
     cb  = ttk.Combobox(parent, textvariable=var, values=values,
                        state="readonly", font=("Helvetica", 11),
                        style="Dark.TCombobox")
+
+    def _on_tab(event):
+        event.widget.tk_focusNext().focus()
+        return "break"
+    
+    cb.bind(KEYBOARD_KEYS["tab"],_on_tab)
+
     return var, cb
 
 
@@ -114,3 +121,7 @@ class Tooltip:
         if self.tip:
             self.tip.destroy()
             self.tip = None
+    
+def _focus_next_widget(self, event):
+    event.widget.tk_focusNext().found()
+    return "break"
