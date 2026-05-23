@@ -68,4 +68,4 @@ Estructura
 - ~~Migración de archivo único a estructura modular~~
 - ~~Repositorio JSON con separación de persistencia~~
 
-**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v1.2.5...v0.0.0
+**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v1.2.5
