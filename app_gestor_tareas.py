@@ -143,17 +143,14 @@ class ProjectManagerApp(tk.Tk):
 
         self.btn_nueva_recurrente = tk.Button(topbar, text="+ Nueva tarea recurrente",
                                        bg=C["accent"], fg="white",
-                                       font=("Helvetica", 20, "bold"), relief="flat", bd=0,
+                                       font=("Helvetica", 10, "bold"), relief="flat", bd=0,
                                        padx=12, pady=5, cursor="hand2",
                                        command=self._new_recurring)
 
         self.recurring_list = RecurringTaskList(main, 
                                                 on_edit=self._edit_recurring, 
                                                 on_new=self._new_recurring,
-                                                on_reorder_task   = self._reorder_recurring,)
-        #self.recurring_list.pack(fill="both", expand=True)
-
-        
+                                                on_reorder_task   = self._reorder_recurring,)        
 
     # ── Refresh ───────────────────────────────────────────────────────────────
 
