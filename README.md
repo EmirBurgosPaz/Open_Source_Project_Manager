@@ -17,8 +17,8 @@ Prototipo
 
 Funcional
 
-- Búsqueda/filtro por texto en la lista de tareas
-- Filtro por prioridad, asignado o fecha límite
+- ~~Búsqueda/filtro por texto en la lista de tareas~~
+- ~~Filtro por prioridad, asignado o fecha límite~~
 - Ordenar columnas haciendo clic en el header
 - ~~Indicador visual de tareas vencidas (fecha límite pasada en rojo)~~
 - ~~Indicador visual de tareas vencidas excluye status "done"~~
@@ -39,6 +39,7 @@ Datos
 - Comentarios o notas por tarea
 - Historial de cambios (quién cambió qué y cuándo)
 - Adjuntos o links relacionados a una tarea
+- ~~Reportes de resumen de productividad~~
 
 UX
 
@@ -50,7 +51,7 @@ UX
 - Paginación o carga lazy si la lista crece mucho
 - Sistema de canvas tradicional ¿?
 - Sistema de diagramas ¿?
-- Mejoras de UI
+- ~~Mejoras de UI~~
 
 Equipo
 
@@ -67,5 +68,12 @@ Estructura
 - ~~Separación en capas: models, services, storage, ui, utils~~
 - ~~Migración de archivo único a estructura modular~~
 - ~~Repositorio JSON con separación de persistencia~~
+- Multiples usuarios
+- Permisos para los usuarios
+
+Persistencia
+
+- Uso del programa por varios usuarios
+- Comunicacion por medio de linea
 
 **Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v1.2.5
