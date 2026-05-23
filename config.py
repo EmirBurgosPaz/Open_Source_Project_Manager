@@ -92,7 +92,8 @@ C = {
     "white" : "#FFFFFF",
     "done_tasks" :  "#2ECC71",
     "progress_tasks" : "#E6A817",
-    "priority_tasks" : "#E05555"
+    "priority_tasks" : "#E05555",
+    "splash_bg" : "#1F1F26",
 }
 
 FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral"]
