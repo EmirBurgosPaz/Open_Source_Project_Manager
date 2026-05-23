@@ -1,4 +1,4 @@
-# Proyecto Meyaj - Open source task manager (Version 1.2.5)
+# Proyecto Meyaj - Open source task manager (Version 1.3.0)
 
 ****
 
@@ -76,4 +76,4 @@ Persistencia
 - Uso del programa por varios usuarios
 - Comunicacion por medio de linea
 
-**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v1.2.5
+**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v1.3.0
