@@ -29,43 +29,57 @@ from ui.report_window import ReportWindow
 class ProjectManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Project Manager")
-
+        
+        self.title("Task Manager")
+        
         app_width = 1550
         app_height = 880
-
+        
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-
+        
         x = (screen_width // 2) - (app_width // 2)
         y = (screen_height // 2) - (app_height // 2)
-
+        
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
         self.configure(bg=C["bg"])
         self.minsize(800, 500)
-
+        
+        # --- NUEVO: Configuración crítica para eliminar flashes ---
+        self.attributes('-alpha', 0)
         self.withdraw()
-        splash = TechPlexusSplash(self)
-
-        # ── Servicios (toda la lógica vive aquí) ─────────────────────────────
-        repo                 = JsonRepository()
-        self.task_service    = TaskService(repo)
+        
+        # Servicios
+        repo = JsonRepository()
+        self.task_service = TaskService(repo)
         self.project_service = ProjectService(repo, self.task_service)
         MEMBERS[:] = self.task_service.members
-
+        
         self.filter_project: str | None = None
         self.current_project_id = None
-
+        
+        # Construir interfaz
         self._build_layout()
         self.refresh()
-
+        
         self.bind(KEYBOARD_KEYS["new_task"], self._new_task)
         self.bind(KEYBOARD_KEYS["new_project"], self._new_project)
         self.bind(KEYBOARD_KEYS["new_recurring"], self._new_recurring)
         self.bind(KEYBOARD_KEYS["escape"], self._on_close)
+        
+        # Forzar un ciclo completo de actualización
+        self.update()
+        self.update_idletasks()
+        
+        splash = TechPlexusSplash(self)
 
         self.wait_window(splash)
+        
+        # --- Mostrar todo perfectamente renderizado ---
+        self.attributes('-alpha', 1)
         self.deiconify()
+        self.lift()
+        self.focus_force()
 
     # ── Layout ───────────────────────────────────────────────────────────────
 
@@ -100,7 +114,7 @@ class ProjectManagerApp(tk.Tk):
 
         self.lbl_title = tk.Label(topbar, text="Todas las tareas",
                                    bg=C["panel"], fg=C["text"],
-                                   font=("Helvetica", 13, "bold"))
+                                   font=("Helvetica", 20, "bold"))
         self.lbl_title.pack(side="left", padx=16)
 
         self.btn_nueva_tarea = tk.Button(topbar, text="+ Nueva tarea",
@@ -129,7 +143,7 @@ class ProjectManagerApp(tk.Tk):
 
         self.btn_nueva_recurrente = tk.Button(topbar, text="+ Nueva tarea recurrente",
                                        bg=C["accent"], fg="white",
-                                       font=("Helvetica", 10, "bold"), relief="flat", bd=0,
+                                       font=("Helvetica", 20, "bold"), relief="flat", bd=0,
                                        padx=12, pady=5, cursor="hand2",
                                        command=self._new_recurring)
 
@@ -175,7 +189,7 @@ class ProjectManagerApp(tk.Tk):
             tk.Label(f, text=str(val), bg=C["panel"], fg=color,
                      font=("Helvetica", 20, "bold")).pack()
             tk.Label(f, text=label, bg=C["panel"], fg=C["muted"],
-                     font=("Helvetica", 9)).pack()
+                     font=("Helvetica", 10)).pack()
         tk.Frame(self.stats_frame, bg=C["border"], width=1).pack(side="left", fill="y", pady=6)
 
     # ── Acciones: Tareas ─────────────────────────────────────────────────────
@@ -328,7 +342,6 @@ class ProjectManagerApp(tk.Tk):
     # ── Filtro ────────────────────────────────────────────────────────────────
 
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
-        self._show_normal_tasks_view()
         self.filter_project = None if project_id == "all" else project_id
         self.current_project_id = project_id
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
@@ -345,6 +358,8 @@ class ProjectManagerApp(tk.Tk):
         self._active_filters = filters
         self.refresh()
     
+    # - Eventos -----
+
     def _on_close(self, event=None):
         self.destroy()
 

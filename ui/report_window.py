@@ -16,7 +16,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from openpyxl.styles import PatternFill, Font, Alignment
 
-from config import C, COLUMNS_STATUS, STATUS_COLORS, PRIORITY_COLORS, STATUS_FILL, PRIORITY_FILL
+from config import C, COLUMNS_STATUS, STATUS_COLORS, PRIORITY_COLORS, STATUS_FILL, PRIORITY_FILL, KEYBOARD_KEYS
+from utils.ui_helpers import center_window
 
 import openpyxl
 
@@ -37,16 +38,13 @@ class ReportWindow(tk.Toplevel):
 
     def __init__(self, master, task_service):
         super().__init__(master)
+        self.withdraw()
+
         self.task_service = task_service
         self.title("Reportes")
         self.configure(bg=C["bg"])
 
-        # Tamaño y posición centrada
-        w, h = 1200, 750
-        sw = self.winfo_screenwidth()
-        sh = self.winfo_screenheight()
-        self.geometry(f"{w}x{h}+{(sw-w)//2}+{(sh-h)//2}")
-        self.minsize(900, 600)
+        
 
         # Estado de filtros
         self._filter_project = tk.StringVar(value="all")
@@ -56,7 +54,19 @@ class ReportWindow(tk.Toplevel):
         self._date_to   = tk.StringVar(value="")
 
         self._build_ui()
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
+
+        center_window(self, master)
+
         self._refresh()
+
+        self.attributes('-alpha', 1.0)
+        self.deiconify()
+        # Tamaño y posición centrad
+
+        self.after(30, lambda: self.attributes('-alpha', 1.0))
+
+        self.focus()
 
     # ── Construcción de UI ────────────────────────────────────────────────────
 
@@ -118,20 +128,31 @@ class ReportWindow(tk.Toplevel):
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("TCombobox",
-                         fieldbackground=C["panel"],
-                         background=C["panel"],
-                         foreground=C["text"],
-                         arrowcolor=C["muted"],
-                         bordercolor=C["border"],
-                         selectbackground=C["panel"],
-                         selectforeground=C["panel"])
-        
+                        fieldbackground=C["panel"],
+                        background=C["panel"],
+                        foreground=C["text"],
+                        arrowcolor=C["muted"],
+                        bordercolor=C["border"],
+                        selectbackground=C["dlg_input"],
+                        selectforeground=C["text"],          # ← antes era C["panel"] (invisible)
+                        insertcolor=C["text"],
+                        padding=(6, 4))
+
         style.map("TCombobox",
                   fieldbackground=[("readonly", C["dlg_input"]),
-                                   ("focus",    C["accent"])],
-                  foreground=[("readonly", C["text"])],
-                  bordercolor=[("focus",   C["accent"]), # Brilla con el color acento
-                               ("!focus",  C["dlg_border"])])
+                                   ("active",   C["panel"]),    # ← nuevo
+                                   ("focus",    C["panel"])],   # ← antes era accent (muy oscuro)
+                  background=[("active",   C["hover"]),         # ← fondo del botón flecha
+                              ("pressed",  C["accent_dk"])],
+                  foreground=[("readonly", C["text"]),
+                              ("active",   C["text"]),
+                              ("disabled", C["disabled_fg"])],
+                  selectbackground=[("readonly", C["dlg_input"]),
+                                    ("focus",    C["dlg_input"])],
+                  selectforeground=[("readonly", C["text"]),
+                                    ("focus",    C["text"])],
+                  bordercolor=[("focus",   C["accent"]),
+                               ("!focus",  C["border"])])       # ← antes era accent siempre
 
         # Proyecto
         projects = self.task_service.projects
@@ -327,6 +348,9 @@ class ReportWindow(tk.Toplevel):
 
 
     def _render_chart(self, tasks):
+        # Ocultar el frame durante la construcción
+        self.chart_frame.pack_forget()
+
         for w in self.chart_frame.winfo_children():
             w.destroy()
 
@@ -358,19 +382,36 @@ class ReportWindow(tk.Toplevel):
         nb.add(f3, text="Por prioridad")
         self._chart_by_priority(f3, tasks)
 
+        # Forzar actualización antes de mostrar
+        self.chart_frame.update_idletasks()
+        self.chart_frame.pack(fill="both", expand=True)  # Restaurar el pack según tu layout
+
     def _make_figure(self):
         bg = C["panel"]
-        fig = Figure(figsize=(4, 3.2), dpi=90, facecolor=bg)
-        ax  = fig.add_subplot(111, facecolor=bg)
+        # Crear figura completamente configurada desde el inicio
+        fig = Figure(figsize=(4, 3.2), dpi=90, facecolor=bg, edgecolor=bg)
+        ax = fig.add_subplot(111, facecolor=bg)
+
+        # Configurar todo antes de que se renderice
         ax.tick_params(colors=C["muted"], labelsize=7)
+        ax.xaxis.label.set_color(C["muted"])
+        ax.yaxis.label.set_color(C["muted"])
+
         for spine in ax.spines.values():
             spine.set_edgecolor(C["border"])
+
         return fig, ax
 
     def _embed_chart(self, parent, fig):
+        # Crear canvas con fondo transparente
         canvas = FigureCanvasTkAgg(fig, master=parent)
+        canvas.get_tk_widget().configure(bg=C["panel"], highlightthickness=0)
+
+        # Renderizar antes de mostrar
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True)
+
+        return canvas  # Por si necesitas referencia
 
     def _chart_by_status(self, parent, tasks):
         counts = {}
@@ -574,3 +615,6 @@ class ReportWindow(tk.Toplevel):
 
         wb.save(path)
         messagebox.showinfo("Exportado", f"Archivo guardado en:\n{path}")
+
+    def _on_close(self,event = None):
+        self.destroy()

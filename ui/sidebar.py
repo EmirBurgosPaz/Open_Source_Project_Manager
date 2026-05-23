@@ -35,6 +35,7 @@ class Sidebar(tk.Frame):
         self.proj_frame = tk.Frame(self, bg=C["sidebar"])
         self.proj_frame.pack(fill="x")
         self._nav_item(self, "◉", "Todos", lambda e: self.on_filter("all"))
+        self._row_refs = {}
 
     # ── Estructura fija ───────────────────────────────────────────────────────
 
@@ -63,14 +64,28 @@ class Sidebar(tk.Frame):
     # ── Lista dinámica de proyectos ───────────────────────────────────────────
 
     def rebuild(self, projects: list, tasks: list):
-        self._current_projects = projects  # ← agrega esta línea
-        for w in self.proj_frame.winfo_children():
-            w.destroy()
+        self._current_projects = projects
 
-        for p in projects:
-            pid   = p.id
-            count = sum(1 for t in tasks if t.project_id == pid)
-            self._project_row(pid, p.name, p.color, count)
+        # Solo actualiza si los proyectos cambiaron (nuevo/eliminado)
+        existing_pids = list(self._row_refs.keys())
+        new_pids = [p.id for p in projects]
+
+        if existing_pids != new_pids:
+            # Solo reconstruye si la lista de proyectos cambió realmente
+            for w in self.proj_frame.winfo_children():
+                w.destroy()
+            self._row_refs = {}
+            for p in projects:
+                pid = p.id
+                count = sum(1 for t in tasks if t.project_id == pid)
+                self._project_row(pid, p.name, p.color, count)
+        else:
+            # Solo actualiza los contadores
+            for p in projects:
+                count = sum(1 for t in tasks if t.project_id == p.id)
+                if p.id in self._row_refs:
+                    self._row_refs[p.id].config(text=str(count))
+
 
     def _project_row(self, pid: str, name: str, color: str, count: int):
         f = tk.Frame(self.proj_frame, bg=C["sidebar"], cursor="hand2")
@@ -91,6 +106,7 @@ class Sidebar(tk.Frame):
         name_lbl.pack(side="left", padx=4)
         cnt_lbl.pack(side="right")
         edit_lbl.pack(side="right", padx=(0, 2))
+        self._row_refs[pid] = cnt_lbl
 
         def on_edit(e, _pid=pid):
             if any(p.id == _pid for p in self._current_projects):
@@ -109,11 +125,15 @@ class Sidebar(tk.Frame):
             for w in _ws:
                 w.config(bg=C["sidebar"])
             _edit.config(fg=C["muted"])
+        
+        def on_click(e, _pid=pid, _name=name):
+            on_leave(e)                    # 1. apaga el hover
+            self.on_filter(_pid, _name)
 
         for w in [f, row, dot, name_lbl, cnt_lbl]:
             w.bind("<Enter>", on_enter)
             w.bind("<Leave>", on_leave)
-            w.bind("<Button-1>", lambda e, _pid=pid, _name=name: self.on_filter(_pid, _name))
+            w.bind("<Button-1>", on_click)
 
         edit_lbl.bind("<Enter>", on_enter)
         edit_lbl.bind("<Leave>", on_leave)
