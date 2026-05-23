@@ -101,12 +101,12 @@ class TechPlexusSplash(tk.Toplevel):
                 if abs(dx) < 2 and abs(dy) < 2:
                     frag["finished"] = True
 
-        limit = min(25, len(active_centers))
+        limit = min(50, len(active_centers)) # < Se incrementa el tiempo que dura el plexus max weight
         for i in range(limit):
             x1, y1 = active_centers[i]
             for j in range(i + 1, limit):
                 x2, y2 = active_centers[j]
-                if (x2 - x1)**2 + (y2 - y1)**2 < 10000: 
+                if (x2 - x1)**2 + (y2 - y1)**2 < 8000: # < Se incrementa el tiempo que dura el plexus ,min weight
                     self.canvas.create_line(x1, y1, x2, y2, fill=C["accent_dk"], tags="plexus_line")
 
         porcentaje = min(100, int((self.frame / self.max_frames) * 100))
