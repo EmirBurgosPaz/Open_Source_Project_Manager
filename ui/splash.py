@@ -27,16 +27,16 @@ class TechPlexusSplash(tk.Toplevel):
         
         # --- Dibujo del fondo ---
         for i in range(0, self.w, 40):
-            self.canvas.create_line(i, 0, i, self.h, fill="#1F1F26")
+            self.canvas.create_line(i, 0, i, self.h, fill=C["splash_bg"])
         for i in range(0, self.h, 40):
-            self.canvas.create_line(0, i, self.w, i, fill="#1F1F26")
+            self.canvas.create_line(0, i, self.w, i, fill=C["splash_bg"])
             
         self.core_x, self.core_y = 250, 225
         self.canvas.create_oval(self.core_x-130, self.core_y-130, self.core_x+130, self.core_y+130, outline=C["border"], dash=(4, 4))
         self.canvas.create_oval(self.core_x-80, self.core_y-80, self.core_x+80, self.core_y+80, outline=C["accent_dk"], width=2)
         
         # --- Fragmentos ---
-        self.num_fragments = 70
+        self.num_fragments = 100
         self.fragments = []
         for i in range(self.num_fragments):
             size = random.randint(4, 12)
@@ -106,7 +106,7 @@ class TechPlexusSplash(tk.Toplevel):
             x1, y1 = active_centers[i]
             for j in range(i + 1, limit):
                 x2, y2 = active_centers[j]
-                if (x2 - x1)**2 + (y2 - y1)**2 < 4900: 
+                if (x2 - x1)**2 + (y2 - y1)**2 < 10000: 
                     self.canvas.create_line(x1, y1, x2, y2, fill=C["accent_dk"], tags="plexus_line")
 
         porcentaje = min(100, int((self.frame / self.max_frames) * 100))
