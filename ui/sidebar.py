@@ -36,6 +36,7 @@ class Sidebar(tk.Frame):
         self.proj_frame.pack(fill="x")
         self._nav_item(self, "◉", "Todos", lambda e: self.on_filter("all"))
         self._row_refs = {}
+        self._row_meta = {}
 
     # ── Estructura fija ───────────────────────────────────────────────────────
 
@@ -65,27 +66,32 @@ class Sidebar(tk.Frame):
 
     def rebuild(self, projects: list, tasks: list):
         self._current_projects = projects
-
-        # Solo actualiza si los proyectos cambiaron (nuevo/eliminado)
+    
         existing_pids = list(self._row_refs.keys())
         new_pids = [p.id for p in projects]
-
-        if existing_pids != new_pids:
-            # Solo reconstruye si la lista de proyectos cambió realmente
+    
+        # Detecta cambios en IDs, nombres o colores
+        projects_changed = existing_pids != new_pids or any(
+            p.name != self._row_meta.get(p.id, {}).get("name") or
+            p.color != self._row_meta.get(p.id, {}).get("color")
+            for p in projects
+        )
+    
+        if projects_changed:
             for w in self.proj_frame.winfo_children():
                 w.destroy()
             self._row_refs = {}
+            self._row_meta = {}
             for p in projects:
-                pid = p.id
-                count = sum(1 for t in tasks if t.project_id == pid)
-                self._project_row(pid, p.name, p.color, count)
+                count = sum(1 for t in tasks if t.project_id == p.id)
+                self._project_row(p.id, p.name, p.color, count)
+                self._row_meta[p.id] = {"name": p.name, "color": p.color}
         else:
-            # Solo actualiza los contadores
             for p in projects:
                 count = sum(1 for t in tasks if t.project_id == p.id)
                 if p.id in self._row_refs:
                     self._row_refs[p.id].config(text=str(count))
-
+    
 
     def _project_row(self, pid: str, name: str, color: str, count: int):
         f = tk.Frame(self.proj_frame, bg=C["sidebar"], cursor="hand2")
