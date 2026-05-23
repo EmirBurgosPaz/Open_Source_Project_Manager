@@ -128,31 +128,31 @@ class ReportWindow(tk.Toplevel):
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("TCombobox",
-                        fieldbackground=C["panel"],
-                        background=C["panel"],
-                        foreground=C["text"],
-                        arrowcolor=C["muted"],
-                        bordercolor=C["border"],
-                        selectbackground=C["dlg_input"],
-                        selectforeground=C["text"],          # ← antes era C["panel"] (invisible)
-                        insertcolor=C["text"],
-                        padding=(6, 4))
+                fieldbackground=C["panel"],
+                background=C["panel"],
+                foreground=C["text"],
+                arrowcolor=C["muted"],
+                bordercolor=C["border"],
+                selectbackground=C["dlg_input"],
+                selectforeground=C["text"],          # ← antes era C["panel"] (invisible)
+                insertcolor=C["text"],
+                padding=(6, 4))
 
         style.map("TCombobox",
-                  fieldbackground=[("readonly", C["dlg_input"]),
-                                   ("active",   C["panel"]),    # ← nuevo
-                                   ("focus",    C["panel"])],   # ← antes era accent (muy oscuro)
-                  background=[("active",   C["hover"]),         # ← fondo del botón flecha
-                              ("pressed",  C["accent_dk"])],
-                  foreground=[("readonly", C["text"]),
-                              ("active",   C["text"]),
-                              ("disabled", C["disabled_fg"])],
-                  selectbackground=[("readonly", C["dlg_input"]),
-                                    ("focus",    C["dlg_input"])],
-                  selectforeground=[("readonly", C["text"]),
-                                    ("focus",    C["text"])],
-                  bordercolor=[("focus",   C["accent"]),
-                               ("!focus",  C["border"])])       # ← antes era accent siempre
+          fieldbackground=[("readonly", C["dlg_input"]),
+                           ("active",   C["panel"]),    # ← nuevo
+                           ("focus",    C["panel"])],   # ← antes era accent (muy oscuro)
+          background=[("active",   C["hover"]),         # ← fondo del botón flecha
+                      ("pressed",  C["accent_dk"])],
+          foreground=[("readonly", C["text"]),
+                      ("active",   C["text"]),
+                      ("disabled", C["disabled_fg"])],
+          selectbackground=[("readonly", C["dlg_input"]),
+                            ("focus",    C["dlg_input"])],
+          selectforeground=[("readonly", C["text"]),
+                            ("focus",    C["text"])],
+          bordercolor=[("focus",   C["accent"]),
+                       ("!focus",  C["border"])])       # ← antes era accent siempre
 
         # Proyecto
         projects = self.task_service.projects

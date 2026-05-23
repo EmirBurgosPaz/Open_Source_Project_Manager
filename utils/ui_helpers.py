@@ -13,24 +13,40 @@ def make_dark_combobox(parent, values: list, default: str) -> tuple[tk.StringVar
     style = ttk.Style()
     style.theme_use("clam")
     style.configure("Dark.TCombobox",
-                    fieldbackground=C["dlg_input"],
-                    background=C["dlg_input"],
-                    foreground=C["text"],
-                    arrowcolor=C["muted"],
-                    bordercolor=C["dlg_border"],
-                    lightcolor=C["dlg_input"],
-                    darkcolor=C["dlg_input"])
+                fieldbackground=C["dlg_input"],
+                background=C["border"],
+                foreground=C["text"],
+                arrowcolor=C["muted"],
+                bordercolor=C["border"],
+                lightcolor=C["dlg_input"],
+                darkcolor=C["dlg_input"],
+                selectbackground=C["dlg_input"],   # ← mismo color que el campo
+                selectforeground=C["text"],         # ← texto visible
+                insertcolor=C["text"])
+
     style.map("Dark.TCombobox",
           fieldbackground=[
-              ("readonly", C["dlg_input"])
+              ("readonly", C["border"]),
+              ("focus",    C["dlg_input"]),         # ← evita fondo negro al enfocar
+              ("active",   C["dlg_input"]),
           ],
           foreground=[
-              ("readonly", C["text"])
+              ("readonly", C["text"]),
+              ("active",   C["text"]),
+              ("disabled", C["disabled_fg"]),
+          ],
+          selectbackground=[
+              ("readonly", C["border"]),            # ← coincide con fieldbackground readonly
+              ("focus",    C["dlg_input"]),
+          ],
+          selectforeground=[
+              ("readonly", C["text"]),
+              ("focus",    C["text"]),
           ],
           bordercolor=[
-              ("focus", C["accent"]),                # ← solo el borde cambia
-          ],
-)
+              ("focus",  C["accent"]),
+              ("!focus", C["border"]),
+          ])
 
     var = tk.StringVar(value=default)
     cb  = ttk.Combobox(parent, textvariable=var, values=values,
