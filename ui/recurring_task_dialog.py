@@ -12,6 +12,9 @@ class RecurringTaskDialog(tk.Toplevel):
     def __init__(self, parent, task=None):
         super().__init__(parent)
         self.result = None
+
+        self.withdraw()
+
         self.title("Editar tarea" if task else "Nueva tarea recurrente")
         self.resizable(False, False)
         self.configure(bg=C["dlg_bg"])
@@ -25,7 +28,10 @@ class RecurringTaskDialog(tk.Toplevel):
         self.bind(KEYBOARD_KEYS["escape"], self._on_close)
 
         self.focus_set()
+
+        self.update_idletasks()
         center_window(self, parent)
+        self.deiconify()
 
     def _build(self, task):
         bg = C["dlg_bg"]

@@ -23,25 +23,33 @@ class TaskDialog(tk.Toplevel):
 
     def __init__(self, parent, projects: list, task: dict = None, default_status: str = "todo", default_project_id=None):
         super().__init__(parent)
+    
         self.result   = None
         self.projects = projects
         self.task     = task
         self.prio_var = None
         self.assign_var = None
         self.default_project_id = default_project_id
+    
+        # Ocultar ventana mientras se construye
+        self.withdraw()
+        
         self.title("Editar tarea" if task else "Nueva tarea")
         self.resizable(False, False)
         self.configure(bg=C["dlg_bg"])
+        self.transient(parent)
         self.grab_set()
-
+    
         self._build(task, default_status)
-
-        #~keyboard shortcuts
         self.bind(KEYBOARD_KEYS["enter"], self._on_save)
         self.bind(KEYBOARD_KEYS["escape"], self._on_close)
-
         self.e_title.focus()
+    
+        # Mostrar y centrar SOLO después de construir todo
+        self.update_idletasks()
         center_window(self, parent)
+        self.deiconify()
+
 
     # ── Construcción del formulario ───────────────────────────────────────────
 
