@@ -110,6 +110,8 @@ KEYBOARD_KEYS = {
     "new_task" : "<KeyPress-n>",
     "new_project" : "<KeyPress-p>",
     "new_recurring" : "<KeyPress-r>",
+    "members" : "<KeyPress-E>",
+    "report" : "<KeyPress-R>",
 }
 
 STATUS_COLORS = {

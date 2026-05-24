@@ -65,6 +65,10 @@ class ProjectManagerApp(tk.Tk):
         self.bind(KEYBOARD_KEYS["new_task"], self._new_task)
         self.bind(KEYBOARD_KEYS["new_project"], self._new_project)
         self.bind(KEYBOARD_KEYS["new_recurring"], self._new_recurring)
+
+        self.bind(KEYBOARD_KEYS["members"], self._manage_members)
+        self.bind(KEYBOARD_KEYS["report"], self._show_report)
+
         self.bind(KEYBOARD_KEYS["escape"], self._on_close)
         
         # Forzar un ciclo completo de actualización
