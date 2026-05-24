@@ -1,4 +1,4 @@
-# Proyecto Meyaj - Open source task manager (Version 1.3.0)
+# Proyecto Okeanos - Open source task manager (Version 1.3.0)
 
 ****
 
