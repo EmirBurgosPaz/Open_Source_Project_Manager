@@ -7,7 +7,9 @@ Ejecutar: python main.py
 """
 
 import tkinter as tk
-from tkinter import messagebox
+import os
+import sys
+import re
 from tkinter import messagebox
 from config import C, MEMBERS, KEYBOARD_KEYS
 from storage.json_repository import JsonRepository
@@ -20,10 +22,30 @@ from ui.task_list import  TaskList
 from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
-from ui.splash import TechPlexusSplash
+
 from ui.filter_bar import FilterBar
 from ui.report_window import ReportWindow
 
+from models.splash_config import SplashConfig
+from ui.splash_window import TechPlexusSplash
+
+README_FILE = "README.md"
+
+def get_current_version():
+    """Busca el número de versión dentro del README.md usando Regex."""
+    if not os.path.exists(README_FILE):
+        print(f"Error: No se encontró el archivo {README_FILE}.")
+        sys.exit(1)
+    
+    with open(README_FILE, "r", encoding="utf-8") as file:
+        content = file.read()
+        # Busca un patrón tipo 1.2.3 o v1.2.3
+        match = re.search(r'(\d+\.\d+\.\d+)', content)
+        if match:
+            return match.group(1)
+        else:
+            print("Error: No se encontró un número de versión (x.x.x) en el README.md")
+            sys.exit(1)
 
 
 class ProjectManagerApp(tk.Tk):
@@ -75,7 +97,15 @@ class ProjectManagerApp(tk.Tk):
         self.update()
         self.update_idletasks()
         
-        splash = TechPlexusSplash(self)
+
+        splash = TechPlexusSplash(
+                    parent=self,
+                    config=SplashConfig(),
+                    colors=C,  # Tu diccionario de config
+                    app_name="Gestor de tareas",
+                    version=get_current_version(),
+                    author="Información"
+                )
 
         self.wait_window(splash)
         
@@ -336,7 +366,7 @@ class ProjectManagerApp(tk.Tk):
 
     # ── Acciones: Reporte ─────────────────────────────────────────────────────
 
-    def _show_report(self):
+    def _show_report(self, event=None):
         
         ReportWindow(self, self.task_service)
 
@@ -349,7 +379,7 @@ class ProjectManagerApp(tk.Tk):
         self._show_normal_tasks_view()
         self.refresh()
 
-    def _manage_members(self):
+    def _manage_members(self, event=None):
         dlg = MembersDialog(self, self.task_service.members)
         self.wait_window(dlg)
         self.task_service.save_members(dlg.members)
