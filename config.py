@@ -112,6 +112,8 @@ KEYBOARD_KEYS = {
     "new_recurring" : "<KeyPress-r>",
     "members" : "<KeyPress-E>",
     "report" : "<KeyPress-R>",
+    "recurring" : "<KeyPress-M>",
+    "task" : "<KeyPress-T>",
 }
 
 STATUS_COLORS = {

@@ -90,6 +90,8 @@ class ProjectManagerApp(tk.Tk):
 
         self.bind(KEYBOARD_KEYS["members"], self._manage_members)
         self.bind(KEYBOARD_KEYS["report"], self._show_report)
+        self.bind(KEYBOARD_KEYS["recurring"], self._show_recurring_tasks_view)
+        self.bind(KEYBOARD_KEYS["task"], self._show_normal_tasks_view)
 
         self.bind(KEYBOARD_KEYS["escape"], self._on_close)
         
@@ -269,7 +271,7 @@ class ProjectManagerApp(tk.Tk):
         self.task_service.reorder(src_id, tgt_id)
 
 
-    def _show_normal_tasks_view(self):
+    def _show_normal_tasks_view(self, event = None):
         """Oculta las tareas recurrentes y vuelve a la vista normal."""
         self.btn_nueva_recurrente.pack_forget() 
         self.btn_nueva_tarea.pack(side="right", padx=16)
@@ -312,7 +314,7 @@ class ProjectManagerApp(tk.Tk):
         for w in self.task_list.winfo_children():
             w.destroy()
     
-    def _show_recurring_tasks_view(self):
+    def _show_recurring_tasks_view(self, event = None):
         """Oculta las tareas normales y muestra las recurrentes."""
         self.task_list.pack_forget()
         self.filter_bar.pack_forget()
