@@ -103,17 +103,28 @@ STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area"
 CATEGORY_OPTIONS = ["Automatico", "Manual"]
 
 KEYBOARD_KEYS = {
-    "enter": "<Return>",
-    "escape": "<Escape>",
-    "space": "<space>",
-    "tab" : "<KeyPress-Tab>",
-    "new_task" : "<KeyPress-n>",
-    "new_project" : "<KeyPress-p>",
-    "new_recurring" : "<KeyPress-r>",
-    "members" : "<KeyPress-E>",
-    "report" : "<KeyPress-R>",
-    "recurring" : "<KeyPress-M>",
-    "task" : "<KeyPress-T>",
+    "enter": "<Return>", 
+    "escape": "<Escape>", 
+    "space": "<space>", # ignorar
+    "tab" : "<KeyPress-Tab>", # Ignorar 
+    "new_task" : "<KeyPress-n>",  #Nueva tarea
+    "new_project" : "<KeyPress-p>", # Nuevo proyecto
+    "new_recurring" : "<KeyPress-r>", # Nueva tarea recurrente
+    "members" : "<KeyPress-E>", # pestaña miembros
+    "report" : "<KeyPress-R>", # Pestaña reportes
+    "recurring" : "<KeyPress-M>", # Pestaña recurrentes
+    "task" : "<KeyPress-T>", # pestaña Tareas
+}
+
+KEYBIND_DESCRIPTIONS = {
+    "new_task":      "Nueva tarea",
+    "new_project":   "Nuevo proyecto",
+    "new_recurring": "Nueva tarea recurrente",
+    "members":       "Gestionar miembros",
+    "report":        "Ver reportes",
+    "recurring":     "Vista recurrentes",
+    "task":          "Vista tareas",
+    "escape":        "Cerrar ventana",
 }
 
 STATUS_COLORS = {

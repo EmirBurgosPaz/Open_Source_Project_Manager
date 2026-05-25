@@ -5,8 +5,32 @@ Widgets genéricos que no dependen de la lógica de negocio.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, KEYBOARD_KEYS
+from config import C, KEYBOARD_KEYS, KEYBIND_DESCRIPTIONS  
 
+_SKIP = {"enter", "space", "tab"}
+
+def _parse_key(tk_binding: str) -> str:
+    s = tk_binding.strip("<>")
+    s = s.replace("KeyPress-", "")
+    aliases = {
+        "Escape": "Esc",
+        "Return": "Enter",
+        "space":  "Space",
+        "Tab":    "Tab",
+    }
+    return aliases.get(s, s.upper())
+
+
+def _build_keybind_rows() -> list[tuple[str, str]]:
+    """Devuelve lista de (tecla_legible, descripción) para las acciones con descripción."""
+    rows = []
+    for action, desc in KEYBIND_DESCRIPTIONS.items():
+        if action in _SKIP:
+            continue
+        binding = KEYBOARD_KEYS.get(action)
+        if binding:
+            rows.append((_parse_key(binding), desc))
+    return rows
 
 def make_dark_combobox(parent, values: list, default: str) -> tuple[tk.StringVar, ttk.Combobox]:
     """Crea un Combobox con el tema oscuro. Devuelve (variable, widget)."""
@@ -146,4 +170,130 @@ class Tooltip:
         if self.tip:
             self.tip.destroy()
             self.tip = None
+
+
+class KeybindsHelp:
+    """
+    Botón circular '?' que muestra un panel flotante con todos los keybinds.
+    Uso:
+        help_btn = KeybindsHelp(parent_frame)
+        help_btn.pack(side="right", padx=8)
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self._panel = None
+
+        # Botón circular azul con '?'
+        self.btn = tk.Label(
+            parent,
+            text="?",
+            bg=C["accent"],
+            fg="white",
+            font=("Helvetica", 11, "bold"),
+            width=2,
+            height=1,
+            relief="flat",
+            cursor="hand2",
+        )
+        # Hacerlo lucir circular con un poco de padding
+        self.btn.configure(padx=4, pady=2)
+
+        self.btn.bind("<Button-1>", self._toggle)
+        self.btn.bind("<Enter>",    self._on_enter)
+        self.btn.bind("<Leave>",    self._on_leave)
+
+    def pack(self, **kwargs):
+        self.btn.pack(**kwargs)
+
+    def grid(self, **kwargs):
+        self.btn.grid(**kwargs)
+
+    # ── Hover visual ──────────────────────────────────────────────────────────
+
+    def _on_enter(self, e):
+        self.btn.config(bg=C.get("accent_hover", C["accent"]))
+
+    def _on_leave(self, e):
+        self.btn.config(bg=C["accent"])
+
+    # ── Panel flotante ────────────────────────────────────────────────────────
+
+    def _toggle(self, e=None):
+        if self._panel and self._panel.winfo_exists():
+            self._panel.destroy()
+            self._panel = None
+            return
+        self._show_panel()
+
+    def _show_panel(self):
+        # Posición: justo debajo del botón
+        x = self.btn.winfo_rootx() - 220   # alineado a la izquierda del botón
+        y = self.btn.winfo_rooty() + self.btn.winfo_height() + 6
+
+        panel = tk.Toplevel(self.btn)
+        panel.wm_overrideredirect(True)
+        panel.wm_geometry(f"+{x}+{y}")
+        panel.config(bg=C["border"])          # borde fino de 1px via padding
+        self._panel = panel
+
+        # Cerrar si se hace clic fuera
+        panel.bind("<FocusOut>", lambda e: self._close_panel())
+        panel.focus_set()
+
+        inner = tk.Frame(panel, bg=C["panel"], padx=14, pady=10)
+        inner.pack(padx=1, pady=1)
+
+        # Título
+        tk.Label(
+            inner,
+            text="Atajos de teclado",
+            bg=C["panel"],
+            fg=C["text"],
+            font=("Helvetica", 11, "bold"),
+        ).grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 8))
+
+        # Separador
+        tk.Frame(inner, bg=C["border"], height=1).grid(
+            row=1, column=0, columnspan=3, sticky="ew", pady=(0, 8)
+        )
+
+        # Filas de keybinds
+        for i, (shortcut, desc) in enumerate(_build_keybind_rows(), start=2):
+    # ... mismo código de grid que antes
+            # Tecla con estilo "badge"
+            key_lbl = tk.Label(
+                inner,
+                text=shortcut,
+                bg=C.get("bg", "#2a2a2a"),
+                fg=C["text"],
+                font=("Courier", 10, "bold"),
+                relief="flat",
+                padx=6, pady=2,
+            )
+            key_lbl.grid(row=i, column=0, sticky="w", pady=2, padx=(0, 10))
+
+            # Flecha separadora
+            tk.Label(
+                inner,
+                text="→",
+                bg=C["panel"],
+                fg=C.get("muted", "#888"),
+                font=("Helvetica", 10),
+            ).grid(row=i, column=1, padx=(0, 8))
+
+            # Descripción
+            tk.Label(
+                inner,
+                text=desc,
+                bg=C["panel"],
+                fg=C["text"],
+                font=("Helvetica", 10),
+                anchor="w",
+            ).grid(row=i, column=2, sticky="w", pady=2)
+
+    def _close_panel(self):
+        if self._panel and self._panel.winfo_exists():
+            self._panel.destroy()
+            self._panel = None
     

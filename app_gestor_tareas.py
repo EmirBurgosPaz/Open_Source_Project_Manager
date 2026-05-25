@@ -22,6 +22,8 @@ from ui.task_list import  TaskList
 from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
+from utils.ui_helpers import KeybindsHelp
+
 
 from ui.filter_bar import FilterBar
 from ui.report_window import ReportWindow
@@ -143,6 +145,9 @@ class ProjectManagerApp(tk.Tk):
         self.stats_frame.pack(fill="x")
         tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
 
+        self.help_btn = KeybindsHelp(self.stats_frame)
+        self.help_btn.pack(side="right",padx=12, pady=8)
+
         # Topbar
         topbar = tk.Frame(main, bg=C["panel"], pady=10)
         topbar.pack(fill="x")
@@ -159,6 +164,7 @@ class ProjectManagerApp(tk.Tk):
                   padx=12, pady=5, cursor="hand2",
                   command=self._new_task)
         self.btn_nueva_tarea.pack(side="right", padx=16)
+
 
         #filtros
 
@@ -209,7 +215,8 @@ class ProjectManagerApp(tk.Tk):
 
     def _render_stats(self):
         for w in self.stats_frame.winfo_children():
-            w.destroy()
+            if w is not self.help_btn.btn:
+                w.destroy()
         s = self.task_service.get_stats()
         for label, val, color in [
             ("Total",          s["total"],        C["text"]),
