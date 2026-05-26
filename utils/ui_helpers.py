@@ -188,7 +188,7 @@ class KeybindsHelp:
         self.btn = tk.Label(
             parent,
             text="?",
-            bg=C["accent"],
+            bg=C["grid"],
             fg="white",
             font=("Helvetica", 11, "bold"),
             width=2,
@@ -212,10 +212,10 @@ class KeybindsHelp:
     # ── Hover visual ──────────────────────────────────────────────────────────
 
     def _on_enter(self, e):
-        self.btn.config(bg=C.get("accent_hover", C["accent"]))
+        self.btn.config(bg=C["accent"])
 
     def _on_leave(self, e):
-        self.btn.config(bg=C["accent"])
+        self.btn.config(bg=C["grid"])
 
     # ── Panel flotante ────────────────────────────────────────────────────────
 

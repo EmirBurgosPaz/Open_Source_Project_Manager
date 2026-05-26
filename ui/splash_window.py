@@ -2,7 +2,7 @@
 """Splash screen modular con efecto plexus."""
 from __future__ import annotations
 import tkinter as tk
-from typing import List, Optional
+from typing import List
 from dataclasses import dataclass
 from models.splash_config  import SplashConfig
 from utils.fragment_splash import FragmentSplash

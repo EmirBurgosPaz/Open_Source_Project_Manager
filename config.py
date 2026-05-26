@@ -69,6 +69,7 @@ C = {
     "muted":     "#7A7A8A",
     "accent":    "#7C6FE0",
     "accent_dk": "#5A4FBA",
+    "accent_hover" : "#5599ff" ,
     "hover":     "#2A2A36",
     "row_alt":   "#1F1F26",
     "dlg_bg":    "#1E1E26",
