@@ -18,7 +18,7 @@ def _parse_key(tk_binding: str) -> str:
         "space":  "Space",
         "Tab":    "Tab",
     }
-    return aliases.get(s, s.upper())
+    return aliases.get(s, s)
 
 
 def _build_keybind_rows() -> list[tuple[str, str]]:
