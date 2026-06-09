@@ -297,3 +297,18 @@ class KeybindsHelp:
             self._panel.destroy()
             self._panel = None
     
+
+
+TEXT_WIDGETS = (tk.Entry, tk.Text, ttk.Entry, ttk.Combobox)
+
+def guard_typing(callback):
+    """
+    Decorador/wrapper para keybinds.
+    El callback solo se ejecuta si el foco NO está en un widget de texto.
+    """
+    def wrapper(event=None):
+        focused = event.widget.winfo_toplevel().focus_get() if event else None
+        if isinstance(focused, TEXT_WIDGETS):
+            return  # no interceptar — dejar comportamiento default del widget
+        return callback(event)
+    return wrapper

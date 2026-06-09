@@ -23,6 +23,8 @@ from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
 from utils.ui_helpers import KeybindsHelp
+from utils.ui_helpers import guard_typing
+
 
 
 from ui.filter_bar import FilterBar
@@ -32,6 +34,7 @@ from models.splash_config import SplashConfig
 from ui.splash_window import TechPlexusSplash
 
 README_FILE = "README.md"
+
 
 def get_current_version():
     """Busca el número de versión dentro del README.md usando Regex."""
@@ -86,16 +89,16 @@ class ProjectManagerApp(tk.Tk):
         self._build_layout()
         self.refresh()
         
-        self.bind(KEYBOARD_KEYS["new_task"], self._new_task)
-        self.bind(KEYBOARD_KEYS["new_project"], self._new_project)
-        self.bind(KEYBOARD_KEYS["new_recurring"], self._new_recurring)
+        self.bind(KEYBOARD_KEYS["new_task"], guard_typing(self._new_task))
+        self.bind(KEYBOARD_KEYS["new_project"], guard_typing(self._new_project))
+        self.bind(KEYBOARD_KEYS["new_recurring"], guard_typing(self._new_recurring))
 
-        self.bind(KEYBOARD_KEYS["members"], self._manage_members)
-        self.bind(KEYBOARD_KEYS["report"], self._show_report)
-        self.bind(KEYBOARD_KEYS["recurring"], self._show_recurring_tasks_view)
-        self.bind(KEYBOARD_KEYS["task"], self._show_normal_tasks_view)
+        self.bind(KEYBOARD_KEYS["members"], guard_typing(self._manage_members))
+        self.bind(KEYBOARD_KEYS["report"], guard_typing(self._show_report))
+        self.bind(KEYBOARD_KEYS["recurring"], guard_typing(self._show_recurring_tasks_view))
+        self.bind(KEYBOARD_KEYS["task"], guard_typing(self._show_normal_tasks_view))
 
-        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
+        self.bind(KEYBOARD_KEYS["escape"], guard_typing(self._on_close))
         
         # Forzar un ciclo completo de actualización
         self.update()
@@ -197,6 +200,7 @@ class ProjectManagerApp(tk.Tk):
     # ── Refresh ───────────────────────────────────────────────────────────────
 
     def refresh(self):
+
         projects = self.project_service.get_all()
         tasks    = self.task_service.get_all()
         visible  = (tasks if not self.filter_project
