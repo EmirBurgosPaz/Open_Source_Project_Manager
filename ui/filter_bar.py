@@ -99,12 +99,11 @@ class FilterBar(tk.Frame):
     def _combo(self, values, var):
         style = ttk.Style()
         
-        # 1. FORZAR UN TEMA PERMISIVO
-        # El tema 'clam' permite modificar los fondos en todos los sistemas operativos.
+
         if "clam" in style.theme_names():
             style.theme_use("clam")
 
-        # 2. CONFIGURAR LA CAJA PRINCIPAL
+
         style.configure("Filter.TCombobox",
                         fieldbackground=C["dlg_input"],
                         background=C["panel"], # Fondo exterior
@@ -124,8 +123,7 @@ class FilterBar(tk.Frame):
                   bordercolor=[("focus",   C["accent"]), # Brilla con el color acento
                                ("!focus",  C["dlg_border"])])
 
-        # 3. EL TRUCO PARA EL MENÚ DESPLEGABLE
-        # Le decimos a Tkinter globalmente que pinte las listas de los Combobox
+
         self.option_add("*TCombobox*Listbox.background", C["dlg_input"])
         self.option_add("*TCombobox*Listbox.foreground", C["text"])
         self.option_add("*TCombobox*Listbox.selectBackground", C["accent"])
@@ -162,6 +160,7 @@ class FilterBar(tk.Frame):
 
     def get_filters(self) -> dict:
         return {
+            "client":   self.client_var.get().strip().lower(),
             "search":   self.search_var.get().strip().lower(),
             "status":   self.status_var.get(),
             "priority": self.prio_var.get(),

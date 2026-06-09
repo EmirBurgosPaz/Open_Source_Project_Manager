@@ -161,7 +161,7 @@ class TaskService:
         
 
         if filters.get("client"):
-            result = [t for t in result if filters["client"] in t.title.lower()]
+            result = [t for t in result if filters["client"] in t.client.lower()]
 
         if filters.get("search"):
             result = [t for t in result if filters["search"] in t.title.lower()]
