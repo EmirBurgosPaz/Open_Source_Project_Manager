@@ -284,6 +284,7 @@ class ProjectManagerApp(tk.Tk):
 
     def _show_normal_tasks_view(self, event = None):
         """Oculta las tareas recurrentes y vuelve a la vista normal."""
+        self.refresh()
         self.btn_nueva_recurrente.pack_forget() 
         self.btn_nueva_tarea.pack(side="right", padx=16)
         self.recurring_list.pack_forget()
