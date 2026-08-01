@@ -5,7 +5,7 @@ Widgets genéricos que no dependen de la lógica de negocio.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, KEYBOARD_KEYS, KEYBIND_DESCRIPTIONS  
+from config import C, KEYBOARD_KEYS, KEYBIND_requesterS  
 
 _SKIP = {"enter", "space", "tab"}
 
@@ -24,7 +24,7 @@ def _parse_key(tk_binding: str) -> str:
 def _build_keybind_rows() -> list[tuple[str, str]]:
     """Devuelve lista de (tecla_legible, descripción) para las acciones con descripción."""
     rows = []
-    for action, desc in KEYBIND_DESCRIPTIONS.items():
+    for action, desc in KEYBIND_requesterS.items():
         if action in _SKIP:
             continue
         binding = KEYBOARD_KEYS.get(action)

@@ -570,7 +570,7 @@ class ReportWindow(tk.Toplevel):
                 t.assign or "—",
                 t.due or "—",
                 getattr(t, "client", "") or "—",
-                getattr(t, "description", "") or "",
+                getattr(t, "requester", "") or "",
             ]
             for col_idx, val in enumerate(row_data, 1):
                 cell = ws.cell(row=row_idx, column=col_idx, value=val)
