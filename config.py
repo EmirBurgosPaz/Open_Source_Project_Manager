@@ -19,15 +19,15 @@ DEFAULT_PROJECTS = [
 ]
 
 DEFAULT_TASKS = [
-    {"id": 1,  "title": "Diseño de pantallas de onboarding", "status": "progress", "project": "p1", "priority": "Alta",  "assign": "Ana R.",    "due": "2026-05-15", "description": ""},
-    {"id": 2,  "title": "Integración con Firebase Auth",      "status": "progress", "project": "p1", "priority": "Alta",  "assign": "Carlos M.", "due": "2026-05-18", "description": ""},
-    {"id": 3,  "title": "Componente de búsqueda global",      "status": "todo",     "project": "p2", "priority": "Media", "assign": "Laura P.",  "due": "2026-05-20", "description": ""},
-    {"id": 4,  "title": "Optimización de imágenes WebP",      "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-10", "description": ""},
-    {"id": 5,  "title": "Endpoint de pagos con Stripe",       "status": "review",   "project": "p3", "priority": "Alta",  "assign": "Jorge G.",  "due": "2026-05-14", "description": ""},
-    {"id": 6,  "title": "Tests de integración en CI/CD",      "status": "todo",     "project": "p3", "priority": "Media", "assign": "Carlos M.", "due": "2026-05-22", "description": ""},
-    {"id": 7,  "title": "Documentación de la API REST",       "status": "backlog",  "project": "p3", "priority": "Baja",  "assign": "Laura P.",  "due": "2026-05-30", "description": ""},
-    {"id": 8,  "title": "Push notifications iOS",             "status": "backlog",  "project": "p1", "priority": "Media", "assign": "Jorge G.",  "due": "2026-05-28", "description": ""},
-    {"id": 9,  "title": "Rediseño del footer",                "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-08", "description": "", "client":""},
+    {"id": 1,  "title": "Diseño de pantallas de onboarding", "status": "progress", "project": "p1", "priority": "Alta",  "assign": "Ana R.",    "due": "2026-05-15", "requester": ""},
+    {"id": 2,  "title": "Integración con Firebase Auth",      "status": "progress", "project": "p1", "priority": "Alta",  "assign": "Carlos M.", "due": "2026-05-18", "requester": ""},
+    {"id": 3,  "title": "Componente de búsqueda global",      "status": "todo",     "project": "p2", "priority": "Media", "assign": "Laura P.",  "due": "2026-05-20", "requester": ""},
+    {"id": 4,  "title": "Optimización de imágenes WebP",      "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-10", "requester": ""},
+    {"id": 5,  "title": "Endpoint de pagos con Stripe",       "status": "review",   "project": "p3", "priority": "Alta",  "assign": "Jorge G.",  "due": "2026-05-14", "requester": ""},
+    {"id": 6,  "title": "Tests de integración en CI/CD",      "status": "todo",     "project": "p3", "priority": "Media", "assign": "Carlos M.", "due": "2026-05-22", "requester": ""},
+    {"id": 7,  "title": "Documentación de la API REST",       "status": "backlog",  "project": "p3", "priority": "Baja",  "assign": "Laura P.",  "due": "2026-05-30", "requester": ""},
+    {"id": 8,  "title": "Push notifications iOS",             "status": "backlog",  "project": "p1", "priority": "Media", "assign": "Jorge G.",  "due": "2026-05-28", "requester": ""},
+    {"id": 9,  "title": "Rediseño del footer",                "status": "done",     "project": "p2", "priority": "Baja",  "assign": "Ana R.",    "due": "2026-05-08", "requester": "", "client":""},
 ]
 
 # ── Kanban columns ────────────────────────────────────────────────────────────
@@ -90,16 +90,38 @@ C = {
     "todo_fg": "#38BDF8",
     "high_bg": "#331E18",
     "high_fg": "#FF6B6B",
+    "selected_bg": "#2a2a3a",
     "white" : "#FFFFFF",
     "done_tasks" :  "#2ECC71",
     "progress_tasks" : "#E6A817",
     "priority_tasks" : "#E05555",
     "splash_bg" : "#1F1F26",
+    "medium_bg": "#241F10",
+      "medium_fg": "#E8B33D",
+"low_bg":    "#16232B",
+ "low_fg":    "#5599FF",
+"over_bg_1": "#241616",
+ "over_fg_1": "#E28080",
+"over_bg_2": "#2A1A1A",
+ "over_fg_2": "#E05555",
+"over_bg_3": "#3A0F0F",
+ "over_fg_3": "#FF4040",
+"soon_bg":   "#241F10", 
+"soon_fg":   "#D8B23A",
 }
 
 FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral"]
 
 STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area", "informacion"]
+
+POSITIONS_OPTIONS = [("Dueños", "Todo"),
+                      ("Direccion" , "Todo"),
+                        ("Subdireccion" , "Todo") ,
+                          ("Gerencias" , "Area"),
+                     ("Lideres" , "Area"),
+                     ("Auditorias", "Area"),
+                     ("Empleados" , "Puntual"),
+                     ("Externos" , "Autorizacion"),]
 
 CATEGORY_OPTIONS = ["Automatico", "Manual"]
 
@@ -117,7 +139,7 @@ KEYBOARD_KEYS = {
     "task" : "<KeyPress-T>", # pestaña Tareas
 }
 
-KEYBIND_DESCRIPTIONS = {
+KEYBIND_requesterS = {
     "new_task":      "Nueva tarea",
     "new_project":   "Nuevo proyecto",
     "new_recurring": "Nueva tarea recurrente",
