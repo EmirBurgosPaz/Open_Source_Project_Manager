@@ -70,9 +70,12 @@ class TaskService:
             priority    = data["priority"],
             assign      = data["assign"],
             due         = data["due"],
-            description = data.get("description", ""),
+            requester = data.get("requester", ""),
             client = data.get("client", ""),
             created     = data.get("created", ""),
+            authorization= data.get("authorization",""),
+            position= data.get("position",""),
+            type_request= data.get("type_request",""),
         )
         self.next_id += 1
         self.tasks.append(task)
@@ -100,8 +103,11 @@ class TaskService:
         task.priority    = data["priority"]
         task.assign      = data["assign"]
         task.due         = data["due"]
-        task.description = data.get("description", "")
+        task.requester = data.get("requester", "")
         task.client = data.get("client", "")
+        task.position = data.get("position", "")
+        task.authorization = data.get("authorization", "")
+        task.type_request = data.get("type_request", "")
         self._persist()
         return task
 
@@ -121,9 +127,13 @@ class TaskService:
             priority        = original.priority,
             assign          = original.assign,
             due             = original.due,
-            description     = original.description,
+            requester     = original.requester,
             client = original.client,
             created         = original.created,
+            position = original.position,
+            authorization         = original.authorization,
+            type_request         = original.type_request,
+
         )
         self.next_id += 1
         self.tasks.append(task)
@@ -141,7 +151,7 @@ class TaskService:
     @staticmethod
     def _validate(data: dict):
         if not data.get("title", "").strip():
-            raise ValueError("El título no puede estar vacío.")
+            raise ValueError("El texto de solicitud no puede estar vacío.")
         try:
             datetime.strptime(data["due"].strip(), "%Y-%m-%d")
         except (ValueError, KeyError):

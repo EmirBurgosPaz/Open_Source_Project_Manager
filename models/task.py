@@ -17,8 +17,11 @@ class Task:
     priority: str     = "Media"      # Alta | Media | Baja
     assign: str       = ""
     due: str          = ""           # "YYYY-MM-DD"
-    description: str  = ""
+    requester: str  = ""
     client: str  = ""
+    position: str = ""
+    authorization: str = ""
+    type_request: str = ""
     created: str      = field(default_factory=lambda: str(date.today()))
     completed_at: Optional[str] = None
 
@@ -31,10 +34,13 @@ class Task:
             "priority":    self.priority,
             "assign":      self.assign,
             "due":         self.due,
-            "description": self.description,
+            "requester": self.requester,
             "client": self.client,
             "created":     self.created,
             "completed_at":     self.completed_at,
+            "position" : self.position,
+            "authorization": self.authorization,
+            "type_request": self.type_request,
         }
 
     @staticmethod
@@ -47,8 +53,12 @@ class Task:
             priority    = d.get("priority", "Media"),
             assign      = d.get("assign", ""),
             due         = d.get("due", ""),
-            description = d.get("description", ""),
+            requester = d.get("requester", ""),
             client = d.get("client", ""),
             created     = d.get("created", str(date.today())),
             completed_at     = d.get("completed_at", None),
+            position = d.get("position", ""),
+            authorization = d.get("authorization", ""),
+            type_request = d.get("type_request", ""),
+
         )
