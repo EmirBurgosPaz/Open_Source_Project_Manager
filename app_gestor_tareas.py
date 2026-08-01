@@ -1,6 +1,6 @@
 """
 main.py — Punto de entrada de Project Manager.
-Solo orquesta: conecta servicios con la UI.
+Orquesta la conexión entre servicios y la UI.
 No contiene lógica de negocio ni widgets complejos.
 
 Ejecutar: python main.py
@@ -13,38 +13,31 @@ import re
 from tkinter import messagebox
 from config import C, MEMBERS, KEYBOARD_KEYS
 from storage.json_repository import JsonRepository
-from services.task_service import TaskService 
-from services.project_service import ProjectService 
-from ui.project_dialog import  ProjectDialog
+from services.task_service import TaskService
+from services.project_service import ProjectService
+from ui.project_dialog import ProjectDialog
 from ui.task_dialog import TaskDialog
-from ui.sidebar import  Sidebar
-from ui.task_list import  TaskList
+from ui.sidebar import Sidebar
+from ui.task_list import TaskList
 from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
-from utils.ui_helpers import KeybindsHelp
-from utils.ui_helpers import guard_typing
-
-
-
+from utils.ui_helpers import KeybindsHelp, guard_typing
 from ui.filter_bar import FilterBar
 from ui.report_window import ReportWindow
-
 from models.splash_config import SplashConfig
 from ui.splash_window import TechPlexusSplash
 
 README_FILE = "README.md"
-
 
 def get_current_version():
     """Busca el número de versión dentro del README.md usando Regex."""
     if not os.path.exists(README_FILE):
         print(f"Error: No se encontró el archivo {README_FILE}.")
         sys.exit(1)
-    
+
     with open(README_FILE, "r", encoding="utf-8") as file:
         content = file.read()
-        # Busca un patrón tipo 1.2.3 o v1.2.3
         match = re.search(r'(\d+\.\d+\.\d+)', content)
         if match:
             return match.group(1)
@@ -52,161 +45,163 @@ def get_current_version():
             print("Error: No se encontró un número de versión (x.x.x) en el README.md")
             sys.exit(1)
 
-
 class ProjectManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         
         self.title("Task Manager")
-        
-        app_width = 1550
-        app_height = 880
-        
+        app_width, app_height = 1550, 880
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        
         x = (screen_width // 2) - (app_width // 2)
         y = (screen_height // 2) - (app_height // 2)
         
         self.geometry(f"{app_width}x{app_height}+{x}+{y}")
         self.configure(bg=C["bg"])
         self.minsize(800, 500)
-        
-        # --- NUEVO: Configuración crítica para eliminar flashes ---
+
+        # --- Configuración para una apertura sin parpadeos ---
         self.attributes('-alpha', 0)
         self.withdraw()
-        
-        # Servicios
+
+        # --- Inicialización de Servicios ---
         repo = JsonRepository()
         self.task_service = TaskService(repo)
         self.project_service = ProjectService(repo, self.task_service)
         MEMBERS[:] = self.task_service.members
-        
+
         self.filter_project: str | None = None
         self.current_project_id = None
-        
-        # Construir interfaz
+
+        # --- Construcción de la UI ---
         self._build_layout()
         self.refresh()
-        
+
+        # --- Atajos de Teclado ---
         self.bind(KEYBOARD_KEYS["new_task"], guard_typing(self._new_task))
         self.bind(KEYBOARD_KEYS["new_project"], guard_typing(self._new_project))
         self.bind(KEYBOARD_KEYS["new_recurring"], guard_typing(self._new_recurring))
-
         self.bind(KEYBOARD_KEYS["members"], guard_typing(self._manage_members))
         self.bind(KEYBOARD_KEYS["report"], guard_typing(self._show_report))
         self.bind(KEYBOARD_KEYS["recurring"], guard_typing(self._show_recurring_tasks_view))
         self.bind(KEYBOARD_KEYS["task"], guard_typing(self._show_normal_tasks_view))
-
         self.bind(KEYBOARD_KEYS["escape"], guard_typing(self._on_close))
-        
-        # Forzar un ciclo completo de actualización
+
         self.update()
         self.update_idletasks()
-        
 
+        # --- Pantalla de Bienvenida (Splash) ---
         splash = TechPlexusSplash(
-                    parent=self,
-                    config=SplashConfig(),
-                    colors=C,  # Tu diccionario de config
-                    app_name="Gestor de tareas",
-                    version=get_current_version(),
-                    author="Información"
-                )
-
+            parent=self,
+            config=SplashConfig(),
+            colors=C,
+            app_name="Gestor de Tareas",
+            version=get_current_version(),
+            author="Informacion"
+        )
         self.wait_window(splash)
-        
-        # --- Mostrar todo perfectamente renderizado ---
+
+        # --- Mostrar la ventana principal ---
         self.attributes('-alpha', 1)
         self.deiconify()
         self.lift()
         self.focus_force()
 
     # ── Layout ───────────────────────────────────────────────────────────────
-
     def _build_layout(self):
         # Sidebar
         self.sidebar = Sidebar(
             self,
-            on_filter       = self._on_filter,
-            on_new_project  = self._new_project,
-            on_edit_project = self._edit_project,
-            on_report       = self._show_report,
-            on_members      = self._manage_members,
-            on_master_tasks  = self._show_master_tasks,
+            on_filter=self._on_filter,
+            on_new_project=self._new_project,
+            on_edit_project=self._edit_project,
+            on_report=self._show_report,
+            on_members=self._manage_members,
+            on_master_tasks=self._show_master_tasks,
         )
         self.sidebar.pack(side="left", fill="y")
-        
-        
 
         # Panel principal
         main = tk.Frame(self, bg=C["bg"])
         main.pack(side="left", fill="both", expand=True)
 
-        # Stats bar
+        # Barra de estadísticas
         self.stats_frame = tk.Frame(main, bg=C["panel"])
         self.stats_frame.pack(fill="x")
         tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
 
+        # Botón de ayuda
         self.help_btn = KeybindsHelp(self.stats_frame)
-        self.help_btn.pack(side="right",padx=12, pady=8)
+        self.help_btn.pack(side="right", padx=12, pady=8)
 
-        # Topbar
+        # Barra superior (Título y botones de acción)
         topbar = tk.Frame(main, bg=C["panel"], pady=10)
         topbar.pack(fill="x")
         tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
 
-        self.lbl_title = tk.Label(topbar, text="Todas las tareas",
-                                   bg=C["panel"], fg=C["text"],
-                                   font=("Helvetica", 20, "bold"))
+        self.lbl_title = tk.Label(
+            topbar, text="Todas las tareas",
+            bg=C["panel"], fg=C["text"],
+            font=("Segoe UI", 20, "bold")
+        )
         self.lbl_title.pack(side="left", padx=16)
 
-        self.btn_nueva_tarea = tk.Button(topbar, text="+ Nueva tarea",
-                  bg=C["accent"], fg="white",
-                  font=("Helvetica", 10, "bold"), relief="flat", bd=0,
-                  padx=12, pady=5, cursor="hand2",
-                  command=self._new_task)
-        self.btn_nueva_tarea.pack(side="right", padx=16)
+        # Contenedor para botones de acción (para mostrar/ocultar según la vista)
+        self.action_buttons_frame = tk.Frame(topbar, bg=C["panel"])
+        self.action_buttons_frame.pack(side="right", padx=16)
 
+        self.btn_nueva_tarea = tk.Button(
+            self.action_buttons_frame, text="➕ Nueva tarea",
+            bg=C["accent"], fg="white",
+            font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+            padx=12, pady=5, cursor="hand2",
+            command=self._new_task
+        )
+        self.btn_nueva_tarea.pack(side="left", padx=5)
 
-        #filtros
+        self.btn_nueva_recurrente = tk.Button(
+            self.action_buttons_frame, text="🔄 Nueva recurrente",
+            bg=C["accent"], fg="white",
+            font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+            padx=12, pady=5, cursor="hand2",
+            command=self._new_recurring
+        )
+        # Oculto por defecto, se muestra en la vista de recurrentes
+        self.btn_nueva_recurrente.pack(side="left", padx=5)
+        self.btn_nueva_recurrente.pack_forget()
 
+        # Barra de filtros
         self.filter_bar = FilterBar(main, on_filter=self._on_filter_change)
         self.filter_bar.pack(fill="x")
 
         tk.Frame(main, bg=C["border"], height=1).pack(fill="x")
 
-
-        # Lista de tareas
-        self.task_list = TaskList(    main,
-                                    on_edit_task      = self._edit_task,
-                                    on_duplicate_task = self._duplicate_task,
-                                    on_delete_task    = self._delete_task,
-                                    on_reorder_task   = self._reorder_task,
-                                    )
+        # Lista de tareas (vista principal)
+        self.task_list = TaskList(
+            main,
+            on_edit_task=self._edit_task,
+            on_duplicate_task=self._duplicate_task,
+            on_delete_task=self._delete_task,
+            on_reorder_task=self._reorder_task,
+        )
         self.task_list.pack(fill="both", expand=True)
 
-        self.btn_nueva_recurrente = tk.Button(topbar, text="+ Nueva tarea recurrente",
-                                       bg=C["accent"], fg="white",
-                                       font=("Helvetica", 10, "bold"), relief="flat", bd=0,
-                                       padx=12, pady=5, cursor="hand2",
-                                       command=self._new_recurring)
-
-        self.recurring_list = RecurringTaskList(main, 
-                                                on_edit=self._edit_recurring, 
-                                                on_new=self._new_recurring,
-                                                on_reorder_task   = self._reorder_recurring,)        
+        # Lista de tareas recurrentes (oculta por defecto)
+        self.recurring_list = RecurringTaskList(
+            main,
+            on_edit=self._edit_recurring,
+            on_new=self._new_recurring,
+            on_reorder_task=self._reorder_recurring,
+        )
+        self.recurring_list.pack_forget()
 
     # ── Refresh ───────────────────────────────────────────────────────────────
-
     def refresh(self):
-
         projects = self.project_service.get_all()
-        tasks    = self.task_service.get_all()
-        visible  = (tasks if not self.filter_project
-                    else self.task_service.get_by_project(self.filter_project))
+        tasks = self.task_service.get_all()
+        visible = (tasks if not self.filter_project
+                   else self.task_service.get_by_project(self.filter_project))
 
-        # Aplicar filtros dinámicos
         filters = getattr(self, "_active_filters", {})
         if filters:
             visible = self.task_service.filter(visible, filters)
@@ -218,32 +213,36 @@ class ProjectManagerApp(tk.Tk):
         self.recurring_list.render(self.task_service.recurring.get_all())
 
     def _render_stats(self):
+        # Limpiar estadísticas anteriores (excepto el botón de ayuda)
         for w in self.stats_frame.winfo_children():
             if w is not self.help_btn.btn:
                 w.destroy()
-        s = self.task_service.get_stats()
-        for label, val, color in [
-            ("Total",          s["total"],        C["text"]),
-            ("Completadas",    s["done"],         C["done_tasks"]),
-            ("En progreso",    s["progress"],      C["progress_tasks"]),
-            ("Alta prioridad", s["high_priority"], C["priority_tasks"]),
-        ]:
-            f = tk.Frame(self.stats_frame, bg=C["panel"])
-            f.pack(side="left", padx=14, pady=10)
-            tk.Label(f, text=str(val), bg=C["panel"], fg=color,
-                     font=("Helvetica", 20, "bold")).pack()
-            tk.Label(f, text=label, bg=C["panel"], fg=C["muted"],
-                     font=("Helvetica", 10)).pack()
+
+        stats = self.task_service.get_stats()
+        stat_items = [
+            ("Total", stats["total"], C["text"]),
+            ("Completadas", stats["done"], C["done_tasks"]),
+            ("En progreso", stats["progress"], C["progress_tasks"]),
+            ("Alta prioridad", stats["high_priority"], C["priority_tasks"]),
+        ]
+
+        for label, value, color in stat_items:
+            frame = tk.Frame(self.stats_frame, bg=C["panel"])
+            frame.pack(side="left", padx=14, pady=10)
+
+            tk.Label(frame, text=str(value), bg=C["panel"], fg=color,
+                     font=("Segoe UI", 20, "bold")).pack()
+            tk.Label(frame, text=label, bg=C["panel"], fg=C["muted"],
+                     font=("Segoe UI", 10)).pack()
+
         tk.Frame(self.stats_frame, bg=C["border"], width=1).pack(side="left", fill="y", pady=6)
 
     # ── Acciones: Tareas ─────────────────────────────────────────────────────
-
     def _new_task(self, event=None):
-        projects = [p.__dict__ for p in self.project_service.get_all()]
-        # TaskDialog espera dicts con "id" y "name"
         projects_dicts = [{"id": p.id, "name": p.name} for p in self.project_service.get_all()]
-        dlg = TaskDialog(self, projects_dicts,default_project_id=self.current_project_id)
+        dlg = TaskDialog(self, projects_dicts, default_project_id=self.current_project_id)
         self.wait_window(dlg)
+
         if dlg.result and not dlg.result.get("deleted"):
             try:
                 self.task_service.create(dlg.result)
@@ -255,11 +254,14 @@ class ProjectManagerApp(tk.Tk):
         task = self.task_service.get_by_id(task_id)
         if not task:
             return
+
         projects_dicts = [{"id": p.id, "name": p.name} for p in self.project_service.get_all()]
         dlg = TaskDialog(self, projects_dicts, task=task.to_dict(), default_project_id=self.current_project_id)
         self.wait_window(dlg)
+
         if not dlg.result:
             return
+
         if dlg.result.get("deleted"):
             self.task_service.delete(task_id)
         else:
@@ -277,27 +279,25 @@ class ProjectManagerApp(tk.Tk):
         if messagebox.askyesno("Eliminar", "¿Eliminar esta tarea?"):
             self.task_service.delete(task_id)
             self.refresh()
-    
+
     def _reorder_task(self, src_id: int, tgt_id: int):
         self.task_service.reorder(src_id, tgt_id)
 
-
-    def _show_normal_tasks_view(self, event = None):
-        """Oculta las tareas recurrentes y vuelve a la vista normal."""
-        self.refresh()
-        self.btn_nueva_recurrente.pack_forget() 
-        self.btn_nueva_tarea.pack(side="right", padx=16)
+    def _show_normal_tasks_view(self, event=None):
+        """Muestra la vista normal de tareas."""
+        self.lbl_title.config(text="Todas las tareas")
+        self.task_list.pack(fill="both", expand=True)
         self.recurring_list.pack_forget()
         self.filter_bar.pack(fill="x")
-        self.task_list.pack(fill="both", expand=True)
+        self.btn_nueva_tarea.pack(side="left", padx=5)
+        self.btn_nueva_recurrente.pack_forget()
+        self.refresh()
 
-        
-
-    # ── Acciones: Tareas recurrentes ───────────────────────────────────────────────────
-
+    # ── Acciones: Tareas Recurrentes ──────────────────────────────────────
     def _new_recurring(self, event=None):
         dlg = RecurringTaskDialog(self)
         self.wait_window(dlg)
+
         if dlg.result and not dlg.result.get("deleted"):
             self.task_service.recurring.create(dlg.result)
             self.task_service._persist()
@@ -307,46 +307,44 @@ class ProjectManagerApp(tk.Tk):
         task = next((t for t in self.task_service.recurring.get_all() if t.id == task_id), None)
         if not task:
             return
+
         dlg = RecurringTaskDialog(self, task=task)
         self.wait_window(dlg)
+
         if not dlg.result:
             return
+
         if dlg.result.get("deleted"):
             self.task_service.recurring.delete(task_id)
         else:
             self.task_service.recurring.update(task_id, dlg.result)
+
         self.task_service._persist()
         self.refresh()
-    
+
     def _show_master_tasks(self):
-        self.btn_nueva_tarea.pack_forget()
+        """Muestra la vista de tareas maestras (recurrentes)."""
         self._show_recurring_tasks_view()
-        self.btn_nueva_recurrente.pack(side="right", padx=16)
-        # limpiar contenido actual y mostrar master task list
-        for w in self.task_list.winfo_children():
-            w.destroy()
-    
-    def _show_recurring_tasks_view(self, event = None):
-        """Oculta las tareas normales y muestra las recurrentes."""
-        self.task_list.pack_forget()
-        self.filter_bar.pack_forget()
-        self.recurring_list.pack(fill="both", expand=True)
-        
-        # Opcional pero recomendado: Actualizar el título superior
+
+    def _show_recurring_tasks_view(self, event=None):
+        """Muestra la vista de tareas recurrentes."""
         self.lbl_title.config(text="Tareas Recurrentes")
-        
-        # Restaurar el título
-        self.lbl_title.config(text="Todas las tareas")
-    
+        self.task_list.pack_forget()
+        self.recurring_list.pack(fill="both", expand=True)
+        self.filter_bar.pack_forget()
+        self.btn_nueva_tarea.pack_forget()
+        self.btn_nueva_recurrente.pack(side="left", padx=5)
+        self.refresh()
+
     def _reorder_recurring(self, src_id: int, tgt_id: int):
         self.task_service.recurring.reorder(src_id, tgt_id)
-        self.task_service.save_members(self.task_service.members)  # persiste
+        self.task_service.save_members(self.task_service.members)
 
     # ── Acciones: Proyectos ───────────────────────────────────────────────────
-
-    def _new_project(self,  event=None):
+    def _new_project(self, event=None):
         dlg = ProjectDialog(self)
         self.wait_window(dlg)
+
         if dlg.result and not dlg.result.get("deleted"):
             try:
                 self.project_service.create(dlg.result["name"], dlg.result["color"])
@@ -358,10 +356,13 @@ class ProjectManagerApp(tk.Tk):
         proj = self.project_service.get_by_id(project_id)
         if not proj:
             return
+
         dlg = ProjectDialog(self, project=proj.__dict__)
         self.wait_window(dlg)
+
         if not dlg.result:
             return
+
         if dlg.result.get("deleted"):
             if not messagebox.askyesno("Eliminar proyecto",
                     f"¿Eliminar '{proj.name}'? Las tareas asociadas quedarán sin proyecto.",
@@ -379,37 +380,31 @@ class ProjectManagerApp(tk.Tk):
         self.refresh()
 
     # ── Acciones: Reporte ─────────────────────────────────────────────────────
-
     def _show_report(self, event=None):
-        
         ReportWindow(self, self.task_service)
 
     # ── Filtro ────────────────────────────────────────────────────────────────
-
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
         self.filter_project = None if project_id == "all" else project_id
         self.current_project_id = project_id
         self.lbl_title.config(text="Todas las tareas" if project_id == "all" else name)
         self._show_normal_tasks_view()
-        self.refresh()
 
     def _manage_members(self, event=None):
         dlg = MembersDialog(self, self.task_service.members)
         self.wait_window(dlg)
         self.task_service.save_members(dlg.members)
         MEMBERS[:] = dlg.members
-    
+
     def _on_filter_change(self, filters: dict):
         self._active_filters = filters
         self.refresh()
-    
-    # - Eventos -----
 
+    # ── Eventos ──────────────────────────────────────────────────────────────
     def _on_close(self, event=None):
         self.destroy()
 
 # ── Punto de entrada ──────────────────────────────────────────────────────────
-
 if __name__ == "__main__":
     app = ProjectManagerApp()
     app.mainloop()
