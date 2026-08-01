@@ -31,7 +31,6 @@ class Sidebar(tk.Frame):
         self.on_report        = on_report
         self.on_master_tasks = on_master_tasks
         self._build_static()
-        self._nav_item(self, "👥", "Equipo", lambda e: self.on_members())
         self.proj_frame = tk.Frame(self, bg=C["sidebar"])
         self.proj_frame.pack(fill="x")
         self._nav_item(self, "◉", "Todos", lambda e: self.on_filter("all"))
@@ -43,7 +42,7 @@ class Sidebar(tk.Frame):
     def _build_static(self):
         logo = tk.Frame(self, bg=C["sidebar"])
         logo.pack(fill="x", padx=14, pady=(18, 10))
-        tk.Label(logo, text="◈  Project Manager",
+        tk.Label(logo, text="◈  Gestor de Tareas",
                  bg=C["sidebar"], fg=C["accent"],
                  font=("Helvetica", 12, "bold")).pack(anchor="w")
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x")
