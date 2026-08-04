@@ -27,6 +27,8 @@ from ui.filter_bar import FilterBar
 from ui.report_window import ReportWindow
 from models.splash_config import SplashConfig
 from ui.splash_window import TechPlexusSplash
+from ui.queries_list import QueriesListFrame
+
 
 README_FILE = "README.md"
 
@@ -118,6 +120,7 @@ class ProjectManagerApp(tk.Tk):
             on_report=self._show_report,
             on_members=self._manage_members,
             on_master_tasks=self._show_master_tasks,
+            on_queries=self._show_querries,
         )
         self.sidebar.pack(side="left", fill="y")
 
@@ -194,6 +197,9 @@ class ProjectManagerApp(tk.Tk):
             on_reorder_task=self._reorder_recurring,
         )
         self.recurring_list.pack_forget()
+
+        self.queries_list = QueriesListFrame(main)
+        self.queries_list.pack_forget()
 
     # ── Refresh ───────────────────────────────────────────────────────────────
     def refresh(self):
@@ -285,10 +291,12 @@ class ProjectManagerApp(tk.Tk):
 
     def _show_normal_tasks_view(self, event=None):
         """Muestra la vista normal de tareas."""
+        # Ocultar consultas si están visibles
+        self.queries_list.pack_forget()
         self.lbl_title.config(text="Todas las tareas")
+        self.filter_bar.pack(fill="x")
         self.task_list.pack(fill="both", expand=True)
         self.recurring_list.pack_forget()
-        self.filter_bar.pack(fill="x")
         self.btn_nueva_tarea.pack(side="left", padx=5)
         self.btn_nueva_recurrente.pack_forget()
         self.refresh()
@@ -328,6 +336,8 @@ class ProjectManagerApp(tk.Tk):
 
     def _show_recurring_tasks_view(self, event=None):
         """Muestra la vista de tareas recurrentes."""
+        # Ocultar consultas si están visibles
+        self.queries_list.pack_forget()
         self.lbl_title.config(text="Tareas Recurrentes")
         self.task_list.pack_forget()
         self.recurring_list.pack(fill="both", expand=True)
@@ -382,6 +392,25 @@ class ProjectManagerApp(tk.Tk):
     # ── Acciones: Reporte ─────────────────────────────────────────────────────
     def _show_report(self, event=None):
         ReportWindow(self, self.task_service)
+
+    # ── Acciones: Queries/Documentación ─────────────────────────────────────
+    def _show_querries(self, event=None):
+        """Muestra la vista de consultas/documentación."""
+        # Ocultar todos los paneles existentes
+        self.task_list.pack_forget()
+        self.recurring_list.pack_forget()
+        self.filter_bar.pack_forget()
+        self.btn_nueva_tarea.pack_forget()
+        self.btn_nueva_recurrente.pack_forget()
+        
+        # Actualizar título
+        self.lbl_title.config(text="📚 Consultas y Documentación")
+
+        self.queries_list.pack(fill="both", expand=True)
+        
+        # Forzar actualización
+        self.update_idletasks()
+        self.refresh()
 
     # ── Filtro ────────────────────────────────────────────────────────────────
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
