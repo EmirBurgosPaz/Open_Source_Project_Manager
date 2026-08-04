@@ -61,6 +61,7 @@ PROJECT_COLORS   = [
 
 C = {
     "bg":        "#1A1A1E",
+    "bg_secondary": "#181825",
     "sidebar":   "#141417",
     "panel":     "#22222A",
     "border":    "#2E2E38",
