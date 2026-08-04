@@ -78,7 +78,7 @@ class MembersDialog(tk.Toplevel):
         f = tk.Frame(parent, bg=C["dlg_border"], padx=1, pady=1)
         f.grid(row=0, column=col, padx=3, sticky="ew")
         e = tk.Entry(f, font=("Helvetica", 10), bg=C["dlg_input"], fg=C["text"],
-                     insertbackground=C["text"], relief="flat", bd=0, justify="center")
+                     insertbackground=C["accent_hover"], relief="flat", bd=0, justify="center")
         e.insert(0, placeholder)
         e.bind("<FocusIn>", lambda _: e.delete(0, "end") if e.get() == placeholder else None)
         e.bind("<FocusOut>", lambda _: e.insert(0, placeholder) if not e.get() else None)

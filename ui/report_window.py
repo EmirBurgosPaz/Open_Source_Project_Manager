@@ -188,7 +188,7 @@ class ReportWindow(tk.Toplevel):
         # Rango de fechas
         lbl(bar, "Desde:")
         e_from = tk.Entry(bar, textvariable=self._date_from, width=11,
-                          bg=C["dlg_input"], fg=C["text"], insertbackground=C["text"],
+                          bg=C["dlg_input"], fg=C["text"], insertbackground=C["accent_hover"],
                           relief="flat", font=("Helvetica", 9))
         e_from.pack(side="left", padx=(0, 4))
         e_from.insert(0, "AAAA-MM-DD")
@@ -198,7 +198,7 @@ class ReportWindow(tk.Toplevel):
 
         lbl(bar, "Hasta:")
         e_to = tk.Entry(bar, textvariable=self._date_to, width=11,
-                        bg=C["dlg_input"], fg=C["text"], insertbackground=C["text"],
+                        bg=C["dlg_input"], fg=C["text"], insertbackground=C["accent_hover"],
                         relief="flat", font=("Helvetica", 9))
         e_to.pack(side="left", padx=(0, 4))
         e_to.insert(0, "AAAA-MM-DD")

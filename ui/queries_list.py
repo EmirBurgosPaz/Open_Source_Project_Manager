@@ -71,7 +71,7 @@ class QueriesListFrame(tk.Frame):
         tk.Label(filter_content, text="🔍 Buscar:", bg=C["panel"], fg=C["white"]).pack(side="left")
         self.entry_buscar = tk.Entry(
             filter_content, bg=C["panel"], fg=C["white"],
-            insertbackground=C["bg"], relief="flat", width=30
+            insertbackground=C["accent_hover"], relief="flat", width=30
         )
         self.entry_buscar.pack(side="left", padx=(6, 12))
         self.entry_buscar.bind("<KeyRelease>", lambda e: self._on_filter_change())

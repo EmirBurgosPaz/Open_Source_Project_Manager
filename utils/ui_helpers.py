@@ -97,7 +97,7 @@ def make_entry(parent, value: str = "", disabled: bool = False) -> tk.Entry:
     """Entry con el estilo oscuro del diálogo."""
     e = tk.Entry(parent, font=("Helvetica", 11),
                  bg=C["dlg_input"], fg=C["text"],
-                 insertbackground=C["text"],
+                 insertbackground=C["accent_hover"],
                  relief="flat", bd=0,
                  highlightthickness=1,
                  highlightbackground=C["dlg_border"],

@@ -53,7 +53,7 @@ class QueriesDialog(tk.Toplevel):
         )
         self.entry_nombre = tk.Entry(
             form, bg=C["panel"], fg=C["white"],
-            insertbackground=C["bg"], relief="flat"
+            insertbackground=C["accent_hover"], relief="flat"
         )
         self.entry_nombre.pack(fill="x", padx=12)
 
@@ -111,7 +111,7 @@ class QueriesDialog(tk.Toplevel):
         )
         self.entry_tags = tk.Entry(
             form, bg=C["panel"], fg=C["white"],
-            insertbackground=C["bg"], relief="flat"
+            insertbackground=C["accent_hover"], relief="flat"
         )
         self.entry_tags.pack(fill="x", padx=12)
 
