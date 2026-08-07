@@ -21,7 +21,7 @@ from ui.tags_filter import TagsFilterBar
 from ui.tags_admin_dialog import TagsAdminDialog
 
 
-from config import C
+from config import C, KEYBOARD_KEYS
 
 
 from storage.queries_manager import CATEGORIAS_DEFAULT
@@ -41,7 +41,7 @@ class QueriesListFrame(tk.Frame):
         self._filtro_modo_tags = "OR"
         self._all_iids = []
         self._iid_map = {}
-        
+
         self._build_ui()
         self.render()
 
@@ -51,85 +51,128 @@ class QueriesListFrame(tk.Frame):
         """Construye la estructura completa de la UI"""
         # Contenedor principal
         container = tk.Frame(self, bg=C["bg"])
-        container.pack(fill="both", expand=True, padx=12, pady=12)
-        
-        # ── Barra de filtros ──────────────────────────────────────────
-        filter_frame = tk.Frame(container, bg=C["bg"], relief="flat", bd=1)
-        filter_frame.pack(fill="x", pady=(0, 10))
+        container.pack(fill="both", expand=True, padx=14, pady=14)
 
-        self.tags_filter_bar = TagsFilterBar(
-            container, self.tags_manager, on_change=self._on_tags_filter_change,
-            bg=C["bg"], fg=C["white"]
+        # ── Encabezado ────────────────────────────────────────────────
+        header = tk.Frame(container, bg=C["bg"])
+        header.pack(fill="x", pady=(0, 10))
+
+        tk.Label(
+            header, text="Documentación de queries",
+            bg=C["bg"], fg=C["white"], font=("Segoe UI", 13, "bold"),
+            anchor="w"
+        ).pack(side="left")
+
+        btns = tk.Frame(header, bg=C["bg"])
+        btns.pack(side="right")
+
+        tk.Button(
+            btns, text="🏷️  Gestionar tags", command=self._gestionar_tags,
+            bg=C["panel"], fg=C["white"], relief="flat",
+            activebackground=C["hover"], activeforeground=C["white"],
+            padx=12, pady=6, font=("Segoe UI", 9), cursor="hand2",
+            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["border"],
+            bd=0
+        ).pack(side="left", padx=(0, 8))
+
+        tk.Button(
+            btns, text="➕  Nueva consulta", command=self._nuevo_query,
+            bg=C["accent"], fg=C["white"], relief="flat",
+            activebackground=C["accent_hover"], activeforeground=C["white"],
+            padx=16, pady=6, font=("Segoe UI", 10, "bold"), cursor="hand2",
+            bd=0
+        ).pack(side="left")
+
+        # ── Fila de filtros: buscar, categoría y tags en una sola tarjeta ──
+        filters_card = tk.Frame(
+            container, bg=C["panel"], relief="flat", bd=0,
+            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["border"]
         )
-        self.tags_filter_bar.pack(fill="x", pady=(0, 10))
+        filters_card.pack(fill="x", pady=(0, 10))
 
-        filter_content = tk.Frame(filter_frame, bg=C["bg"])
-        filter_content.pack(fill="x", padx=12, pady=8)
-        
+        filter_content = tk.Frame(filters_card, bg=C["panel"])
+        filter_content.pack(side="left", fill="x", padx=12, pady=10)
+
         # Buscar
-        tk.Label(filter_content, text="🔍 Buscar:", bg=C["panel"], fg=C["white"]).pack(side="left")
+        tk.Label(
+            filter_content, text="🔍 Buscar:", bg=C["panel"], fg=C["white"],
+            font=("Segoe UI", 9, "bold")
+        ).pack(side="left")
+
         self.entry_buscar = tk.Entry(
-            filter_content, bg=C["panel"], fg=C["white"],
-            insertbackground=C["accent_hover"], relief="flat", width=30
+            filter_content, bg=C["bg"], fg=C["white"],
+            insertbackground=C["white"], relief="flat", width=32,
+            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["accent"],
+            bd=0
         )
-        self.entry_buscar.pack(side="left", padx=(6, 12))
+        self.entry_buscar.pack(side="left", ipady=4, padx=(8, 18))
         self.entry_buscar.bind("<KeyRelease>", lambda e: self._on_filter_change())
-        
+
         # Categoría
-        tk.Label(filter_content, text="📂 Categoría:", bg=C["panel"], fg=C["white"]).pack(side="left")
+        tk.Label(
+            filter_content, text="📂 Categoría:", bg=C["panel"], fg=C["white"],
+            font=("Segoe UI", 9, "bold")
+        ).pack(side="left")
+
         self.combo_filtro = ttk.Combobox(
-            filter_content, values=["Todas"] + CATEGORIAS_DEFAULT, 
-            state="readonly", width=25
+            filter_content, values=["Todas"] + CATEGORIAS_DEFAULT,
+            state="readonly", width=25, style="Dark.TCombobox"
         )
         self.combo_filtro.set("Todas")
-        self.combo_filtro.pack(side="left", padx=(6, 12))
+        self.combo_filtro.pack(side="left", padx=(8, 0))
         self.combo_filtro.bind("<<ComboboxSelected>>", lambda e: self._on_filter_change())
-        
-        # Botón Nueva Query
-        tk.Button(
-            filter_content, text="Crear querrie ➕", command=self._nuevo_query,
-            bg=C["accent"], fg=C["white"], relief="flat", 
-            padx=15, pady=5, font=("Segoe UI", 10, "bold"), cursor="hand2"
-        ).pack(side="right")
 
-        
-        #Gestionar tags
-        tk.Button(
-        filter_content, text="🏷️ Gestionar tags", command=self._gestionar_tags,
-            bg=C["border"], fg=C["white"], relief="flat",
-            padx=12, pady=5, font=("Segoe UI", 9), cursor="hand2"
-        ).pack(side="right", padx=(0, 8))
+        # Tags, dentro de la misma tarjeta
+        self.tags_filter_bar = TagsFilterBar(
+            filters_card, self.tags_manager, on_change=self._on_tags_filter_change,
+            bg=C["panel"], fg=C["white"]
+        )
+        self.tags_filter_bar.pack(side="left", fill="x", expand=True, padx=(6, 12), pady=10)
 
-        
+        # Limpiar (búsqueda + categoría)
+        tk.Button(
+            filters_card, text="✕ Limpiar", command=self._limpiar_filtros,
+            bg=C["panel"], fg=C["white"], relief="flat",
+            activebackground=C["hover"], activeforeground=C["white"],
+            font=("Segoe UI", 9), cursor="hand2", bd=0
+        ).pack(side="right", padx=12)
+
         # ── Contador de resultados ────────────────────────────────────
         self.lbl_count = tk.Label(
-            container, text="", bg=C["bg"], fg=C["muted"],
+            container, text="", bg=C["bg"], fg=C["white"],
             font=("Segoe UI", 9), anchor="w"
         )
         self.lbl_count.pack(fill="x", pady=(0, 6))
-        
+
         # ── Treeview ──────────────────────────────────────────────────
-        body = tk.Frame(container, bg=C["bg"])
+        body = tk.Frame(
+            container, bg=C["bg"],
+            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["border"]
+        )
         body.pack(fill="both", expand=True)
-        
-        cols = ("Nombre", "Categoría", "Origen", "Modificado")
-        widths = [280, 200, 150, 150]
-        
+
+        cols = ("Nombre", "Categoría", "Origen", "Tags", "Modificado")
+        widths = [260, 160, 120, 220, 140]
+
+        style = ttk.Style()
+        style.configure("Dark.Treeview.Heading", font=("Segoe UI", 9, "bold"))
+
         self.tree = ttk.Treeview(body, columns=cols, show="headings",
                                  style="Dark.Treeview", selectmode="browse")
-        
+
         vsb = ttk.Scrollbar(body, orient="vertical", command=self.tree.yview)
         vsb.pack(side="right", fill="y")
-        
+
         for col, w in zip(cols, widths):
-            self.tree.heading(col, text=col, anchor="w")
-            self.tree.column(col, width=w, anchor="w", minwidth=w, stretch=False)
-        
+            self.tree.heading(col, text=col, anchor="w",
+                               command=lambda c=col: self._ordenar_por(c))
+            self.tree.column(col, width=w, anchor="w", minwidth=w, stretch=True)
+
         # Configurar tags para colores alternos
         self.tree.tag_configure("odd", background=C["bg"])
         self.tree.tag_configure("even", background=C["row_alt"])
         self.tree.tag_configure("hover", background=C["hover"])
-        
+
         # ── Eventos ───────────────────────────────────────────────────
         self.tree.bind("<Double-1>", lambda e: self._editar_seleccionada())
         self.tree.bind("<Button-3>", self._menu_contextual)
@@ -137,10 +180,11 @@ class QueriesListFrame(tk.Frame):
         self.tree.bind("<KP_Enter>", lambda e: self._editar_seleccionada())
         self.tree.bind("<Delete>", lambda e: self._eliminar_seleccionada())
         self.tree.bind("<Control-d>", lambda e: self._duplicar_seleccionada())
-        
+        self.tree.bind(KEYBOARD_KEYS["New_Querrie"], lambda e: self._nuevo_query())
+
         # Hover effect
         self._last_hovered = None
-        
+
         def on_motion(e):
             row = self.tree.identify_row(e.y)
             if row != self._last_hovered:
@@ -151,37 +195,40 @@ class QueriesListFrame(tk.Frame):
                 if row:
                     self.tree.item(row, tags=("hover",))
                 self._last_hovered = row
-        
+
         def on_leave(e):
             if self._last_hovered and self._last_hovered in self.tree.get_children():
                 idx = self._all_iids.index(self._last_hovered) if self._last_hovered in self._all_iids else 0
                 tag = "even" if idx % 2 else "odd"
                 self.tree.item(self._last_hovered, tags=(tag,))
             self._last_hovered = None
-        
+
         self.tree.bind("<Motion>", on_motion)
         self.tree.bind("<Leave>", on_leave)
-        
+
         # ── Menú contextual ──────────────────────────────────────────
         self.menu = tk.Menu(self, tearoff=0, bg=C["panel"], fg=C["text"],
                            activebackground=C["accent"], activeforeground="white",
-                           font=("Helvetica", 10), bd=0)
+                           font=("Segoe UI", 10), bd=0)
         self.menu.add_command(label="✏️  Editar", command=self._editar_seleccionada)
         self.menu.add_command(label="📋  Duplicar", command=self._duplicar_seleccionada)
         self.menu.add_command(label="📄  Copiar SQL", command=self._copiar_sql)
         self.menu.add_separator()
         self.menu.add_command(label="🗑️  Eliminar", command=self._eliminar_seleccionada)
-        
+
         self.tree.configure(yscrollcommand=vsb.set)
-        self.tree.pack(fill="both", expand=True)
-        
+        self.tree.pack(fill="both", expand=True, padx=1, pady=1)
+
         # ── Pie de página ────────────────────────────────────────────
+        footer = tk.Frame(container, bg=C["bg"])
+        footer.pack(fill="x", pady=(8, 0))
+
         tk.Label(
-            container,
-            text="Doble clic o Enter para editar · Supr elimina · Ctrl+D duplica",
-            bg=C["bg"], fg=C["muted"], 
+            footer,
+            text="Doble clic o Enter para editar  ·  Supr elimina  ·  Ctrl+D duplica  ·  clic derecho para más opciones",
+            bg=C["bg"], fg=C["white"],
             font=("Segoe UI", 9), anchor="w"
-        ).pack(fill="x", pady=(8, 0))
+        ).pack(side="left")
 
     # ---------- Render ----------
 
@@ -190,37 +237,45 @@ class QueriesListFrame(tk.Frame):
         # Limpiar treeview
         for item in self.tree.get_children():
             self.tree.delete(item)
-        
+
         self._all_iids = []
         self._iid_map = {}
-        
+
         # Obtener datos filtrados
         categoria = self._filtro_categoria
         texto = self._filtro_texto
         resultados = self.manager.filtrar(categoria=categoria, texto=texto,
                                            tags=self._filtro_tags, modo_tags=self._filtro_modo_tags
                                            )
-        
+
         # Ordenar por fecha de modificación (más reciente primero)
         resultados_ordenados = sorted(resultados, key=lambda x: x["modificado"], reverse=True)
-        
+
         # Insertar en el treeview
         for idx, q in enumerate(resultados_ordenados):
             tag = "even" if idx % 2 else "odd"
-            
+
+            tags_texto = ", ".join(q.get("tags", []))
+
             iid = self.tree.insert("", "end", iid=q["id"], tags=(tag,), values=(
                 q["nombre"],
                 q["categoria"],
                 q.get("origen", ""),
+                tags_texto,
                 q["modificado"]
             ))
-            
+
             self._all_iids.append(iid)
             self._iid_map[iid] = q["id"]
-        
+
         # Actualizar contador
         total = len(resultados_ordenados)
-        self.lbl_count.config(text=f"📊 {total} consulta{'s' if total != 1 else ''} encontrada{'s' if total != 1 else ''}")
+        if total == 0:
+            self.lbl_count.config(text="📊 No se encontraron consultas con los filtros actuales")
+        else:
+            self.lbl_count.config(
+                text=f"📊 {total} consulta{'s' if total != 1 else ''} encontrada{'s' if total != 1 else ''}"
+            )
 
     # ---------- Filtros ----------
 
@@ -230,9 +285,19 @@ class QueriesListFrame(tk.Frame):
         self._filtro_texto = self.entry_buscar.get().strip()
         self.render()
 
+    def _limpiar_filtros(self):
+        """Restablece búsqueda y categoría (no toca el filtro de tags)."""
+        self.entry_buscar.delete(0, "end")
+        self.combo_filtro.set("Todas")
+        self._on_filter_change()
+
+    def _ordenar_por(self, columna):
+        """Placeholder de orden por columna; el orden actual es por fecha."""
+        pass
+
     # ---------- Acciones ----------
 
-    def _nuevo_query(self):
+    def _nuevo_query(self,  event=None):
         QueriesDialog(self, self.manager, self.tags_manager, on_saved=self.render)
 
     def _seleccion_actual(self):
@@ -273,7 +338,7 @@ class QueriesListFrame(tk.Frame):
             self.menu.tk_popup(event.x_root, event.y_root)
 
 
-    
+
     def _on_tags_filter_change(self, tags, modo):
         self._filtro_tags = tags
         self._filtro_modo_tags = modo
