@@ -88,6 +88,7 @@ class ProjectManagerApp(tk.Tk):
         self.bind(KEYBOARD_KEYS["recurring"], guard_typing(self._show_recurring_tasks_view))
         self.bind(KEYBOARD_KEYS["task"], guard_typing(self._show_normal_tasks_view))
         self.bind(KEYBOARD_KEYS["escape"], guard_typing(self._on_close))
+        self.bind(KEYBOARD_KEYS["querries"], guard_typing(self._show_querries))
 
         self.update()
         self.update_idletasks()

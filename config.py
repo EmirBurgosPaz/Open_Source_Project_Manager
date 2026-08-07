@@ -164,6 +164,8 @@ KEYBOARD_KEYS = {
     "recurring" : "<KeyPress-M>", # Pestaña recurrentes
     "task" : "<KeyPress-T>", # pestaña Tareas
     "save" : "<Control-s>", # pestaña Tareas
+    "New_Querrie" : "<q>",
+    "querries" : "<KeyPress-Q>",
 }
 
 KEYBIND_requesterS = {
