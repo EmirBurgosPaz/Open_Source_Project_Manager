@@ -7,33 +7,9 @@ y una gama de color por prioridad + atraso).
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, COLUMNS_STATUS
+from config import C, COLUMNS_STATUS, PRIORITY_STYLE , DEFAULT_PRIORITY_STYLE ,  OVERDUE_LEVELS , SOON_BG, SOON_FG , PRIORITY_ORDER 
 from datetime import date
 
-
-def _c(key, fallback):
-    return C.get(key, fallback)
-
-
-PRIORITY_STYLE = {
-    "Alta":  {"bg": _c("high_bg",   "#331E18"), "fg": _c("high_fg",   "#FF6B6B"),
-              "bold": True,  "icon": "!!!"},
-    "Media": {"bg": _c("medium_bg", "#241F10"), "fg": _c("medium_fg", "#E8B33D"),
-              "bold": False, "icon": "!!"},
-    "Baja":  {"bg": _c("low_bg",    "#16232B"), "fg": _c("low_fg",    C.get("accent_hover", "#5599FF")),
-              "bold": False, "icon": "!"},
-}
-DEFAULT_PRIORITY_STYLE = {"bg": C["todo_bg"], "fg": C["todo_fg"], "bold": False, "icon": "!"}
-
-# (días mínimos de atraso, bg, fg) — de más grave a más leve
-OVERDUE_LEVELS = [
-    (7, _c("over_bg_3", "#3A0F0F"), _c("over_fg_3", "#FF4040")),
-    (3, _c("over_bg_2", C["over_bg"]), _c("over_fg_2", C["over_fg"])),
-    (1, _c("over_bg_1", "#241616"), _c("over_fg_1", "#E28080")),
-]
-SOON_BG, SOON_FG = _c("soon_bg", "#241F10"), _c("soon_fg", "#D8B23A")
-
-PRIORITY_ORDER = {"Alta": 0, "Media": 1, "Baja": 2}
 
 
 class TaskList(tk.Frame):

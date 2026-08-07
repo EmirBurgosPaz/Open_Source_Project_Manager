@@ -12,7 +12,7 @@ Uso:
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from config import C
+from config import C, KEYBOARD_KEYS
 
 from storage.queries_manager import CATEGORIAS_DEFAULT
 from storage.queries_manager import ORIGENES_DEFAULT
@@ -27,8 +27,9 @@ class QueriesDialog(tk.Toplevel):
         self.existing = manager.obtener(query_id) if query_id else None
 
         self.title("Editar query" if self.existing else "Nueva query")
+        self.focus()
         self.configure(bg=C["bg"])
-        self.geometry("640x620")
+        self.geometry("800x920")
         self.minsize(560, 520)
         self.transient(parent)
         self.grab_set()
@@ -38,6 +39,7 @@ class QueriesDialog(tk.Toplevel):
             self._cargar_datos(self.existing)
 
         self.protocol("WM_DELETE_WINDOW", self.destroy)
+        self.bind(KEYBOARD_KEYS["escape"], self._on_close)
 
     # ---------- UI ----------
 
@@ -56,6 +58,7 @@ class QueriesDialog(tk.Toplevel):
             insertbackground=C["accent_hover"], relief="flat"
         )
         self.entry_nombre.pack(fill="x", padx=12)
+        self.entry_nombre.focus()
 
         # Categoría + Origen en la misma fila
         fila = tk.Frame(form, bg=C["bg"])
@@ -132,10 +135,7 @@ class QueriesDialog(tk.Toplevel):
         self.btn_guardar.pack(side="right")
 
         # Enlazar Ctrl+S para guardar
-        self.bind('<Control-s>', lambda e: self._guardar())
-        self.bind('<Control-S>', lambda e: self._guardar())
-        # Enter en campos específicos también puede guardar
-        self.entry_nombre.bind('<Return>', lambda e: self._guardar())
+        self.bind(KEYBOARD_KEYS["save"], lambda e: self._guardar())
 
     # ---------- Datos ----------
 
@@ -177,3 +177,6 @@ class QueriesDialog(tk.Toplevel):
         if self.on_saved:
             self.on_saved()
         self.destroy()
+
+    def _on_close(self, event=None):
+            self.destroy()

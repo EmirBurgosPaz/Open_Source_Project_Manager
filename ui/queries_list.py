@@ -17,23 +17,9 @@ Uso típico dentro de tu app:
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-try:
-    from config import C
-except ImportError:
-    C = {
-        "bg": "#1e1e2e",
-        "bg_secondary": "#181825",
-        "bg": "#cdd6f4",
-        "accent": "#89b4fa",
-        "panel": "#313244",
-        "border": "#45475a",
-        "danger": "#f38ba8",
-        "success": "#a6e3a1",
-        "hover": "#313244",
-        "row_alt": "#181825",
-        "panel": "#1e1e2e",
-        "muted": "#6c7086",
-    }
+
+from config import C
+
 
 from storage.queries_manager import CATEGORIAS_DEFAULT
 from storage.queries_manager import QueriesManager
@@ -77,7 +63,7 @@ class QueriesListFrame(tk.Frame):
         self.entry_buscar.bind("<KeyRelease>", lambda e: self._on_filter_change())
         
         # Categoría
-        tk.Label(filter_content, text="📂 Categoría:", bg=C["bg_secondary"], fg=C["bg"]).pack(side="left")
+        tk.Label(filter_content, text="📂 Categoría:", bg=C["panel"], fg=C["white"]).pack(side="left")
         self.combo_filtro = ttk.Combobox(
             filter_content, values=["Todas"] + CATEGORIAS_DEFAULT, 
             state="readonly", width=25
