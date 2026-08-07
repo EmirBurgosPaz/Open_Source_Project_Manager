@@ -127,7 +127,52 @@ class QueriesManager:
 
     # ---------- Filtros / búsqueda ----------
 
-    def filtrar(self, categoria=None, texto=None):
+    def reemplazar_tag_en_todas(self, tag_viejo, tag_nuevo):
+             """Renombra un tag en todas las queries que lo usan (dedupe si colisiona)."""
+             clave_vieja = tag_viejo.strip().lower()
+             cambiado = False
+             for q in self.queries:
+                 claves = [t.strip().lower() for t in q.get("tags", [])]
+                 if clave_vieja not in claves:
+                     continue
+                 nuevos = [tag_nuevo if t.strip().lower() == clave_vieja else t
+                           for t in q["tags"]]
+                 vistos, dedup = set(), []
+                 for t in nuevos:
+                     k = t.strip().lower()
+                     if k not in vistos:
+                         vistos.add(k)
+                         dedup.append(t)
+                 q["tags"] = dedup
+                 q["modificado"] = datetime.now().isoformat(timespec="seconds")
+                 cambiado = True
+             if cambiado:
+                 self.save()
+    
+    def quitar_tag_de_todas(self, tag):
+         """Elimina un tag de todas las queries que lo tengan."""
+         clave = tag.strip().lower()
+         cambiado = False
+         for q in self.queries:
+             originales = q.get("tags", [])
+             nuevos = [t for t in originales if t.strip().lower() != clave]
+             if len(nuevos) != len(originales):
+                 q["tags"] = nuevos
+                 q["modificado"] = datetime.now().isoformat(timespec="seconds")
+                 cambiado = True
+         if cambiado:
+             self.save()
+
+    def todos_los_tags(self):
+         """Lista única de tags realmente en uso (para poblar filtros/UI)."""
+         tags = set()
+         for q in self.queries:
+             tags.update(q.get("tags", []))
+         return sorted(tags, key=str.lower)
+
+     # Y actualiza filtrar() para aceptar tags como filtro adicional:
+
+    def filtrar(self, categoria=None, texto=None, tags=None, modo_tags="AND"):
         resultado = self.queries
         if categoria and categoria != "Todas":
             resultado = [q for q in resultado if q["categoria"] == categoria]
@@ -140,7 +185,16 @@ class QueriesManager:
                 or texto in q.get("sql", "").lower()
                 or any(texto in t.lower() for t in q.get("tags", []))
             ]
+        if tags:
+            claves_filtro = {t.strip().lower() for t in tags}
+            if modo_tags == "AND":
+                resultado = [
+                    q for q in resultado
+                    if claves_filtro.issubset({t.strip().lower() for t in q.get("tags", [])})
+                ]
+            else:  # "OR"
+                resultado = [
+                    q for q in resultado
+                    if claves_filtro & {t.strip().lower() for t in q.get("tags", [])}
+                ]
         return resultado
-
-    def categorias_en_uso(self):
-        return sorted({q["categoria"] for q in self.queries})

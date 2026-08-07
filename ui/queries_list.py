@@ -15,7 +15,10 @@ Uso típico dentro de tu app:
 """
 
 import tkinter as tk
+from datetime import datetime
 from tkinter import ttk, messagebox
+from ui.tags_filter import TagsFilterBar
+from ui.tags_admin_dialog import TagsAdminDialog
 
 
 from config import C
@@ -24,14 +27,18 @@ from config import C
 from storage.queries_manager import CATEGORIAS_DEFAULT
 from storage.queries_manager import QueriesManager
 from ui.queries_dialog import QueriesDialog
+from storage.tags_manager import TagsManager
 
 
 class QueriesListFrame(tk.Frame):
-    def __init__(self, parent, data_file="queries_data.json"):
+    def __init__(self, parent, data_file="queries_data.json", tags_file="tags_data.json"):
         super().__init__(parent, bg=C["bg"])
         self.manager = QueriesManager(data_file)
+        self.tags_manager = TagsManager(tags_file)
         self._filtro_categoria = "Todas"
         self._filtro_texto = ""
+        self._filtro_tags = []
+        self._filtro_modo_tags = "OR"
         self._all_iids = []
         self._iid_map = {}
         
@@ -49,7 +56,13 @@ class QueriesListFrame(tk.Frame):
         # ── Barra de filtros ──────────────────────────────────────────
         filter_frame = tk.Frame(container, bg=C["bg"], relief="flat", bd=1)
         filter_frame.pack(fill="x", pady=(0, 10))
-        
+
+        self.tags_filter_bar = TagsFilterBar(
+            container, self.tags_manager, on_change=self._on_tags_filter_change,
+            bg=C["bg"], fg=C["white"]
+        )
+        self.tags_filter_bar.pack(fill="x", pady=(0, 10))
+
         filter_content = tk.Frame(filter_frame, bg=C["bg"])
         filter_content.pack(fill="x", padx=12, pady=8)
         
@@ -74,10 +87,19 @@ class QueriesListFrame(tk.Frame):
         
         # Botón Nueva Query
         tk.Button(
-            filter_content, text="Crear querrie ➕", command=self._nueva_query,
+            filter_content, text="Crear querrie ➕", command=self._nuevo_query,
             bg=C["accent"], fg=C["white"], relief="flat", 
             padx=15, pady=5, font=("Segoe UI", 10, "bold"), cursor="hand2"
         ).pack(side="right")
+
+        
+        #Gestionar tags
+        tk.Button(
+        filter_content, text="🏷️ Gestionar tags", command=self._gestionar_tags,
+            bg=C["border"], fg=C["white"], relief="flat",
+            padx=12, pady=5, font=("Segoe UI", 9), cursor="hand2"
+        ).pack(side="right", padx=(0, 8))
+
         
         # ── Contador de resultados ────────────────────────────────────
         self.lbl_count = tk.Label(
@@ -175,7 +197,9 @@ class QueriesListFrame(tk.Frame):
         # Obtener datos filtrados
         categoria = self._filtro_categoria
         texto = self._filtro_texto
-        resultados = self.manager.filtrar(categoria=categoria, texto=texto)
+        resultados = self.manager.filtrar(categoria=categoria, texto=texto,
+                                           tags=self._filtro_tags, modo_tags=self._filtro_modo_tags
+                                           )
         
         # Ordenar por fecha de modificación (más reciente primero)
         resultados_ordenados = sorted(resultados, key=lambda x: x["modificado"], reverse=True)
@@ -208,8 +232,8 @@ class QueriesListFrame(tk.Frame):
 
     # ---------- Acciones ----------
 
-    def _nueva_query(self):
-        QueriesDialog(self, self.manager, on_saved=self.render)
+    def _nuevo_query(self):
+        QueriesDialog(self, self.manager, self.tags_manager, on_saved=self.render)
 
     def _seleccion_actual(self):
         sel = self.tree.selection()
@@ -218,7 +242,7 @@ class QueriesListFrame(tk.Frame):
     def _editar_seleccionada(self):
         qid = self._seleccion_actual()
         if qid:
-            QueriesDialog(self, self.manager, query_id=qid, on_saved=self.render)
+            QueriesDialog(self, self.manager,self.tags_manager, query_id=qid, on_saved=self.render)
 
     def _duplicar_seleccionada(self):
         qid = self._seleccion_actual()
@@ -249,3 +273,15 @@ class QueriesListFrame(tk.Frame):
             self.menu.tk_popup(event.x_root, event.y_root)
 
 
+    
+    def _on_tags_filter_change(self, tags, modo):
+        self._filtro_tags = tags
+        self._filtro_modo_tags = modo
+        self.render()
+
+    def _gestionar_tags(self):
+        TagsAdminDialog(self, self.tags_manager, self.manager, on_changed=self._on_tags_admin_changed)
+
+    def _on_tags_admin_changed(self):
+        self.tags_filter_bar.refresh()
+        self.render()

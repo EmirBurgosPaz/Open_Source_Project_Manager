@@ -16,12 +16,15 @@ from config import C, KEYBOARD_KEYS
 
 from storage.queries_manager import CATEGORIAS_DEFAULT
 from storage.queries_manager import ORIGENES_DEFAULT
+from storage.tags_manager import TagsManager
+from ui.tags_input import TagInput
 
 
 class QueriesDialog(tk.Toplevel):
-    def __init__(self, parent, manager, query_id=None, on_saved=None):
+    def __init__(self, parent, manager,tags_manager, query_id=None, on_saved=None):
         super().__init__(parent)
         self.manager = manager
+        self.tags_manager = tags_manager
         self.query_id = query_id
         self.on_saved = on_saved
         self.existing = manager.obtener(query_id) if query_id else None
@@ -109,14 +112,11 @@ class QueriesDialog(tk.Toplevel):
         scroll.config(command=self.text_sql.yview)
 
         # Tags
-        tk.Label(form, text="Tags (separados por coma)", bg=C["bg"], fg=C["white"]).pack(
-            anchor="w", padx=12, pady=(10, 0)
+        self.tag_input = TagInput(
+            form, self.tags_manager, bg=C["bg"], fg=C["white"],
+            entry_bg=C["panel"], accent=C["accent"]
         )
-        self.entry_tags = tk.Entry(
-            form, bg=C["panel"], fg=C["white"],
-            insertbackground=C["accent_hover"], relief="flat"
-        )
-        self.entry_tags.pack(fill="x", padx=12)
+        self.tag_input.pack(fill="x", padx=12)
 
         # Botones
         botones = tk.Frame(self, bg=C["bg"])
@@ -145,7 +145,7 @@ class QueriesDialog(tk.Toplevel):
         self.combo_origen.set(q.get("origen", ""))
         self.text_desc.insert("1.0", q.get("descripcion", ""))
         self.text_sql.insert("1.0", q.get("sql", ""))
-        self.entry_tags.insert(0, ", ".join(q.get("tags", [])))
+        self.tag_input.set_tags(q.get("tags", []))
 
     def _guardar(self):
         nombre = self.entry_nombre.get().strip()
@@ -153,7 +153,8 @@ class QueriesDialog(tk.Toplevel):
         origen = self.combo_origen.get().strip()
         descripcion = self.text_desc.get("1.0", "end").strip()
         sql = self.text_sql.get("1.0", "end").strip()
-        tags = [t.strip() for t in self.entry_tags.get().split(",") if t.strip()]
+        tags = self.tag_input.get_tags()
+        self.tags_manager.registrar_varios(tags)
 
         if not nombre:
             messagebox.showwarning("Falta información", "El nombre es obligatorio.")
