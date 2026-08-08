@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from config import C
+from utils.ui_helpers import setup_treeview_style
+
 
 
 class Documents_list(ttk.Frame):
@@ -26,18 +28,9 @@ class Documents_list(ttk.Frame):
 
         columns = ("nombre", "activo", "pertenece")
 
-        style.configure("Documents.Treeview",
-                         background=C["panel"],
-                         foreground=C["text"],
-                         fieldbackground=C["panel"],
-                         borderwidth=0)
-        style.configure("Documents.Treeview.Heading",
-                         background=C["sidebar"],
-                         foreground=C["text"])
-        style.map("Documents.Treeview",
-                  background=[("selected", C["accent"])])
+        style_name = setup_treeview_style()
 
-        self.tree = ttk.Treeview(self, columns=columns, show="headings", selectmode="browse", style="Documents.Treeview")
+        self.tree = ttk.Treeview(self, columns=columns, show="headings", selectmode="browse", style=style_name)
         self.tree.heading("nombre", text="Documento")
         self.tree.heading("activo", text="Activo")
         self.tree.heading("pertenece", text="Pertenece")

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from config import C
+from utils.ui_helpers import setup_treeview_style
 
 
 class RecurringTaskList(tk.Frame):
@@ -9,7 +10,6 @@ class RecurringTaskList(tk.Frame):
         self.on_edit = on_edit
         self._iid_map = {}
         self._build_header(on_new)
-        self._setup_style()
         self.on_reorder_task = on_reorder_task
 
     def _build_header(self, on_new):
@@ -22,19 +22,6 @@ class RecurringTaskList(tk.Frame):
         self.table_frame = tk.Frame(self, bg=C["bg"])
         self.table_frame.pack(fill="both", expand=True)
 
-    def _setup_style(self):
-        style = ttk.Style()
-        style.configure("Recurring.Treeview",
-                        background=C["bg"], foreground=C["text"],
-                        fieldbackground=C["bg"], bordercolor=C["border"],
-                        rowheight=32, font=("Helvetica", 10))
-        style.configure("Recurring.Treeview.Heading",
-                        background=C["panel"], foreground=C["muted"],
-                        bordercolor=C["border"], relief="flat",
-                        font=("Helvetica", 9, "bold"))
-        style.map("Recurring.Treeview",
-                  background=[("selected", C["accent_dk"])],
-                  foreground=[("selected", "#FFFFFF")])
 
     def render(self, tasks: list):
         for w in self.table_frame.winfo_children():
@@ -44,8 +31,10 @@ class RecurringTaskList(tk.Frame):
         cols   = ("Categoría", "Tarea", "Frecuencia", "Status", "Prioridad")
         widths = [100, 320, 110, 110, 80]
 
+        style_name = setup_treeview_style()
+
         tree = ttk.Treeview(self.table_frame, columns=cols, show="headings",
-                            style="Recurring.Treeview", selectmode="browse")
+                            style=style_name, selectmode="browse")
         for col, w in zip(cols, widths):
             tree.heading(col, text=col)
             tree.column(col, width=w, anchor="w", minwidth=60)
