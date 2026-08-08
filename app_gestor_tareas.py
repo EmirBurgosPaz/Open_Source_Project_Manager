@@ -28,6 +28,8 @@ from ui.report_window import ReportWindow
 from models.splash_config import SplashConfig
 from ui.splash_window import TechPlexusSplash
 from ui.queries_list import QueriesListFrame
+from ui.documents_list import Documents_list
+from services.document_service import DocumentService
 
 
 README_FILE = "README.md"
@@ -51,7 +53,7 @@ class ProjectManagerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.title("Task Manager")
+        self.title("Gestor de area")
         app_width, app_height = 1550, 880
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -71,6 +73,8 @@ class ProjectManagerApp(tk.Tk):
         self.task_service = TaskService(repo)
         self.project_service = ProjectService(repo, self.task_service)
         MEMBERS[:] = self.task_service.members
+
+        self.document_service = DocumentService()
 
         self.filter_project: str | None = None
         self.current_project_id = None
@@ -98,7 +102,7 @@ class ProjectManagerApp(tk.Tk):
             parent=self,
             config=SplashConfig(),
             colors=C,
-            app_name="Gestor de Tareas",
+            app_name="Gestor de area",
             version=get_current_version(),
             author="Informacion"
         )
@@ -122,6 +126,7 @@ class ProjectManagerApp(tk.Tk):
             on_members=self._manage_members,
             on_master_tasks=self._show_master_tasks,
             on_queries=self._show_querries,
+            on_documents=self._show_documents,
         )
         self.sidebar.pack(side="left", fill="y")
 
@@ -202,6 +207,9 @@ class ProjectManagerApp(tk.Tk):
         self.queries_list = QueriesListFrame(main)
         self.queries_list.pack_forget()
 
+        self.documents_list = Documents_list(main, self.document_service)
+        self.documents_list.pack_forget()
+
     # ── Refresh ───────────────────────────────────────────────────────────────
     def refresh(self):
         projects = self.project_service.get_all()
@@ -218,6 +226,7 @@ class ProjectManagerApp(tk.Tk):
         self._render_stats()
         self.task_list.render(visible, projects)
         self.recurring_list.render(self.task_service.recurring.get_all())
+        self.documents_list.render(self.document_service.get_all())
 
     def _render_stats(self):
         # Limpiar estadísticas anteriores (excepto el botón de ayuda)
@@ -294,6 +303,7 @@ class ProjectManagerApp(tk.Tk):
         """Muestra la vista normal de tareas."""
         # Ocultar consultas si están visibles
         self.queries_list.pack_forget()
+        self.documents_list.pack_forget()
         self.lbl_title.config(text="Todas las tareas")
         self.filter_bar.pack(fill="x")
         self.task_list.pack(fill="both", expand=True)
@@ -339,6 +349,7 @@ class ProjectManagerApp(tk.Tk):
         """Muestra la vista de tareas recurrentes."""
         # Ocultar consultas si están visibles
         self.queries_list.pack_forget()
+        self.documents_list.pack_forget()
         self.lbl_title.config(text="Tareas Recurrentes")
         self.task_list.pack_forget()
         self.recurring_list.pack(fill="both", expand=True)
@@ -399,6 +410,7 @@ class ProjectManagerApp(tk.Tk):
         """Muestra la vista de consultas/documentación."""
         # Ocultar todos los paneles existentes
         self.task_list.pack_forget()
+        self.documents_list.pack_forget()
         self.recurring_list.pack_forget()
         self.filter_bar.pack_forget()
         self.btn_nueva_tarea.pack_forget()
@@ -412,6 +424,27 @@ class ProjectManagerApp(tk.Tk):
         # Forzar actualización
         self.update_idletasks()
         self.refresh()
+
+    # ── Acciones: Queries/Documentación ─────────────────────────────────────
+    def _show_documents(self, event=None):
+        """Muestra la vista de documentos activos."""
+        # Ocultar todos los paneles existentes
+        self.task_list.pack_forget()
+        self.queries_list.pack_forget()
+        self.recurring_list.pack_forget()
+        self.filter_bar.pack_forget()
+        self.btn_nueva_tarea.pack_forget()
+        self.btn_nueva_recurrente.pack_forget()
+        
+        # Actualizar título
+        self.lbl_title.config(text="📁 Documentos activos")
+
+        self.documents_list.pack(fill="both", expand=True)
+        
+        # Forzar actualización
+        self.update_idletasks()
+        self.refresh()
+
 
     # ── Filtro ────────────────────────────────────────────────────────────────
     def _on_filter(self, project_id: str, name: str = "Todas las tareas"):
