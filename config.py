@@ -168,7 +168,7 @@ KEYBOARD_KEYS = {
     "querries" : "<KeyPress-Q>",
 }
 
-KEYBIND_requesterS = {
+KEYBIND_REQUESTERS = {
     "new_task":      "Nueva tarea",
     "new_project":   "Nuevo proyecto",
     "new_recurring": "Nueva tarea recurrente",
@@ -205,3 +205,5 @@ STATUS_FILL = {
     "backlog":  "7A7A8A",
 }
 PRIORITY_FILL = {"Alta": "FF6B6B", "Media": "E6A817", "Baja": "38BDF8"}
+
+
