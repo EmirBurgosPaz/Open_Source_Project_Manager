@@ -5,7 +5,7 @@ Widgets genéricos que no dependen de la lógica de negocio.
 
 import tkinter as tk
 from tkinter import ttk
-from config import C, KEYBOARD_KEYS, KEYBIND_requesterS  
+from config import C, KEYBOARD_KEYS, KEYBIND_REQUESTERS  
 
 _SKIP = {"enter", "space", "tab"}
 
@@ -24,7 +24,7 @@ def _parse_key(tk_binding: str) -> str:
 def _build_keybind_rows() -> list[tuple[str, str]]:
     """Devuelve lista de (tecla_legible, descripción) para las acciones con descripción."""
     rows = []
-    for action, desc in KEYBIND_requesterS.items():
+    for action, desc in KEYBIND_REQUESTERS.items():
         if action in _SKIP:
             continue
         binding = KEYBOARD_KEYS.get(action)
@@ -312,3 +312,40 @@ def guard_typing(callback):
             return  # no interceptar — dejar comportamiento default del widget
         return callback(event)
     return wrapper
+
+
+
+def setup_treeview_style(
+    style_name: str = "Dark.Treeview",
+    rowheight: int = 36,
+    font: tuple = ("Helvetica", 10),
+    heading_font: tuple = ("Helvetica", 9, "bold"),
+    colors: dict = C,
+) -> str:
+    """
+    Configura (o reutiliza) un estilo ttk oscuro para Treeview.
+    Devuelve el nombre del estilo para usarlo directamente en:
+        ttk.Treeview(parent, style=setup_treeview_style())
+    """
+    style = ttk.Style()
+    style.theme_use("clam")
+
+    style.configure(
+        style_name,
+        background=colors["bg"], foreground=colors["text"],
+        fieldbackground=colors["bg"], bordercolor=colors["border"],
+        rowheight=rowheight, font=font,
+    )
+    style.configure(
+        f"{style_name}.Heading",
+        background=colors["panel"], foreground=colors["muted"],
+        bordercolor=colors["border"], relief="flat",
+        font=heading_font,
+    )
+    style.map(f"{style_name}.Heading",
+              background=[("active", colors["hover"])])
+    style.map(style_name,
+              background=[("selected", colors["accent_dk"])],
+              foreground=[("selected", colors["white"])])
+
+    return style_name

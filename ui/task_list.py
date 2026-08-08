@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 from config import C, COLUMNS_STATUS, PRIORITY_STYLE , DEFAULT_PRIORITY_STYLE ,  OVERDUE_LEVELS , SOON_BG, SOON_FG , PRIORITY_ORDER 
 from datetime import date
+from utils.ui_helpers import setup_treeview_style
 
 
 
@@ -35,29 +36,15 @@ class TaskList(tk.Frame):
         self._tooltip = None
         self._last_hovered = None
 
-        self._setup_style()
+        
 
     # ────────────────────────── estilo base ──────────────────────────
-    def _setup_style(self):
-        style = ttk.Style()
-        style.theme_use("clam")
-        style.configure("Dark.Treeview",
-                        background=C["bg"], foreground=C["text"],
-                        fieldbackground=C["bg"], bordercolor=C["border"],
-                        rowheight=36, font=("Helvetica", 10))
-        style.configure("Dark.Treeview.Heading",
-                        background=C["panel"], foreground=C["muted"],
-                        bordercolor=C["border"], relief="flat",
-                        font=("Helvetica", 9, "bold"))
-        style.map("Dark.Treeview.Heading",
-                  background=[("active", C["hover"])])
-        style.map("Dark.Treeview",
-                  background=[("selected", C["accent_dk"])],
-                  foreground=[("selected", C["white"])])
+
 
     # ─────────────────────────── construcción ─────────────────────────
     def render(self, tasks: list, projects: list):
         """Limpia y vuelve a pintar la lista completa."""
+        style_name = setup_treeview_style()
         self._tooltip = None
         self._tt_label = None
 
@@ -81,7 +68,7 @@ class TaskList(tk.Frame):
         body.pack(fill="both", expand=True)
 
         tree = ttk.Treeview(body, columns=cols, show="headings",
-                            style="Dark.Treeview", selectmode="browse")
+                            style=style_name, selectmode="browse")
 
         vsb = ttk.Scrollbar(body, orient="vertical", command=tree.yview)
         vsb.pack(side="right", fill="y")

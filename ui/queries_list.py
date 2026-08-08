@@ -29,6 +29,8 @@ from storage.queries_manager import QueriesManager
 from ui.queries_dialog import QueriesDialog
 from storage.tags_manager import TagsManager
 
+from utils.ui_helpers import setup_treeview_style
+
 
 class QueriesListFrame(tk.Frame):
     def __init__(self, parent, data_file="queries_data.json", tags_file="tags_data.json"):
@@ -154,11 +156,10 @@ class QueriesListFrame(tk.Frame):
         cols = ("Nombre", "Categoría", "Origen", "Tags", "Modificado")
         widths = [260, 160, 120, 220, 140]
 
-        style = ttk.Style()
-        style.configure("Dark.Treeview.Heading", font=("Segoe UI", 9, "bold"))
+        style_name = setup_treeview_style()
 
         self.tree = ttk.Treeview(body, columns=cols, show="headings",
-                                 style="Dark.Treeview", selectmode="browse")
+                                 style=style_name, selectmode="browse")
 
         vsb = ttk.Scrollbar(body, orient="vertical", command=self.tree.yview)
         vsb.pack(side="right", fill="y")
