@@ -349,3 +349,45 @@ def setup_treeview_style(
               foreground=[("selected", colors["white"])])
 
     return style_name
+
+def add_hover(widget, hover_bg=None, base_bg=None, hover_fg=None, base_fg=None):
+    """
+    Agrega efecto hover (cambio de color al pasar el mouse) a cualquier widget
+    que soporte los atributos 'bg'/'fg' (tk.Button, tk.Label, tk.Frame, etc).
+
+    - base_bg / base_fg: si no se pasan, se toman del estado actual del widget.
+    - hover_bg / hover_fg: colores al pasar el mouse. Si hover_fg no se da,
+      el fg no cambia.
+    """
+    base_bg = base_bg or widget.cget("bg")
+    base_fg = base_fg if base_fg is not None else widget.cget("fg")
+
+    def _on_enter(e):
+        cfg = {}
+        if hover_bg:
+            cfg["bg"] = hover_bg
+        if hover_fg:
+            cfg["fg"] = hover_fg
+        widget.configure(**cfg)
+
+    def _on_leave(e):
+        cfg = {"bg": base_bg}
+        if hover_fg:
+            cfg["fg"] = base_fg
+        widget.configure(**cfg)
+
+    widget.configure(bg=base_bg)
+    widget.bind("<Enter>", _on_enter)
+    widget.bind("<Leave>", _on_leave)
+
+def lighten(hex_color: str, amount: float = 0.15) -> str:
+    """Aclara un color hex un poco, para usarlo en estados hover."""
+    try:
+        hex_color = hex_color.lstrip("#")
+        r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+        r = min(255, int(r + (255 - r) * amount))
+        g = min(255, int(g + (255 - g) * amount))
+        b = min(255, int(b + (255 - b) * amount))
+        return f"#{r:02x}{g:02x}{b:02x}"
+    except Exception:
+        return hex_color
