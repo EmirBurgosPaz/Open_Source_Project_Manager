@@ -391,3 +391,49 @@ def lighten(hex_color: str, amount: float = 0.15) -> str:
         return f"#{r:02x}{g:02x}{b:02x}"
     except Exception:
         return hex_color
+
+
+def setup_treeview_hover(tree, hover_tag="hover", get_base_tag=None,
+                          on_motion_extra=None, on_leave_extra=None):
+    """
+    Añade efecto hover genérico a un Treeview con filas alternadas.
+
+    get_base_tag: función (iid) -> tags a restaurar. Si no se pasa,
+    se calcula automáticamente ("odd"/"even") según posición.
+
+    on_motion_extra: función opcional (event, row) llamada al final de
+    cada <Motion>, útil para lógica adicional (ej. tooltips por columna).
+
+    on_leave_extra: función opcional (event) llamada al final de <Leave>.
+    """
+    state = {"last_hovered": None}
+
+    def _default_get_base_tag(iid):
+        children = tree.get_children()
+        idx = children.index(iid) if iid in children else 0
+        return ("even",) if idx % 2 else ("odd",)
+
+    base_tag_fn = get_base_tag or _default_get_base_tag
+
+    def _restore(iid):
+        if iid and iid in tree.get_children():
+            tree.item(iid, tags=base_tag_fn(iid))
+
+    def _on_motion(e):
+        row = tree.identify_row(e.y)
+        if row != state["last_hovered"]:
+            _restore(state["last_hovered"])
+            if row:
+                tree.item(row, tags=(hover_tag,))
+            state["last_hovered"] = row
+        if on_motion_extra:
+            on_motion_extra(e, row)
+
+    def _on_leave(e):
+        _restore(state["last_hovered"])
+        state["last_hovered"] = None
+        if on_leave_extra:
+            on_leave_extra(e)
+
+    tree.bind("<Motion>", _on_motion, add="+")
+    tree.bind("<Leave>", _on_leave, add="+")

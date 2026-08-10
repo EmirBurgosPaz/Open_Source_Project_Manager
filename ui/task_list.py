@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 from config import C, COLUMNS_STATUS, PRIORITY_STYLE , DEFAULT_PRIORITY_STYLE ,  OVERDUE_LEVELS , SOON_BG, SOON_FG , PRIORITY_ORDER 
 from datetime import date
-from utils.ui_helpers import setup_treeview_style
+from utils.ui_helpers import setup_treeview_style, setup_treeview_hover
 
 
 
@@ -211,35 +211,22 @@ class TaskList(tk.Frame):
                  bg=C["bg"], fg=C["muted"], font=("Helvetica", 9)).pack(pady=6)
 
         # ── Hover + tooltip de fecha ───────────────────────────────────
-        self._last_hovered = None
-
-        def on_motion(e):
-            row = tree.identify_row(e.y)
+        def _extra_motion(e, row):
             col = tree.identify_column(e.x)
-
-            if row != self._last_hovered:
-                if self._last_hovered and self._last_hovered in tree.get_children():
-                    original_tag = self._iid_tags.get(self._last_hovered, ("odd",))
-                    tree.item(self._last_hovered, tags=original_tag)
-                if row:
-                    tree.item(row, tags=("hover",))
-                self._last_hovered = row
-
             if row and col == f"#{cols.index('Fecha') + 1}":
                 self._show_tooltip(e.x_root, e.y_root, row)
             else:
                 self._hide_tooltip()
 
-        def on_leave(e):
-            if self._last_hovered and self._last_hovered in tree.get_children():
-                original_tag = self._iid_tags.get(self._last_hovered, ("odd",))
-                tree.item(self._last_hovered, tags=original_tag)
-            self._last_hovered = None
+        def _extra_leave(e):
             self._hide_tooltip()
 
-        tree.bind("<Motion>", on_motion)
-        tree.bind("<Leave>", on_leave)
-
+        setup_treeview_hover(
+            tree,
+            get_base_tag=lambda iid: self._iid_tags.get(iid, ("odd",)),
+            on_motion_extra=_extra_motion,
+            on_leave_extra=_extra_leave,
+        )
     # ───────────────────────── color por fila ─────────────────────────
     def _resolve_tag(self, tree, task, idx):
         """Calcula un único tag compuesto (prioridad + atraso + estado)
