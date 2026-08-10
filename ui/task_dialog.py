@@ -9,21 +9,7 @@ from tkinter import messagebox
 from datetime import date
 from config import C, COLUMNS_STATUS, PRIORITY_OPTIONS, KEYBOARD_KEYS, COLUMNS_STATUS_DEFAULT, POSITIONS_OPTIONS
 import config
-from utils.ui_helpers import make_label, make_entry, make_dark_combobox, center_window
-
-
-def _lighten(hex_color: str, amount: float = 0.15) -> str:
-    """Aclara un color hex un poco, para usarlo en estados hover."""
-    try:
-        hex_color = hex_color.lstrip("#")
-        r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
-        r = min(255, int(r + (255 - r) * amount))
-        g = min(255, int(g + (255 - g) * amount))
-        b = min(255, int(b + (255 - b) * amount))
-        return f"#{r:02x}{g:02x}{b:02x}"
-    except Exception:
-        return hex_color
-
+from utils.ui_helpers import make_label, make_entry, make_dark_combobox, center_window, add_hover, lighten
 
 class TaskDialog(tk.Toplevel):
     """
@@ -223,45 +209,40 @@ class TaskDialog(tk.Toplevel):
         tk.Frame(self, bg=C["dlg_border"], height=1).pack(fill="x", pady=(16, 0))
         self._build_buttons(task, bg)
 
-    def _add_hover(self, btn, base_bg, hover_bg):
-        btn.configure(bg=base_bg)
-        btn.bind("<Enter>", lambda e: btn.configure(bg=hover_bg))
-        btn.bind("<Leave>", lambda e: btn.configure(bg=base_bg))
-
     def _build_buttons(self, task, bg):
         btn_row = tk.Frame(self, bg=bg)
         btn_row.pack(fill="x", padx=16, pady=12)
 
         if task:
             delete_btn = tk.Button(
-                btn_row, text="Eliminar", fg="#E05555",
+                btn_row, text="Eliminar", bg=C["button"],fg=C["white"],
                 font=("Helvetica", 10), relief="flat", bd=0,
                 padx=10, pady=6, cursor="hand2",
-                activeforeground="#E05555",
+                activeforeground=C["button"],
                 command=self._on_delete,
             )
             delete_btn.pack(side="left")
-            self._add_hover(delete_btn, "#3A1A1A", _lighten("#3A1A1A", 0.35))
+            add_hover(delete_btn, lighten(C["delete"], 0.35), C["button"])
 
         cancel_btn = tk.Button(
-            btn_row, text="Cancelar", fg=C["muted"],
+            btn_row, text="Cancelar", bg=C["button"],fg=C["white"],
             font=("Helvetica", 10), relief="flat", bd=0,
             padx=10, pady=6, cursor="hand2",
-            activeforeground=C["muted"],
+            activeforeground=C["button"],
             command=self.destroy,
         )
         cancel_btn.pack(side="right", padx=(6, 0))
-        self._add_hover(cancel_btn, C["panel"], _lighten(C["panel"], 0.25))
+        add_hover(cancel_btn, lighten(C["accent"], 0.25), C["button"])
 
         save_btn = tk.Button(
-            btn_row, text="Guardar" if task else "Crear tarea", fg="white",
+            btn_row, text="Guardar" if task else "Crear tarea", bg=C["button"],fg=C["white"],
             font=("Helvetica", 10, "bold"), relief="flat", bd=0,
             padx=14, pady=6, cursor="hand2",
-            activeforeground="white",
+            activeforeground=C["button"],
             command=self._on_save,
         )
         save_btn.pack(side="right")
-        self._add_hover(save_btn, C["accent"], _lighten(C["accent"], 0.15))
+        add_hover(save_btn,  lighten(C["accent"], 0.15), C["button"])
 
     # ── Handlers ─────────────────────────────────────────────────────────
 

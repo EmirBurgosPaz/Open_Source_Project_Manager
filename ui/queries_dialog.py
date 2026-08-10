@@ -18,6 +18,7 @@ from storage.queries_manager import CATEGORIAS_DEFAULT
 from storage.queries_manager import ORIGENES_DEFAULT
 from storage.tags_manager import TagsManager
 from ui.tags_input import TagInput
+from utils.ui_helpers import add_hover, lighten
 
 
 class QueriesDialog(tk.Toplevel):
@@ -122,16 +123,19 @@ class QueriesDialog(tk.Toplevel):
         botones = tk.Frame(self, bg=C["bg"])
         botones.pack(fill="x", padx=12, pady=10)
 
-        tk.Button(
+        cancel_btn = tk.Button(
             botones, text="Cancelar", command=self.destroy,
             bg=C["border"], fg=C["white"], relief="flat", padx=14
-        ).pack(side="right", padx=(6, 0))
+        )
+        add_hover(cancel_btn , lighten(C["accent"], 0.25), C["button"])
+        cancel_btn.pack(side="right", padx=(6, 0))
 
         # Botón Guardar - AHORA VISIBLE Y FUNCIONAL
         self.btn_guardar = tk.Button(
             botones, text="Guardar", command=self._guardar,
             bg=C["button"], fg=C["white"], relief="flat", padx=14
         )
+        add_hover(self.btn_guardar , lighten(C["accent"], 0.25), C["button"])
         self.btn_guardar.pack(side="right")
 
         # Enlazar Ctrl+S para guardar

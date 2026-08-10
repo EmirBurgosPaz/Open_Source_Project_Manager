@@ -22,7 +22,7 @@ from ui.task_list import TaskList
 from ui.members_dialog import MembersDialog
 from ui.recurring_task_list import RecurringTaskList
 from ui.recurring_task_dialog import RecurringTaskDialog
-from utils.ui_helpers import KeybindsHelp, guard_typing
+from utils.ui_helpers import KeybindsHelp, guard_typing, add_hover, lighten
 from ui.filter_bar import FilterBar
 from ui.report_window import ReportWindow
 from models.splash_config import SplashConfig
@@ -166,6 +166,7 @@ class ProjectManagerApp(tk.Tk):
             padx=12, pady=5, cursor="hand2",
             command=self._new_task
         )
+        add_hover(self.btn_nueva_tarea , lighten(C["accent"], 0.25), C["button"])
         self.btn_nueva_tarea.pack(side="left", padx=5)
 
         self.btn_nueva_recurrente = tk.Button(
@@ -175,6 +176,7 @@ class ProjectManagerApp(tk.Tk):
             padx=12, pady=5, cursor="hand2",
             command=self._new_recurring
         )
+        add_hover(self.btn_nueva_recurrente , lighten(C["accent"], 0.25), C["button"])
         # Oculto por defecto, se muestra en la vista de recurrentes
         self.btn_nueva_recurrente.pack(side="left", padx=5)
         self.btn_nueva_recurrente.pack_forget()

@@ -3,8 +3,8 @@ from config import C, FREQUENCY_OPTIONS, STATUS_OPTIONS, CATEGORY_OPTIONS, PRIOR
 from utils.ui_helpers import make_label
 from utils.ui_helpers import make_entry
 from utils.ui_helpers import make_dark_combobox
-from utils.ui_helpers import center_window
-
+from utils.ui_helpers import center_window, add_hover, lighten
+from tkinter import messagebox
 
 
 
@@ -69,28 +69,33 @@ class RecurringTaskDialog(tk.Toplevel):
         btn_row.pack(fill="x", padx=16, pady=12)
 
         if task:
-            tk.Button(btn_row, text="Eliminar",
-                      bg=C["button"], fg=C["delete"],
+            delete_btn = tk.Button(btn_row, text="Eliminar",
+                      bg=C["delete"], fg=C["white"],
                       font=("Helvetica", 10), relief="flat", bd=0,
                       padx=10, pady=5, cursor="hand2",
-                      command=self._on_delete).pack(side="left")
+                      command=self._on_delete)
+            add_hover(delete_btn , lighten(C["delete"], 0.25), C["delete"])
+            delete_btn.pack(side="left", padx=(0, 6))
 
-        tk.Button(btn_row, text="Cancelar",
+        cancel_btn = tk.Button(btn_row, text="Cancelar",
                   bg=C["button"], fg=C["muted"],
                   font=("Helvetica", 10), relief="flat", bd=0,
                   padx=10, pady=5, cursor="hand2",
-                  command=self.destroy).pack(side="right", padx=(6, 0))
+                  command=self.destroy)
+        add_hover(cancel_btn , lighten(C["accent"], 0.25), C["button"])
+        cancel_btn.pack(side="right", padx=(6, 0))
 
-        tk.Button(btn_row, text="Guardar" if task else "Crear",
-                  bg=C["button"], fg="white",
+        save_btn = tk.Button(btn_row, text="Guardar" if task else "Crear",
+                  bg=C["button"], fg=C["white"],
                   font=("Helvetica", 10, "bold"), relief="flat", bd=0,
                   padx=14, pady=5, cursor="hand2",
-                  command=self._on_save).pack(side="right")
+                  command=self._on_save)
+        add_hover(save_btn , lighten(C["accent"], 0.25), C["button"])
+        save_btn.pack(side="right")
 
     def _on_save(self, event=None):
         title = self.e_title.get().strip()
         if not title:
-            from tkinter import messagebox
             messagebox.showwarning("Campo vacío", "El nombre no puede estar vacío.", parent=self)
             return
         self.result = {

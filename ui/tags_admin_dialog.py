@@ -12,6 +12,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, colorchooser
 
 from config import C
+from utils.ui_helpers import add_hover, lighten
 
 
 class TagsAdminDialog(tk.Toplevel):
@@ -56,22 +57,32 @@ class TagsAdminDialog(tk.Toplevel):
         botones = tk.Frame(cont, bg=C["bg"])
         botones.pack(fill="x", pady=(10, 0))
 
-        tk.Button(botones, text="✏️ Renombrar", command=self._renombrar,
+        renombrar_btn = tk.Button(botones, text="✏️ Renombrar", command=self._renombrar,
                  bg=C["button"], fg=C["white"], relief="flat", padx=10
-                 ).pack(side="left", padx=(0, 6))
-        tk.Button(botones, text="🎨 Color", command=self._cambiar_color,
+                 )
+        add_hover(renombrar_btn, lighten(C["accent"], 0.25), C["button"])
+        renombrar_btn.pack(side="left", padx=(0, 6))
+        color_btn = tk.Button(botones, text="🎨 Color", command=self._cambiar_color,
                  bg=C["button"], fg=C["white"], relief="flat", padx=10
-                 ).pack(side="left", padx=(0, 6))
-        tk.Button(botones, text="🔀 Fusionar con...", command=self._fusionar,
+                 )
+        add_hover(color_btn , lighten(C["accent"], 0.25), C["button"])
+        color_btn.pack(side="left", padx=(0, 6))
+        fusion_btn = tk.Button(botones, text="🔀 Fusionar con...", command=self._fusionar,
                  bg=C["button"], fg=C["white"], relief="flat", padx=10
-                 ).pack(side="left", padx=(0, 6))
-        tk.Button(botones, text="🗑️ Eliminar", command=self._eliminar,
+                 )
+        add_hover(fusion_btn , lighten(C["accent"], 0.25), C["button"])
+        fusion_btn.pack(side="left", padx=(0, 6))
+        delete_btn = tk.Button(botones, text="🗑️ Eliminar", command=self._eliminar,
                  bg=C["delete"], fg=C["white"], relief="flat", padx=10
-                 ).pack(side="left")
+                 )
+        add_hover(delete_btn , lighten(C["accent"], 0.25), C["delete"])
+        delete_btn.pack(side="left")
 
-        tk.Button(cont, text="Cerrar", command=self.destroy,
+        cerrar_btn = tk.Button(cont, text="Cerrar", command=self.destroy,
                  bg=C["border"], fg=C["white"], relief="flat", padx=14
-                 ).pack(anchor="e", pady=(10, 0))
+                 )
+        add_hover(cerrar_btn , lighten(C["accent"], 0.25), C["button"])
+        cerrar_btn.pack(anchor="e", pady=(10, 0))
 
     # ---------- Render ----------
 

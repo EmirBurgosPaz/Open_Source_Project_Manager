@@ -17,7 +17,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from openpyxl.styles import PatternFill, Font, Alignment
 
 from config import C, COLUMNS_STATUS, STATUS_COLORS, PRIORITY_COLORS, STATUS_FILL, PRIORITY_FILL, KEYBOARD_KEYS
-from utils.ui_helpers import center_window
+from utils.ui_helpers import center_window, add_hover, lighten
 
 import openpyxl
 
@@ -76,14 +76,18 @@ class ReportWindow(tk.Toplevel):
         header.pack(fill="x")
         tk.Label(header, text="Reportes", bg=C["sidebar"], fg=C["text"],
                  font=("Helvetica", 15, "bold")).pack(side="left", padx=20)
-        tk.Button(header, text="Cerrar", bg=C["button"], fg=C["muted"],
+        cerrar_btn = tk.Button(header, text="Cerrar", bg=C["button"], fg=C["muted"],
                   font=("Helvetica", 9), relief="flat", bd=0,
                   padx=10, pady=4, cursor="hand2",
-                  command=self.destroy).pack(side="right", padx=16)
-        tk.Button(header, text="Exportar Excel", bg=C["button"], fg="white",
+                  command=self.destroy)
+        add_hover(cerrar_btn , lighten(C["accent"], 0.25), C["button"])
+        cerrar_btn.pack(side="right", padx=16)
+        import_btn = tk.Button(header, text="Exportar Excel", bg=C["button"], fg="white",
                       font=("Helvetica", 9, "bold"), relief="flat", bd=0,
                       padx=12, pady=4, cursor="hand2",
-                      command=self._export_excel).pack(side="right", padx=6)
+                      command=self._export_excel)
+        add_hover(import_btn , lighten(C["accent"], 0.25), C["button"])
+        import_btn.pack(side="right", padx=6)
 
         tk.Frame(self, bg=C["border"], height=1).pack(fill="x")
 
@@ -206,15 +210,19 @@ class ReportWindow(tk.Toplevel):
         e_to.bind("<FocusOut>", lambda e: (e_to.insert(0, "AAAA-MM-DD") if not e_to.get() else None))
         e_to.bind("<Return>", lambda e: self._refresh())
 
-        tk.Button(bar, text="Aplicar", bg=C["button"], fg="white",
+        filter_btn = tk.Button(bar, text="Aplicar", bg=C["button"], fg=C["white"],
                   font=("Helvetica", 8, "bold"), relief="flat", bd=0,
                   padx=8, pady=3, cursor="hand2",
-                  command=self._refresh).pack(side="left", padx=6)
+                  command=self._refresh)
+        add_hover(filter_btn , lighten(C["accent"], 0.25), C["button"])
+        filter_btn.pack(side="left", padx=6)
 
-        tk.Button(bar, text="Limpiar", bg=C["button"], fg=C["muted"],
+        limpiar_btn = tk.Button(bar, text="Limpiar", bg=C["button"], fg=C["muted"],
                   font=("Helvetica", 8), relief="flat", bd=0,
                   padx=8, pady=3, cursor="hand2",
-                  command=self._clear_filters).pack(side="left")
+                  command=self._clear_filters)
+        add_hover(limpiar_btn , lighten(C["accent"], 0.25), C["button"])
+        limpiar_btn.pack(side="left")
 
     def _build_table(self, parent):
         # Título

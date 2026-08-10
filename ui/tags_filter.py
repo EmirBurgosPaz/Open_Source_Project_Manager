@@ -18,7 +18,7 @@ Uso:
 
 import tkinter as tk
 from config import C
-
+from utils.ui_helpers import add_hover, lighten
 
 class TagsFilterBar(tk.Frame):
     def __init__(self, parent, tags_manager, on_change, bg="#1e1e1e", fg="#ffffff", **kwargs):
@@ -40,12 +40,14 @@ class TagsFilterBar(tk.Frame):
             self.header, text="Modo: cualquiera (OR)", command=self._toggle_modo,
             bg=C["button"], fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
         )
+        add_hover(self.btn_modo , lighten(C["accent"], 0.25), C["button"])
         self.btn_modo.pack(side="left", padx=(0, 10))
 
         self.btn_limpiar = tk.Button(
             self.header, text="Limpiar", command=self.limpiar,
             bg=C["button"], fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
         )
+        add_hover(self.btn_limpiar , lighten(C["accent"], 0.25), C["button"])
         self.btn_limpiar.pack(side="left")
 
         self.chips_row = tk.Frame(self, bg=bg)

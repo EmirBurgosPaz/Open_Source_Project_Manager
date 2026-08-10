@@ -3,8 +3,8 @@ ui/filter_bar.py — Barra de filtros dinámicos sobre la lista de tareas.
 """
 import tkinter as tk
 from tkinter import ttk
-from config import C, COLUMNS_STATUS, PRIORITY_OPTIONS
-import config
+from config import C, COLUMNS_STATUS, PRIORITY_OPTIONS,MEMBERS
+from utils.ui_helpers import add_hover, lighten
 
 
 class FilterBar(tk.Frame):
@@ -88,13 +88,15 @@ class FilterBar(tk.Frame):
         self._assign_cb.pack(side="left", padx=(0, 12))
 
         # Botón limpiar
-        tk.Button(self, text="✕ Limpiar",
+        limpiar_btn = tk.Button(self, text="✕ Limpiar",
                         bg=C["button"], fg=C["muted"],
                         font=("Helvetica", 9), relief="flat", bd=0,
                         padx=8, pady=3, cursor="hand2",
                         activebackground=C["accent"],
                         activeforeground=C["panel"],
-                        command=self.clear).pack(side="right", padx=12)
+                        command=self.clear)
+        add_hover(limpiar_btn , lighten(C["accent"], 0.25), C["button"])
+        limpiar_btn.pack(side="right", padx=12)
 
     def _combo(self, values, var):
         style = ttk.Style()
@@ -137,7 +139,7 @@ class FilterBar(tk.Frame):
 
     def refresh_members(self):
         """Actualiza el combo de asignados con los miembros actuales."""
-        members = ["Todos"] + [m["name"] for m in config.MEMBERS]
+        members = ["Todos"] + [m["name"] for m in MEMBERS]
         self._assign_cb["values"] = members
         if self.assign_var.get() not in members:
             self.assign_var.set("Todos")

@@ -4,7 +4,7 @@ ui/members_dialog.py — Diálogo para gestionar miembros con edición por doble
 
 import tkinter as tk
 from config import C, KEYBOARD_KEYS
-from utils.ui_helpers import center_window
+from utils.ui_helpers import center_window, add_hover, lighten
 
 
 class MembersDialog(tk.Toplevel):
@@ -70,9 +70,11 @@ class MembersDialog(tk.Toplevel):
         self.e_pos = self._create_add_input(form_frame, "Posición", 1)
         self.e_team = self._create_add_input(form_frame, "Equipo", 2)
 
-        tk.Button(form_frame, text="+ Agregar Miembro", bg=C["button"], fg="white",
+        add_btn = tk.Button(form_frame, text="+ Agregar Miembro", bg=C["button"], fg="white",
                   font=("Helvetica", 10, "bold"), relief="flat", bd=0,
-                  pady=6, cursor="hand2", command=self._add_member).grid(row=1, column=0, columnspan=3, sticky="ew", pady=(10, 0))
+                  pady=6, cursor="hand2", command=self._add_member)
+        add_hover(add_btn , lighten(C["accent"], 0.25), C["button"])
+        add_btn.grid(row=1, column=0, columnspan=3, sticky="ew", pady=(10, 0))
 
     def _create_add_input(self, parent, placeholder, col):
         f = tk.Frame(parent, bg=C["dlg_border"], padx=1, pady=1)
@@ -98,8 +100,10 @@ class MembersDialog(tk.Toplevel):
             self._create_editable_cell(row, m, "team", i, expand_weight=2)
 
             # Botón eliminar
-            tk.Button(row, text="✕", bg=C["button"], fg="#ff5555", font=("Helvetica", 10),
-                      relief="flat", bd=0, cursor="hand2", command=lambda _idx=i: self._remove(_idx)).pack(side="right", padx=10)
+            delete_btn = tk.Button(row, text="Eliminar", bg=C["delete"], fg=C["White"], font=("Helvetica", 10),
+                      relief="flat", bd=0, cursor="hand2", command=lambda _idx=i: self._remove(_idx))
+            add_hover(delete_btn , lighten(C["accent"], 0.25), C["delete"])
+            delete_btn.pack(side="right", padx=10)
 
     def _create_editable_cell(self, parent, member_dict, key, member_idx, expand_weight):
         cell_frame = tk.Frame(parent, bg=C["dlg_input"])
