@@ -161,7 +161,7 @@ class ProjectManagerApp(tk.Tk):
 
         self.btn_nueva_tarea = tk.Button(
             self.action_buttons_frame, text="➕ Nueva tarea",
-            bg=C["accent"], fg="white",
+            bg=C["button"], fg="white",
             font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
             padx=12, pady=5, cursor="hand2",
             command=self._new_task
@@ -170,7 +170,7 @@ class ProjectManagerApp(tk.Tk):
 
         self.btn_nueva_recurrente = tk.Button(
             self.action_buttons_frame, text="🔄 Nueva recurrente",
-            bg=C["accent"], fg="white",
+            bg=C["button"], fg="white",
             font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
             padx=12, pady=5, cursor="hand2",
             command=self._new_recurring

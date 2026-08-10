@@ -19,11 +19,13 @@ C = {
     "bg_secondary": "#181825",
     "sidebar":   "#141417",
     "panel":     "#22222A",
+    "button":     "#333333",
     "border":    "#2E2E38",
     "grid": "#1F1F26",
     "text":      "#E8E8EC",
     "muted":     "#7A7A8A",
     "accent":    "#7C6FE0",
+    "delete":    "#FF4040",
     "accent_dk": "#5A4FBA",
     "accent_hover" : "#5599ff" ,
     "hover":     "#2A2A36",
@@ -156,6 +158,7 @@ KEYBOARD_KEYS = {
     "escape": "<Escape>", 
     "space": "<space>", # ignorar
     "tab" : "<KeyPress-Tab>", # Ignorar 
+    "supr" : "<Delete>",
     "new_task" : "<KeyPress-n>",  #Nueva tarea
     "new_project" : "<KeyPress-p>", # Nuevo proyecto
     "new_recurring" : "<KeyPress-r>", # Nueva tarea recurrente

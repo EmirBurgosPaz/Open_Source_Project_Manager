@@ -57,16 +57,16 @@ class TagsAdminDialog(tk.Toplevel):
         botones.pack(fill="x", pady=(10, 0))
 
         tk.Button(botones, text="✏️ Renombrar", command=self._renombrar,
-                 bg=C["accent"], fg=C["white"], relief="flat", padx=10
+                 bg=C["button"], fg=C["white"], relief="flat", padx=10
                  ).pack(side="left", padx=(0, 6))
         tk.Button(botones, text="🎨 Color", command=self._cambiar_color,
-                 bg=C["border"], fg=C["white"], relief="flat", padx=10
+                 bg=C["button"], fg=C["white"], relief="flat", padx=10
                  ).pack(side="left", padx=(0, 6))
         tk.Button(botones, text="🔀 Fusionar con...", command=self._fusionar,
-                 bg=C["border"], fg=C["white"], relief="flat", padx=10
+                 bg=C["button"], fg=C["white"], relief="flat", padx=10
                  ).pack(side="left", padx=(0, 6))
         tk.Button(botones, text="🗑️ Eliminar", command=self._eliminar,
-                 bg="#a13c3c", fg=C["white"], relief="flat", padx=10
+                 bg=C["delete"], fg=C["white"], relief="flat", padx=10
                  ).pack(side="left")
 
         tk.Button(cont, text="Cerrar", command=self.destroy,

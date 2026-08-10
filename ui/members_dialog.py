@@ -70,7 +70,7 @@ class MembersDialog(tk.Toplevel):
         self.e_pos = self._create_add_input(form_frame, "Posición", 1)
         self.e_team = self._create_add_input(form_frame, "Equipo", 2)
 
-        tk.Button(form_frame, text="+ Agregar Miembro", bg=C["accent"], fg="white",
+        tk.Button(form_frame, text="+ Agregar Miembro", bg=C["button"], fg="white",
                   font=("Helvetica", 10, "bold"), relief="flat", bd=0,
                   pady=6, cursor="hand2", command=self._add_member).grid(row=1, column=0, columnspan=3, sticky="ew", pady=(10, 0))
 
@@ -98,7 +98,7 @@ class MembersDialog(tk.Toplevel):
             self._create_editable_cell(row, m, "team", i, expand_weight=2)
 
             # Botón eliminar
-            tk.Button(row, text="✕", bg=C["dlg_input"], fg="#ff5555", font=("Helvetica", 10),
+            tk.Button(row, text="✕", bg=C["button"], fg="#ff5555", font=("Helvetica", 10),
                       relief="flat", bd=0, cursor="hand2", command=lambda _idx=i: self._remove(_idx)).pack(side="right", padx=10)
 
     def _create_editable_cell(self, parent, member_dict, key, member_idx, expand_weight):

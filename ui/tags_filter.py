@@ -17,6 +17,7 @@ Uso:
 """
 
 import tkinter as tk
+from config import C
 
 
 class TagsFilterBar(tk.Frame):
@@ -37,13 +38,13 @@ class TagsFilterBar(tk.Frame):
 
         self.btn_modo = tk.Button(
             self.header, text="Modo: cualquiera (OR)", command=self._toggle_modo,
-            bg="#333333", fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
+            bg=C["button"], fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
         )
         self.btn_modo.pack(side="left", padx=(0, 10))
 
         self.btn_limpiar = tk.Button(
             self.header, text="Limpiar", command=self.limpiar,
-            bg="#333333", fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
+            bg=C["button"], fg=fg, relief="flat", font=("Segoe UI", 8), padx=6
         )
         self.btn_limpiar.pack(side="left")
 

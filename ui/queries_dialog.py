@@ -130,7 +130,7 @@ class QueriesDialog(tk.Toplevel):
         # Botón Guardar - AHORA VISIBLE Y FUNCIONAL
         self.btn_guardar = tk.Button(
             botones, text="Guardar", command=self._guardar,
-            bg=C["accent"], fg=C["white"], relief="flat", padx=14
+            bg=C["button"], fg=C["white"], relief="flat", padx=14
         )
         self.btn_guardar.pack(side="right")
 

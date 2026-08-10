@@ -89,10 +89,10 @@ class FilterBar(tk.Frame):
 
         # Botón limpiar
         tk.Button(self, text="✕ Limpiar",
-                        bg=C["hover"], fg=C["muted"],
+                        bg=C["button"], fg=C["muted"],
                         font=("Helvetica", 9), relief="flat", bd=0,
                         padx=8, pady=3, cursor="hand2",
-                        activebackground=C["hover"],
+                        activebackground=C["accent"],
                         activeforeground=C["panel"],
                         command=self.clear).pack(side="right", padx=12)
 

@@ -70,19 +70,19 @@ class RecurringTaskDialog(tk.Toplevel):
 
         if task:
             tk.Button(btn_row, text="Eliminar",
-                      bg="#3A1A1A", fg="#E05555",
+                      bg=C["button"], fg=C["delete"],
                       font=("Helvetica", 10), relief="flat", bd=0,
                       padx=10, pady=5, cursor="hand2",
                       command=self._on_delete).pack(side="left")
 
         tk.Button(btn_row, text="Cancelar",
-                  bg=C["panel"], fg=C["muted"],
+                  bg=C["button"], fg=C["muted"],
                   font=("Helvetica", 10), relief="flat", bd=0,
                   padx=10, pady=5, cursor="hand2",
                   command=self.destroy).pack(side="right", padx=(6, 0))
 
         tk.Button(btn_row, text="Guardar" if task else "Crear",
-                  bg=C["accent"], fg="white",
+                  bg=C["button"], fg="white",
                   font=("Helvetica", 10, "bold"), relief="flat", bd=0,
                   padx=14, pady=5, cursor="hand2",
                   command=self._on_save).pack(side="right")
