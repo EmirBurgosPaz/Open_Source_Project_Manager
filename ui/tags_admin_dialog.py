@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, colorchooser
 
 from config import C
-from utils.ui_helpers import add_hover, lighten
+from utils.ui_helpers import add_hover, lighten, setup_treeview_hover
 
 
 class TagsAdminDialog(tk.Toplevel):
@@ -30,6 +30,7 @@ class TagsAdminDialog(tk.Toplevel):
 
         self._build_ui()
         self._render()
+        self.focus()
 
     def _build_ui(self):
         cont = tk.Frame(self, bg=C["bg"])
@@ -54,6 +55,10 @@ class TagsAdminDialog(tk.Toplevel):
         self.tree.configure(yscrollcommand=vsb.set)
         self.tree.pack(fill="both", expand=True)
 
+        self.tree.tag_configure("odd", background=C["bg"])
+        self.tree.tag_configure("even", background=C["row_alt"])
+        self.tree.tag_configure("hover", background=C["hover"])
+        
         botones = tk.Frame(cont, bg=C["bg"])
         botones.pack(fill="x", pady=(10, 0))
 
@@ -75,7 +80,7 @@ class TagsAdminDialog(tk.Toplevel):
         delete_btn = tk.Button(botones, text="🗑️ Eliminar", command=self._eliminar,
                  bg=C["delete"], fg=C["white"], relief="flat", padx=10
                  )
-        add_hover(delete_btn , lighten(C["accent"], 0.25), C["delete"])
+        add_hover(delete_btn , lighten(C["delete"], 0.25), C["delete"])
         delete_btn.pack(side="left")
 
         cerrar_btn = tk.Button(cont, text="Cerrar", command=self.destroy,
@@ -89,10 +94,17 @@ class TagsAdminDialog(tk.Toplevel):
     def _render(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
+        
         conteo = self.tags_manager.conteo_uso(self.queries_manager)
+
+        i = 0
+         
         for t in self.tags_manager.obtener_todos():
+            i =  i +1
             usos = conteo.get(t["clave"], 0)
-            self.tree.insert("", "end", iid=t["clave"], values=(t["display"], usos))
+            self.tree.insert("", "end",tags=("even" if i % 2 == 0 else "odd",),  iid=t["clave"], values=(t["display"], usos))
+
+        setup_treeview_hover(self.tree)
 
     def _seleccion(self):
         sel = self.tree.selection()

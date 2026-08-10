@@ -29,7 +29,7 @@ from storage.queries_manager import QueriesManager
 from ui.queries_dialog import QueriesDialog
 from storage.tags_manager import TagsManager
 
-from utils.ui_helpers import setup_treeview_style, add_hover, lighten
+from utils.ui_helpers import setup_treeview_style, add_hover, lighten, setup_treeview_hover
 
 
 class QueriesListFrame(tk.Frame):
@@ -176,29 +176,7 @@ class QueriesListFrame(tk.Frame):
         self.tree.bind("<Control-d>", lambda e: self._duplicar_seleccionada())
         self.tree.bind(KEYBOARD_KEYS["New_Querrie"], lambda e: self._nuevo_query())
 
-        # Hover effect
-        self._last_hovered = None
-
-        def on_motion(e):
-            row = self.tree.identify_row(e.y)
-            if row != self._last_hovered:
-                if self._last_hovered and self._last_hovered in self.tree.get_children():
-                    idx = self._all_iids.index(self._last_hovered) if self._last_hovered in self._all_iids else 0
-                    tag = "even" if idx % 2 else "odd"
-                    self.tree.item(self._last_hovered, tags=(tag,))
-                if row:
-                    self.tree.item(row, tags=("hover",))
-                self._last_hovered = row
-
-        def on_leave(e):
-            if self._last_hovered and self._last_hovered in self.tree.get_children():
-                idx = self._all_iids.index(self._last_hovered) if self._last_hovered in self._all_iids else 0
-                tag = "even" if idx % 2 else "odd"
-                self.tree.item(self._last_hovered, tags=(tag,))
-            self._last_hovered = None
-
-        self.tree.bind("<Motion>", on_motion)
-        self.tree.bind("<Leave>", on_leave)
+        setup_treeview_hover(self.tree)
 
         # ── Menú contextual ──────────────────────────────────────────
         self.menu = tk.Menu(self, tearoff=0, bg=C["panel"], fg=C["text"],

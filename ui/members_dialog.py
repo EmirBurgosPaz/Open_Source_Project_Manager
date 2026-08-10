@@ -100,9 +100,9 @@ class MembersDialog(tk.Toplevel):
             self._create_editable_cell(row, m, "team", i, expand_weight=2)
 
             # Botón eliminar
-            delete_btn = tk.Button(row, text="Eliminar", bg=C["delete"], fg=C["White"], font=("Helvetica", 10),
+            delete_btn = tk.Button(row, text="Eliminar", bg=C["delete"], fg=C["white"], font=("Helvetica", 10),
                       relief="flat", bd=0, cursor="hand2", command=lambda _idx=i: self._remove(_idx))
-            add_hover(delete_btn , lighten(C["accent"], 0.25), C["delete"])
+            add_hover(delete_btn , lighten(C["delete"], 0.25), C["delete"])
             delete_btn.pack(side="right", padx=10)
 
     def _create_editable_cell(self, parent, member_dict, key, member_idx, expand_weight):

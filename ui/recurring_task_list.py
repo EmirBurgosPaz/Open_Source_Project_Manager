@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from config import C
-from utils.ui_helpers import setup_treeview_style
+from utils.ui_helpers import setup_treeview_style, setup_treeview_hover
 
 
 class RecurringTaskList(tk.Frame):
@@ -41,8 +41,7 @@ class RecurringTaskList(tk.Frame):
 
         tree.tag_configure("odd",  background=C["bg"])
         tree.tag_configure("even", background=C["row_alt"])
-        tree.tag_configure("odd_hover",  background=C["hover"])
-        tree.tag_configure("even_hover", background=C["hover"])
+        tree.tag_configure("hover",  background=C["hover"])
 
         vsb = ttk.Scrollbar(self.table_frame, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=vsb.set)
@@ -88,28 +87,8 @@ class RecurringTaskList(tk.Frame):
         tree.bind("<ButtonRelease-1>", on_drag_release)
 
         # Hover
-        self._last_hovered = None
-
-        def on_motion(e):
-            row = tree.identify_row(e.y)
-            if row == self._last_hovered:
-                return
-            if self._last_hovered and self._last_hovered in tree.get_children():
-                idx = tree.index(self._last_hovered)
-                tree.item(self._last_hovered, tags=("even" if idx % 2 == 0 else "odd",))
-            if row:
-                idx = tree.index(row)
-                tree.item(row, tags=(f"{'even' if idx % 2 == 0 else 'odd'}_hover",))
-            self._last_hovered = row
-
-        def on_leave(e):
-            if self._last_hovered and self._last_hovered in tree.get_children():
-                idx = tree.index(self._last_hovered)
-                tree.item(self._last_hovered, tags=("even" if idx % 2 == 0 else "odd",))
-            self._last_hovered = None
-
-        tree.bind("<Motion>",     on_motion)
-        tree.bind("<Leave>",      on_leave)
+        setup_treeview_hover(tree)
+        
         tree.bind("<Double-1>",   lambda e: self._on_double_click(tree))
 
 
