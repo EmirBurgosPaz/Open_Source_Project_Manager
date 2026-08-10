@@ -29,7 +29,7 @@ from storage.queries_manager import QueriesManager
 from ui.queries_dialog import QueriesDialog
 from storage.tags_manager import TagsManager
 
-from utils.ui_helpers import setup_treeview_style
+from utils.ui_helpers import setup_treeview_style, add_hover, lighten
 
 
 class QueriesListFrame(tk.Frame):
@@ -54,36 +54,6 @@ class QueriesListFrame(tk.Frame):
         # Contenedor principal
         container = tk.Frame(self, bg=C["bg"])
         container.pack(fill="both", expand=True, padx=14, pady=14)
-
-        # ── Encabezado ────────────────────────────────────────────────
-        header = tk.Frame(container, bg=C["bg"])
-        header.pack(fill="x", pady=(0, 10))
-
-        tk.Label(
-            header, text="Documentación de queries",
-            bg=C["bg"], fg=C["white"], font=("Segoe UI", 13, "bold"),
-            anchor="w"
-        ).pack(side="left")
-
-        btns = tk.Frame(header, bg=C["bg"])
-        btns.pack(side="right")
-
-        tk.Button(
-            btns, text="🏷️  Gestionar tags", command=self._gestionar_tags,
-            bg=C["panel"], fg=C["white"], relief="flat",
-            activebackground=C["hover"], activeforeground=C["white"],
-            padx=12, pady=6, font=("Segoe UI", 9), cursor="hand2",
-            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["border"],
-            bd=0
-        ).pack(side="left", padx=(0, 8))
-
-        tk.Button(
-            btns, text="➕  Nueva consulta", command=self._nuevo_query,
-            bg=C["accent"], fg=C["white"], relief="flat",
-            activebackground=C["accent_hover"], activeforeground=C["white"],
-            padx=16, pady=6, font=("Segoe UI", 10, "bold"), cursor="hand2",
-            bd=0
-        ).pack(side="left")
 
         # ── Fila de filtros: buscar, categoría y tags en una sola tarjeta ──
         filters_card = tk.Frame(
@@ -132,12 +102,35 @@ class QueriesListFrame(tk.Frame):
         self.tags_filter_bar.pack(side="left", fill="x", expand=True, padx=(6, 12), pady=10)
 
         # Limpiar (búsqueda + categoría)
-        tk.Button(
+        limpiar_btn = tk.Button(
             filters_card, text="✕ Limpiar", command=self._limpiar_filtros,
-            bg=C["panel"], fg=C["white"], relief="flat",
-            activebackground=C["hover"], activeforeground=C["white"],
+            bg=C["button"], fg=C["white"], relief="flat",
+            activebackground=C["accent_hover"], activeforeground=C["white"],
             font=("Segoe UI", 9), cursor="hand2", bd=0
-        ).pack(side="right", padx=12)
+        )
+        add_hover(limpiar_btn , lighten(C["accent"], 0.25), C["button"])
+        limpiar_btn.pack(side="left", padx=12)
+
+        tags_btn = tk.Button(
+            filters_card, text="🏷️  Gestionar tags", command=self._gestionar_tags,
+            bg=C["button"], fg=C["white"], relief="flat",
+            activebackground=C["accent_hover"], activeforeground=C["white"],
+            padx=12, pady=6, font=("Segoe UI", 9), cursor="hand2",
+            highlightthickness=1, highlightbackground=C["border"], highlightcolor=C["border"],
+            bd=0
+        )
+        add_hover(tags_btn , lighten(C["accent"], 0.25), C["button"])
+        tags_btn.pack(side="left", padx=(0, 8))
+
+        add_btn = tk.Button(
+            filters_card, text="➕  Nueva consulta", command=self._nuevo_query,
+            bg=C["button"], fg=C["white"], relief="flat",
+            activebackground=C["accent_hover"], activeforeground=C["white"],
+            padx=16, pady=6, font=("Segoe UI", 10, "bold"), cursor="hand2",
+            bd=0
+        )
+        add_hover(add_btn , lighten(C["accent"], 0.25), C["button"])
+        add_btn.pack(side="right")
 
         # ── Contador de resultados ────────────────────────────────────
         self.lbl_count = tk.Label(
