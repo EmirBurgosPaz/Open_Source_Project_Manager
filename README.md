@@ -1,4 +1,4 @@
-# Proyecto Okeanos - Open source task manager (Version 3.2.0)
+# Proyecto Okeanos - Open source task manager (Version 3.2.4)
 
 ****
 
@@ -76,4 +76,4 @@ Persistencia
 - Uso del programa por varios usuarios
 - Comunicacion por medio de linea
 
-**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v3.2.0
+**Full Changelog**: https://github.com/EmirBurgosPaz/Open_Source_Project_Manager/compare/v0.0.0...v3.2.4
