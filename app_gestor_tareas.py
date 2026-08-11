@@ -30,6 +30,8 @@ from ui.splash_window import TechPlexusSplash
 from ui.queries_list import QueriesListFrame
 from ui.documents_list import Documents_list
 from services.document_service import DocumentService
+from ui.notas_list import NotasListFrame
+from ui.notas_dialog import NotaDialog
 
 
 README_FILE = "README.md"
@@ -127,6 +129,7 @@ class ProjectManagerApp(tk.Tk):
             on_master_tasks=self._show_master_tasks,
             on_queries=self._show_querries,
             on_documents=self._show_documents,
+            on_notas = self._show_notas,
         )
         self.sidebar.pack(side="left", fill="y")
 
@@ -212,6 +215,9 @@ class ProjectManagerApp(tk.Tk):
         self.documents_list = Documents_list(main, self.document_service)
         self.documents_list.pack_forget()
 
+        self.notas_list = NotasListFrame(main)
+        self.notas_list.pack_forget()
+
     # ── Refresh ───────────────────────────────────────────────────────────────
     def refresh(self):
         projects = self.project_service.get_all()
@@ -229,6 +235,8 @@ class ProjectManagerApp(tk.Tk):
         self.task_list.render(visible, projects)
         self.recurring_list.render(self.task_service.recurring.get_all())
         self.documents_list.render(self.document_service.get_all())
+        self.notas_list.render()
+        self.queries_list.render()
 
     def _render_stats(self):
         # Limpiar estadísticas anteriores (excepto el botón de ayuda)
@@ -306,6 +314,7 @@ class ProjectManagerApp(tk.Tk):
         # Ocultar consultas si están visibles
         self.queries_list.pack_forget()
         self.documents_list.pack_forget()
+        self.notas_list.pack_forget()
         self.lbl_title.config(text="Todas las tareas")
         self.filter_bar.pack(fill="x")
         self.task_list.pack(fill="both", expand=True)
@@ -352,6 +361,7 @@ class ProjectManagerApp(tk.Tk):
         # Ocultar consultas si están visibles
         self.queries_list.pack_forget()
         self.documents_list.pack_forget()
+        self.notas_list.pack_forget()
         self.lbl_title.config(text="Tareas Recurrentes")
         self.task_list.pack_forget()
         self.recurring_list.pack(fill="both", expand=True)
@@ -413,6 +423,7 @@ class ProjectManagerApp(tk.Tk):
         # Ocultar todos los paneles existentes
         self.task_list.pack_forget()
         self.documents_list.pack_forget()
+        self.notas_list.pack_forget()
         self.recurring_list.pack_forget()
         self.filter_bar.pack_forget()
         self.btn_nueva_tarea.pack_forget()
@@ -426,6 +437,29 @@ class ProjectManagerApp(tk.Tk):
         # Forzar actualización
         self.update_idletasks()
         self.refresh()
+
+    # ── Acciones: Queries/Documentación ─────────────────────────────────────
+    def _show_notas(self, event=None):
+        """Muestra la vista de documentos activos."""
+        # Ocultar todos los paneles existentes
+        self.task_list.pack_forget()
+        self.queries_list.pack_forget()
+        self.notas_list.pack_forget()
+        self.recurring_list.pack_forget()
+        self.filter_bar.pack_forget()
+        self.btn_nueva_tarea.pack_forget()
+        self.btn_nueva_recurrente.pack_forget()
+        self.documents_list.pack_forget()
+        
+        # Actualizar título
+        self.lbl_title.config(text="📁 Notas")
+
+        self.notas_list.pack(fill="both", expand=True)
+        
+        # Forzar actualización
+        self.update_idletasks()
+        self.refresh()
+        
 
     # ── Acciones: Queries/Documentación ─────────────────────────────────────
     def _show_documents(self, event=None):

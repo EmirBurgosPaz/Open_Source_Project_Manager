@@ -159,15 +159,15 @@ KEYBOARD_KEYS = {
     "space": "<space>", # ignorar
     "tab" : "<KeyPress-Tab>", # Ignorar 
     "supr" : "<Delete>",
-    "new_task" : "<KeyPress-n>",  #Nueva tarea
-    "new_project" : "<KeyPress-p>", # Nuevo proyecto
-    "new_recurring" : "<KeyPress-r>", # Nueva tarea recurrente
+    "new_task" : "<Control-t>",  #Nueva tarea
+    "new_project" : "<Control-p>", # Nuevo proyecto
+    "new_recurring" : "<Control-r>", # Nueva tarea recurrente
     "members" : "<KeyPress-E>", # pestaña miembros
     "report" : "<KeyPress-R>", # Pestaña reportes
     "recurring" : "<KeyPress-M>", # Pestaña recurrentes
     "task" : "<KeyPress-T>", # pestaña Tareas
     "save" : "<Control-s>", # pestaña Tareas
-    "New_Querrie" : "<q>",
+    "New_Querrie" : "<Control-q>",
     "querries" : "<KeyPress-Q>",
 }
 
