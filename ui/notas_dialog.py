@@ -6,7 +6,7 @@ import tkinter as tk
 
 from config import C
 from services.notas_service import NotasService
-from utils.ui_helpers import make_label, make_entry, center_window
+from utils.ui_helpers import make_label, make_entry, center_window, add_hover, lighten
 from utils.rich_text import RichTextEditor
 
 
@@ -19,10 +19,11 @@ class NotaDialog(tk.Toplevel):
 
         self.title("Nota")
         self.configure(bg=C["dlg_bg"])
-        self.geometry("640x540")
-        self.focus()
-        self._build_ui()
+        self.geometry("800x620")
+        self.minsize(560, 520)
         center_window(self, parent)
+        self._build_ui()
+        self.update_idletasks()
         self.transient(parent)
         self.grab_set()
 
@@ -33,6 +34,7 @@ class NotaDialog(tk.Toplevel):
         make_label(cont, "Título").pack(anchor="w")
         self.titulo_entry = make_entry(cont, value=self.nota.titulo)
         self.titulo_entry.pack(fill="x", pady=(0, 10))
+        self.titulo_entry.focus()
 
         make_label(cont, "Tags (separados por coma)").pack(anchor="w")
         self.tags_entry = make_entry(cont, value=", ".join(self.nota.tags))
@@ -46,17 +48,19 @@ class NotaDialog(tk.Toplevel):
         botones = tk.Frame(cont, bg=C["dlg_bg"])
         botones.pack(fill="x")
 
-        guardar_btn = tk.Label(botones, text="Guardar", bg=C["accent"], fg="white",
+        save_btn = tk.Label(botones, text="Guardar", bg=C["button"], fg=C["white"],
                                 font=("Helvetica", 10, "bold"), padx=14, pady=6,
                                 cursor="hand2")
-        guardar_btn.pack(side="right")
-        guardar_btn.bind("<Button-1>", lambda e: self._guardar())
+        save_btn.pack(side="right")
+        add_hover(save_btn , lighten(C["accent"], 0.25), C["button"])
+        save_btn.bind("<Button-1>", lambda e: self._guardar())
 
-        eliminar_btn = tk.Label(botones, text="Eliminar", bg=C["border"], fg=C["text"],
+        delete_btn = tk.Label(botones, text="Eliminar", bg=C["delete"], fg=C["white"],
                                  font=("Helvetica", 10), padx=14, pady=6,
                                  cursor="hand2")
-        eliminar_btn.pack(side="right", padx=(0, 8))
-        eliminar_btn.bind("<Button-1>", lambda e: self._eliminar())
+        delete_btn.pack(side="right", padx=(0, 8))
+        add_hover(delete_btn , lighten(C["delete"], 0.25), C["delete"])
+        delete_btn.bind("<Button-1>", lambda e: self._eliminar())
 
     def _guardar(self):
         self.nota.titulo = self.titulo_entry.get().strip()
