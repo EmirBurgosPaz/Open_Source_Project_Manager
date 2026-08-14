@@ -215,14 +215,14 @@ class TaskDialog(tk.Toplevel):
 
         if task:
             delete_btn = tk.Button(
-                btn_row, text="Eliminar", bg=C["button"],fg=C["white"],
+                btn_row, text="Eliminar", bg=C["delete"],fg=C["white"],
                 font=("Helvetica", 10), relief="flat", bd=0,
                 padx=10, pady=6, cursor="hand2",
                 activeforeground=C["button"],
                 command=self._on_delete,
             )
             delete_btn.pack(side="left")
-            add_hover(delete_btn, lighten(C["delete"], 0.35), C["button"])
+            add_hover(delete_btn, lighten(C["delete"], 0.35), C["delete"])
 
         cancel_btn = tk.Button(
             btn_row, text="Cancelar", bg=C["button"],fg=C["white"],
