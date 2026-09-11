@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 import os
 
@@ -10,6 +10,9 @@ class Document:
     fecha_modificacion: str = ""
     activo: int = 1
     pertenece: str = ""
+    descripcion: str = ""       # texto descriptivo del archivo
+    fecha_documento: str = ""   # fecha asignada manualmente por el usuario
+    query_ids: list = field(default_factory=list)  # NUEVO: IDs de Query asociadas a este documento
 
     def to_dict(self) -> dict:
         return {
@@ -18,6 +21,9 @@ class Document:
             "Fecha_modificacion": self.fecha_modificacion,
             "Activo": self.activo,
             "Pertenece": self.pertenece,
+            "Descripcion": self.descripcion,
+            "Fecha_documento": self.fecha_documento,
+            "Query_ids": self.query_ids,
         }
 
     @classmethod
@@ -28,6 +34,9 @@ class Document:
             fecha_modificacion=d.get("Fecha_modificacion", ""),
             activo=int(d.get("Activo", 1)),
             pertenece=d.get("Pertenece", ""),
+            descripcion=d.get("Descripcion", ""),
+            fecha_documento=d.get("Fecha_documento", ""),
+            query_ids=list(d.get("Query_ids", [])),
         )
 
     def refresh_mtime(self) -> bool:

@@ -212,7 +212,7 @@ class ProjectManagerApp(tk.Tk):
         self.queries_list = QueriesListFrame(main)
         self.queries_list.pack_forget()
 
-        self.documents_list = Documents_list(main, self.document_service)
+        self.documents_list = Documents_list(main, self.document_service, queries_manager=self.queries_list.manager)
         self.documents_list.pack_forget()
 
         self.notas_list = NotasListFrame(main)

@@ -24,7 +24,7 @@ from ui.tags_admin_dialog import TagsAdminDialog
 from config import C, KEYBOARD_KEYS
 
 
-from storage.queries_manager import CATEGORIAS_DEFAULT
+from models.querie_model import CATEGORIAS_DEFAULT
 from storage.queries_manager import QueriesManager
 from ui.queries_dialog import QueriesDialog
 from storage.tags_manager import TagsManager
