@@ -3,3 +3,4 @@
 *.drawio
 *.pyc
 *documentation.md
+*.env
