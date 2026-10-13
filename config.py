@@ -28,6 +28,7 @@ C = {
     "delete":    "#FF4040",
     "accent_dk": "#5A4FBA",
     "accent_hover" : "#5599ff" ,
+    "review" : "#A78BFA",
     "hover":     "#2A2A36",
     "row_alt":   "#1F1F26",
     "dlg_bg":    "#1E1E26",
@@ -90,15 +91,6 @@ DEFAULT_TASKS = [
 
 # ── Kanban columns ────────────────────────────────────────────────────────────
 
-COLUMNS_STATUS = [
-    ("todo",     "Por hacer"),
-    ("progress", "En progreso"),
-    ("review",   "En revisión"),
-    ("done",     "Completado"),
-    ("denied",     "Denegado"),
-    ("backlog",  "Backlog"),
-]
-
 COLUMNS_STATUS_DEFAULT = [
     ("todo",     "Por hacer",   ),
 ]
@@ -135,21 +127,12 @@ OVERDUE_LEVELS = [
 ]
 SOON_BG, SOON_FG = C["soon_bg"], C["soon_fg"]
 
-PRIORITY_ORDER = {"Alta": 0, "Media": 1, "Baja": 2}
 
 
 FREQUENCY_OPTIONS = ["Diario", "Semanal", "Quincenal", "Mensual", "Trimestral"]
 
 STATUS_OPTIONS = ["Direccion", "Lideres", "Proyectos", "CFM", "Gerentes", "Area", "informacion"]
 
-POSITIONS_OPTIONS = [("Dueños", "Todo"),
-                      ("Direccion" , "Todo"),
-                        ("Subdireccion" , "Todo") ,
-                          ("Gerencias" , "Area"),
-                     ("Lideres" , "Area"),
-                     ("Auditorias", "Area"),
-                     ("Empleados" , "Puntual"),
-                     ("Externos" , "Autorizacion"),]
 
 CATEGORY_OPTIONS = ["Automatico", "Manual"]
 
@@ -210,3 +193,42 @@ STATUS_FILL = {
 PRIORITY_FILL = {"Alta": "FF6B6B", "Media": "E6A817", "Baja": "38BDF8"}
 
 
+
+COLUMNS_STATUS = [
+    ("todo",     "Por hacer"),
+    ("progress", "En progreso"),
+    ("review",   "En revisión"),
+    ("done",     "Completado"),
+    ("denied",     "Denegado"),
+    ("backlog",  "Backlog"),
+]
+
+POSITIONS_OPTIONS = [("Consejo general", "Todo"),
+                      ("Direccion" , "Todo"),
+                        ("Subdireccion" , "Todo") ,
+                          ("Gerencias" , "Departamento"),
+                          ("Lideres" , "Equipo"),
+                          ("Operativos" , "Puntual"),
+                     ("Informacion" , "A consideracion"),
+                     ("Auditorias", "Zona de gestion"),
+                     ("Externos" , "Autorizacion"),]
+
+PRIORITY_ORDER = {"Alta": 0, "Media": 1, "Baja": 2}
+
+# (clave, encabezado, ancho en tabla (px), ancho en Excel)
+FIELDS = [
+    ("id",           "ID",                50,  6),
+    ("title",        "Tarea",            260, 40),
+    ("project",      "Proyecto",         110, 18),
+    ("status",       "Estado",            95, 14),
+    ("priority",     "Prioridad",         80, 12),
+    ("assign",       "Asignado",         110, 18),
+    ("requester",    "Solicitante",      110, 18),
+    ("client",       "Cliente",           90, 14),
+    ("due",          "Vencimiento",       95, 14),
+    ("created",      "Creado",            95, 14),
+    ("completed_at", "Completado",        95, 14),
+    ("position",     "Posición",          90, 14),
+    ("authorization","Autorización",     100, 16),
+    ("type_request", "Tipo de solicitud",120, 20),
+]
