@@ -129,7 +129,7 @@ class TaskService:
             due             = original.due,
             requester     = original.requester,
             client = original.client,
-            created         = original.created,
+            created         = datetime.now().strftime("%Y-%m-%d"),
             position = original.position,
             authorization         = original.authorization,
             type_request         = original.type_request,
@@ -180,7 +180,7 @@ class TaskService:
             if filters["status"] == "Activas":
                 # Buscamos los IDs internos de las tareas que no están terminadas
                 # (Ajusta "Por hacer" y "En progreso" si tus textos en COLUMNS_STATUS son diferentes)
-                active_ids = [c[0] for c in COLUMNS_STATUS if c[1] in ["Por hacer", "En progreso"]]
+                active_ids = [c[0] for c in COLUMNS_STATUS if c[1] in ["Por hacer", "En progreso", "En revisión","Backlog" ]]
                 result = [t for t in result if t.status in active_ids]
             else:
                 # Lógica normal para un estado individual (Ej. "Completado")
