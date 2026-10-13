@@ -97,19 +97,22 @@ class Documents_list(ttk.Frame):
         add_hover(add_btn, lighten(C["accent"], 0.25), C["button"])
         add_btn.pack(side="right")
 
-        columns = ("nombre", "activo", "Fecha_update", "pertenece", "fecha_doc", "descripcion", "queries")
+        columns = ("nombre", "carpeta", "activo", "Fecha_update", "pertenece", "fecha_doc", "descripcion", "queries")
 
         style_name = setup_treeview_style()
 
         self.tree = ttk.Treeview(self, columns=columns, show="headings", selectmode="browse", style=style_name)
         self.tree.heading("nombre", text="Documento", command=lambda: self._sort_by("nombre", False))
+        self.tree.heading("carpeta", text="Carpeta actual", command=lambda: self._sort_by("carpeta", False))
         self.tree.heading("activo", text="Activo", command=lambda: self._sort_by("activo", False))
         self.tree.heading("Fecha_update", text="Última modificación", command=lambda: self._sort_by("Fecha_update", False))
         self.tree.heading("pertenece", text="Pertenece", command=lambda: self._sort_by("pertenece", False))
         self.tree.heading("fecha_doc", text="Fecha", command=lambda: self._sort_by("fecha_doc", False))
         self.tree.heading("descripcion", text="Descripción", command=lambda: self._sort_by("descripcion", False))
         self.tree.heading("queries", text="Queries", command=lambda: self._sort_by("queries", False))
+
         self.tree.column("nombre", width=150, anchor="w")
+        self.tree.column("carpeta", width=110, anchor="w")
         self.tree.column("activo", width=20, anchor="center")
         self.tree.column("Fecha_update", width=80, anchor="center")
         self.tree.column("pertenece", width=90, anchor="w")
@@ -138,6 +141,11 @@ class Documents_list(ttk.Frame):
         nombres = self.service.obtener_nombres_queries(doc.ruta_documento, self.queries_manager)
         return ", ".join(nombres)
 
+    def _carpeta_actual_de(self, doc) -> str:
+        """Nombre de la última carpeta que contiene al documento."""
+        carpeta = os.path.dirname(os.path.normpath(doc.ruta_documento))
+        return os.path.basename(carpeta)
+
     def _populate(self):
         i = 0
         self.tree.delete(*self.tree.get_children())
@@ -145,9 +153,9 @@ class Documents_list(ttk.Frame):
             i = i + 1
             estado = "☑" if doc.activo else "☐"
             self.tree.insert("", "end", tags=("even" if i % 2 == 0 else "odd",), iid=doc.ruta_documento,
-                              values=(doc.nombre_documento, estado, doc.fecha_modificacion,
-                                      doc.pertenece, doc.fecha_documento, doc.descripcion,
-                                      self._nombres_queries_de(doc)))
+                  values=(doc.nombre_documento, self._carpeta_actual_de(doc), estado,
+                          doc.fecha_modificacion, doc.pertenece, doc.fecha_documento,
+                          doc.descripcion, self._nombres_queries_de(doc)))
 
         if self._last_sort:
             col, reverse = self._last_sort
@@ -190,6 +198,9 @@ class Documents_list(ttk.Frame):
             self._open_assign_queries_dialog(row)
         else:
             self._open_edit_dialog(row)
+
+        if col_name == "carpeta":
+            return
 
     def _open_edit_dialog(self, ruta):
         doc = next((d for d in self.service.get_all() if d.ruta_documento == ruta), None)
