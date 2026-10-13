@@ -56,6 +56,7 @@ class Query:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     creado: str = field(default_factory=_ahora)
     modificado: str = field(default_factory=_ahora)
+    sql_link: str = field(default_factory=_ahora)
 
     def __post_init__(self):
         self.tags = _normalizar_tags(self.tags)
@@ -121,6 +122,7 @@ class Query:
             descripcion=self.descripcion,
             sql=self.sql,
             tags=list(self.tags),
+            sql_link=list(self.sql_link),
         )
 
     # ---------- Serialización ----------
@@ -141,4 +143,5 @@ class Query:
             id=data.get("id", str(uuid.uuid4())),
             creado=data.get("creado", _ahora()),
             modificado=data.get("modificado", _ahora()),
+            sql_link=data.get("sql_link", _ahora()),
         )
