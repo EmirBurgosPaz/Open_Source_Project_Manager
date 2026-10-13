@@ -232,3 +232,20 @@ FIELDS = [
     ("authorization","Autorización",     100, 16),
     ("type_request", "Tipo de solicitud",120, 20),
 ]
+
+STATUS_LABEL = {k: v for k, v in COLUMNS_STATUS}
+PRIORITIES = ("Alta", "Media", "Baja")
+PLACEHOLDER = "AAAA-MM-DD"
+
+# Nombres posibles de los campos del modelo Task (ajústalos a los tuyos)
+CREATED_FIELDS = ("created", "created_at", "fecha_creacion", "start")
+CLOSED_FIELDS  = ("completed_at", "done_at", "closed_at", "finished", "fecha_cierre")
+HOURS_FIELDS   = ("hours", "horas", "horas_operativas")
+
+BASIS_RESOLVED = "Resueltas (creación → cierre)"
+BASIS_OPEN     = "Abiertas (antigüedad)"
+
+USE_ESTIMATED_HOURS = True
+HOURS_PER_DAY = 10
+MINIMUN_DAY = 1
+
