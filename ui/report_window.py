@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from openpyxl.styles import PatternFill, Font, Alignment
 
-from config import C, COLUMNS_STATUS, STATUS_COLORS, PRIORITY_COLORS, STATUS_FILL, PRIORITY_FILL, KEYBOARD_KEYS
+from config import C, COLUMNS_STATUS, STATUS_COLORS, PRIORITY_COLORS, STATUS_FILL, PRIORITY_FILL, KEYBOARD_KEYS, FIELDS
 from utils.ui_helpers import center_window, add_hover, lighten
 
 import openpyxl
@@ -250,23 +250,14 @@ class ReportWindow(tk.Toplevel):
                   background=[("selected", C["accent_dk"])],
                   foreground=[("selected", "white")])
 
-        cols = ("title", "project", "status", "priority", "assign", "due", "client")
+        cols = tuple(f[0] for f in FIELDS)
         self.tree = ttk.Treeview(wrapper, columns=cols, show="headings",
-                                  style="Report.Treeview")
+                                 style="Report.Treeview")
 
-        headers = {
-            "title":    ("Tarea",        260),
-            "project":  ("Proyecto",     110),
-            "status":   ("Estado",        95),
-            "priority": ("Prioridad",     80),
-            "assign":   ("Asignado",     100),
-            "due":      ("Vencimiento",   95),
-            "client":   ("Cliente",      100),
-        }
-        for col, (heading, width) in headers.items():
-            self.tree.heading(col, text=heading,
-                              command=lambda c=col: self._sort_by(c))
-            self.tree.column(col, width=width, minwidth=60, anchor="w")
+        for key, heading, width, _ in FIELDS:
+            self.tree.heading(key, text=heading,
+                              command=lambda c=key: self._sort_by(c))
+            self.tree.column(key, width=width, minwidth=50, anchor="w")
 
         # Tags de color por estado
         for status_id, color in STATUS_COLORS.items():
@@ -507,16 +498,8 @@ class ReportWindow(tk.Toplevel):
         for i, t in enumerate(tasks):
             tag = f"s_{t.status}"
             alt = "row_alt" if i % 2 else ""
-            self.tree.insert("", "end", iid=str(t.id), tags=(tag, alt),
-                             values=(
-                                 t.title,
-                                 proj_map.get(t.project_id, "—"),
-                                 STATUS_LABEL.get(t.status, t.status),
-                                 t.priority,
-                                 t.assign or "—",
-                                 t.due or "—",
-                                 getattr(t, "client", "") or "—",
-                             ))
+            values = tuple(self._task_value(t, f[0], proj_map) for f in FIELDS)
+            self.tree.insert("", "end", iid=str(t.id), tags=(tag, alt), values=values)
 
     # ── Ordenar tabla ─────────────────────────────────────────────────────────
 
@@ -527,12 +510,28 @@ class ReportWindow(tk.Toplevel):
             self._sort_col = col
             self._sort_asc = True
 
+        def key(item):
+            v = item[0]
+            try:
+                return (0, int(v))
+            except (ValueError, TypeError):
+                return (1, str(v).lower())
+
         items = [(self.tree.set(k, col), k) for k in self.tree.get_children("")]
-        items.sort(reverse=not self._sort_asc)
+        items.sort(key=key, reverse=not self._sort_asc)
         for idx, (_, k) in enumerate(items):
             self.tree.move(k, "", idx)
 
     # ── Exportar Excel ────────────────────────────────────────────────────────
+
+    def _task_value(self, t, key, proj_map):
+        """Devuelve el valor ya formateado de un campo de la tarea."""
+        if key == "project":
+            return proj_map.get(t.project_id, "—")
+        if key == "status":
+            return STATUS_LABEL.get(t.status, t.status)
+        val = getattr(t, key, "")
+        return "—" if val in ("", None) else val
 
     def _export_excel(self):
 
@@ -551,9 +550,8 @@ class ReportWindow(tk.Toplevel):
         ws = wb.active
         ws.title = "Reporte de Tareas"
 
-        # Encabezados
-        headers = ["ID", "Tarea", "Proyecto", "Estado", "Prioridad",
-                   "Asignado", "Vencimiento", "Cliente", "Descripción"]
+                # Encabezados
+        headers = [f[1] for f in FIELDS]
         header_fill = PatternFill("solid", fgColor="7C6FE0")
         header_font = Font(bold=True, color="FFFFFF", size=10)
 
@@ -565,31 +563,17 @@ class ReportWindow(tk.Toplevel):
 
         ws.row_dimensions[1].height = 22
 
-        # Colores por estado para Excel
-
-
         for row_idx, t in enumerate(tasks, 2):
-            row_data = [
-                t.id,
-                t.title,
-                proj_map.get(t.project_id, "—"),
-                STATUS_LABEL.get(t.status, t.status),
-                t.priority,
-                t.assign or "—",
-                t.due or "—",
-                getattr(t, "client", "") or "—",
-                getattr(t, "requester", "") or "",
-            ]
-            for col_idx, val in enumerate(row_data, 1):
+            for col_idx, (key, *_rest) in enumerate(FIELDS, 1):
+                val = self._task_value(t, key, proj_map)
                 cell = ws.cell(row=row_idx, column=col_idx, value=val)
                 cell.alignment = Alignment(vertical="center", wrap_text=False)
-                if col_idx == 4:  # Estado
-                    fill_color = STATUS_FILL.get(t.status, "7A7A8A")
-                    cell.fill = PatternFill("solid", fgColor=fill_color)
+
+                if key == "status":
+                    cell.fill = PatternFill("solid", fgColor=STATUS_FILL.get(t.status, "7A7A8A"))
                     cell.font = Font(color="FFFFFF", size=9)
-                elif col_idx == 5:  # Prioridad
-                    fill_color = PRIORITY_FILL.get(t.priority, "7A7A8A")
-                    cell.fill = PatternFill("solid", fgColor=fill_color)
+                elif key == "priority":
+                    cell.fill = PatternFill("solid", fgColor=PRIORITY_FILL.get(t.priority, "7A7A8A"))
                     cell.font = Font(color="FFFFFF", size=9)
                 else:
                     bg = "1F1F26" if row_idx % 2 == 0 else "22222A"
@@ -599,11 +583,11 @@ class ReportWindow(tk.Toplevel):
             ws.row_dimensions[row_idx].height = 18
 
         # Anchos de columna
-        col_widths = [6, 40, 18, 14, 12, 16, 14, 16, 40]
-        for i, width in enumerate(col_widths, 1):
-            ws.column_dimensions[
-                openpyxl.utils.get_column_letter(i)
-            ].width = width
+        for i, (*_, xl_width) in enumerate(FIELDS, 1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = xl_width
+
+        ws.freeze_panes = "A2"
+        ws.auto_filter.ref = ws.dimensions
 
         # Hoja 2: resumen
         ws2 = wb.create_sheet("Resumen")
