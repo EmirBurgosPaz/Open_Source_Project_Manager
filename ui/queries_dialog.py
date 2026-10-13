@@ -246,7 +246,9 @@ class QueriesDialog(tk.Toplevel):
 
     def _cargar_sql_desde_link(self, auto=False):
         """Descarga el contenido del link (raw de GitLab) y lo muestra en el Text de SQL."""
+        
         url = self.entry_sql_link.get().strip()
+        print(url)
         if not url:
             if not auto:
                 messagebox.showwarning("Falta información", "Pega primero el link del SQL.")
