@@ -142,21 +142,37 @@ def bind_hover(widgets: list, bg_normal: str, bg_hover: str,
         w.bind("<Leave>", on_leave)
 
 class Tooltip:
-    def __init__(self, widget, text: str, trigger_widgets: list = None):
-        self.widget          = widget
-        self.text            = text
-        self.tip             = None
-        # Si se pasan widgets externos (como el frame padre), escuchar en ellos
+    def __init__(self, widget, text: str, trigger_widgets: list = None, delay: int = 350):
+        self.widget = widget
+        self.text   = text
+        self.tip    = None
+        self.delay  = delay
+        self._after = None
         targets = trigger_widgets if trigger_widgets else [widget]
         for w in targets:
-            w.bind("<Enter>", self._show, add="+")
+            w.bind("<Enter>", self._schedule, add="+")
             w.bind("<Leave>", self._hide, add="+")
+            w.bind("<Button-1>", self._hide, add="+")
 
-    def _show(self, e):
+    def _schedule(self, e=None):
+        self._cancel()
+        self._after = self.widget.after(self.delay, self._show)
+
+    def _cancel(self):
+        if self._after:
+            try:
+                self.widget.after_cancel(self._after)
+            except tk.TclError:
+                pass
+            self._after = None
+
+    def _show(self):
+        self._after = None
         if self.tip:
             return
-        x = self.widget.winfo_rootx() + self.widget.winfo_width() + 4
-        y = self.widget.winfo_rooty()
+        # Debajo del puntero, con offset: nunca queda bajo el mouse
+        x = self.widget.winfo_pointerx() + 12
+        y = self.widget.winfo_pointery() + 22
         self.tip = tk.Toplevel(self.widget)
         self.tip.wm_overrideredirect(True)
         self.tip.wm_geometry(f"+{x}+{y}")
@@ -166,7 +182,8 @@ class Tooltip:
                  relief="flat", bd=0,
                  padx=8, pady=4).pack()
 
-    def _hide(self, e):
+    def _hide(self, e=None):
+        self._cancel()
         if self.tip:
             self.tip.destroy()
             self.tip = None

@@ -248,4 +248,4 @@ BASIS_OPEN     = "Abiertas (antigüedad)"
 USE_ESTIMATED_HOURS = True
 HOURS_PER_DAY = 10
 MINIMUN_DAY = 1
-
+MAX_NAME_LEN = 18 

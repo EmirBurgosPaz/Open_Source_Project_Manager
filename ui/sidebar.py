@@ -7,7 +7,8 @@ import tkinter as tk
 from config import C
 from utils.ui_helpers import Tooltip
 
-MAX_NAME_LEN = 18 
+from config import (MAX_NAME_LEN)
+
 
 def _truncate(text: str, max_len: int = MAX_NAME_LEN) -> str:
         return text if len(text) <= max_len else text[:max_len - 3] + "..."
@@ -104,14 +105,11 @@ class Sidebar(tk.Frame):
         row = tk.Frame(f, bg=C["sidebar"])
         row.pack(fill="x", padx=10, pady=3)
 
-        dot      = tk.Label(row, text="●",      bg=C["sidebar"], fg=color,     font=("Helvetica", 10))
-
-        display_name = _truncate(name)
-        name_lbl = tk.Label(row, text=display_name, bg=C["sidebar"], fg=C["text"], font=("Helvetica", 10))
-        
-
+        dot      = tk.Label(row, text="●", bg=C["sidebar"], fg=color, font=("Helvetica", 10))
+        name_lbl = tk.Label(row, text=_truncate(name), bg=C["sidebar"], fg=C["text"], font=("Helvetica", 10))
         cnt_lbl  = tk.Label(row, text=str(count), bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 9))
-        edit_lbl = tk.Label(row, text="✎",      bg=C["sidebar"], fg=C["muted"], font=("Helvetica", 10), cursor="hand2", padx=2)
+        edit_lbl = tk.Label(row, text="✎", bg=C["sidebar"], fg=C["muted"],
+                            font=("Helvetica", 10), cursor="hand2", padx=2)
 
         dot.pack(side="left")
         name_lbl.pack(side="left", padx=4)
@@ -119,38 +117,49 @@ class Sidebar(tk.Frame):
         edit_lbl.pack(side="right", padx=(0, 2))
         self._row_refs[pid] = cnt_lbl
 
+        all_widgets = [f, row, dot, name_lbl, cnt_lbl, edit_lbl]
+        state = {"hover": False}
+
+        def apply_hover(active: bool):
+            if state["hover"] == active:      # evita redibujados innecesarios
+                return
+            state["hover"] = active
+            bg = C["hover"] if active else C["sidebar"]
+            for w in all_widgets:
+                w.config(bg=bg)
+            edit_lbl.config(fg=C["text"] if active else C["muted"])
+
+        def on_enter(e):
+            apply_hover(True)
+
+        def on_leave(e):
+            # Solo apaga el hover si el mouse realmente salió de la fila completa
+            x, y = f.winfo_pointerxy()
+            widget = f.winfo_containing(x, y)
+            if widget not in all_widgets:
+                apply_hover(False)
+
         def on_edit(e, _pid=pid):
             if any(p.id == _pid for p in self._current_projects):
                 self.on_edit_project(_pid)
+            return "break"                    # evita que el click llegue a on_click
+
+        def on_click(e, _pid=pid, _name=name):
+            apply_hover(False)
+            self.on_filter(_pid, _name)
+
+        for w in all_widgets:
+            w.bind("<Enter>", on_enter)
+            w.bind("<Leave>", on_leave)
+
+        for w in [f, row, dot, name_lbl, cnt_lbl]:
+            w.bind("<Button-1>", on_click)
 
         edit_lbl.bind("<Button-1>", on_edit)
 
-        all_widgets = [f, row, dot, name_lbl, cnt_lbl, edit_lbl]
-
-        def on_enter(e, _ws=all_widgets, _edit=edit_lbl):
-            for w in _ws:
-                w.config(bg=C["hover"])
-            _edit.config(fg=C["text"])
-
-        def on_leave(e, _ws=all_widgets, _edit=edit_lbl):
-            for w in _ws:
-                w.config(bg=C["sidebar"])
-            _edit.config(fg=C["muted"])
-        
-        def on_click(e, _pid=pid, _name=name):
-            on_leave(e)                    # 1. apaga el hover
-            self.on_filter(_pid, _name)
-
-        for w in [f, row, dot, name_lbl, cnt_lbl]:
-            w.bind("<Enter>", on_enter)
-            w.bind("<Leave>", on_leave)
-            w.bind("<Button-1>", on_click)
-
-        edit_lbl.bind("<Enter>", on_enter)
-        edit_lbl.bind("<Leave>", on_leave)
-
         if len(name) > MAX_NAME_LEN:
             Tooltip(name_lbl, name, trigger_widgets=[f, row, dot, name_lbl])
+            
 
     def _nav_item(self, parent, icon, label, cmd):
         f   = tk.Frame(parent, bg=C["sidebar"], cursor="hand2")
