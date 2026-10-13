@@ -241,6 +241,15 @@ class TaskList(tk.Frame):
         if task.status == "done":
             key, bg, fg, bold = "done", C["done_bg"], C["done_fg"], False
 
+        elif task.status == "backlog":
+            key, bg, fg, bold = "backlog", C["row_alt"], C["tag_pink"], False
+
+        elif task.status == "review":
+            key, bg, fg, bold = "review", C["row_alt"], C["review"], False
+
+        elif task.status == "denied":
+            key, bg, fg, bold = "review", C["row_alt"], C["text"], False
+
         elif due_delta is not None and due_delta < 0:
             days_late = -due_delta
             level = next((lvl for lvl in OVERDUE_LEVELS if days_late >= lvl[0]), OVERDUE_LEVELS[-1])
