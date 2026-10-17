@@ -471,6 +471,7 @@ class ProjectManagerApp(tk.Tk):
         self.filter_bar.pack_forget()
         self.btn_nueva_tarea.pack_forget()
         self.btn_nueva_recurrente.pack_forget()
+        self.notas_list.pack_forget()
         
         # Actualizar título
         self.lbl_title.config(text="📁 Documentos activos")
