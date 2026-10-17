@@ -5,8 +5,6 @@ Todo lo que no cambia con la lógica va aquí.
 
 import os
 
-
-
 # ── Persistencia ──────────────────────────────────────────────────────────────
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -204,8 +202,8 @@ COLUMNS_STATUS = [
 ]
 
 POSITIONS_OPTIONS = [("Consejo general", "Todo"),
-                      ("Direccion" , "Todo"),
-                        ("Subdireccion" , "Todo") ,
+                      ("Direccion (General/Finanzas)" , "Todo"),
+                        ("Direccion operativa" , "General") ,
                           ("Gerencias" , "Departamento"),
                           ("Lideres" , "Equipo"),
                           ("Operativos" , "Puntual"),
